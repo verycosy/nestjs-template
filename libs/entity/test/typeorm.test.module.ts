@@ -6,7 +6,11 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'sqlite',
+      type: 'mysql',
+      host: 'localhost',
+      port: 43306,
+      username: 'root',
+      password: 'password',
       database: 'testdb',
       entities: [path.join(__dirname, '../src/domain/**/*.entity.ts')],
       synchronize: true,
