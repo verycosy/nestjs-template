@@ -16,6 +16,6 @@ describe('UserApiController', () => {
   });
 
   it('sayHello', () => {
-    expect(sut.sayHello()).toEqual('hello');
+    expect(sut.sayHello()).toEqual({ message: 'hello' });
   });
 });

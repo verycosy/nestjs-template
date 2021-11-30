@@ -7,6 +7,8 @@ export class UserApiController {
 
   @Get('/hello')
   sayHello() {
-    return this.userApiService.sayHello();
+    return {
+      message: this.userApiService.sayHello(),
+    };
   }
 }
