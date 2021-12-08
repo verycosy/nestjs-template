@@ -14,7 +14,6 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
       database: 'testdb',
       entities: [path.join(__dirname, '../src/domain/**/*.entity.ts')],
       synchronize: true,
-      dropSchema: true,
       namingStrategy: new SnakeNamingStrategy(),
     }),
   ],
