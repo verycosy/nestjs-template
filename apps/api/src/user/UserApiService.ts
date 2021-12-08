@@ -9,10 +9,6 @@ export class UserApiService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
-  sayHello() {
-    return 'hello';
-  }
-
   async signUp(newUser: User): Promise<User> {
     return await this.userRepository.save(newUser);
   }

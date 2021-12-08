@@ -27,10 +27,6 @@ describe('UserApiController', () => {
     await userRepository.clear();
   });
 
-  it('sayHello', () => {
-    expect(sut.sayHello()).toEqual({ message: 'hello' });
-  });
-
   describe('signUp', () => {
     it('비밀번호가 서로 다르면 BadRequestException', async () => {
       const request = new SignUpRequest();

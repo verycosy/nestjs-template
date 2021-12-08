@@ -23,10 +23,6 @@ describe('UserApiService', () => {
     await userRepository.clear();
   });
 
-  it('sayHello', () => {
-    expect(sut.sayHello()).toEqual('hello');
-  });
-
   it('sign up', async () => {
     const signUpUser = new User();
     signUpUser.email = 'test@test.com';

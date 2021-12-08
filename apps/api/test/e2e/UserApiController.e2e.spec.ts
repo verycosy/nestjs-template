@@ -22,11 +22,6 @@ describe('UserApiController (e2e)', () => {
     await app.close();
   });
 
-  it('/hello (GET)', async () => {
-    const res = await request(app.getHttpServer()).get('/users/hello');
-    expect(res.body).toEqual({ message: 'hello' });
-  });
-
   describe('/sign-up (POST)', () => {
     it('비밀번호가 서로 다르면 에러 메시지', async () => {
       const res = await request(app.getHttpServer())
