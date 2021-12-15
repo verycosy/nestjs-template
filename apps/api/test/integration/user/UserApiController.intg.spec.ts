@@ -41,6 +41,7 @@ describe('UserApiController', () => {
 
     it('회원가입 성공시 생성된 유저 정보 반환', async () => {
       const request = new SignUpRequest();
+      request.name = 'verycosy';
       request.email = 'test@test.com';
       request.password = 'password';
       request.confirmPassword = 'password';
@@ -69,6 +70,7 @@ describe('UserApiController', () => {
 
     it('회원가입 성공시 생성된 유저 정보 반환', async () => {
       const request = new SignUpRequest();
+      request.name = 'verycosy';
       request.email = 'test@test.com';
       request.password = 'password';
       request.confirmPassword = 'password';
@@ -79,6 +81,7 @@ describe('UserApiController', () => {
       const mockUserApiService = mock<UserApiService>();
       when(mockUserApiService.signUp(requestToEntity)).thenResolve({
         id: 1,
+        name: request.name,
         email: request.email,
         password: request.password,
       });

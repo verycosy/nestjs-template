@@ -7,6 +7,9 @@ export class User {
   id: number;
 
   @Column()
+  name: string;
+
+  @Column()
   email: string;
 
   @Column()
@@ -16,9 +19,11 @@ export class User {
     return await bcrypt.hash(password, 10);
   }
 
-  static async signUp(email: string, password: string): Promise<User> {
+  static async signUp(params: Partial<User>): Promise<User> {
+    const { name, email, password } = params;
     const signUpUser = new User();
 
+    signUpUser.name = name;
     signUpUser.email = email;
     signUpUser.password = await User.hashPassword(password);
 

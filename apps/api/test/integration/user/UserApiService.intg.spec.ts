@@ -24,9 +24,11 @@ describe('UserApiService', () => {
   });
 
   it('sign up', async () => {
-    const signUpUser = new User();
-    signUpUser.email = 'test@test.com';
-    signUpUser.password = 'password';
+    const signUpUser = await User.signUp({
+      name: 'verycosy',
+      email: 'test@test.com',
+      password: 'password',
+    });
 
     const newUser = await sut.signUp(signUpUser);
     expect(newUser.email).toEqual(signUpUser.email);

@@ -3,6 +3,9 @@ import { IsString } from 'class-validator';
 
 export class SignUpRequest {
   @IsString()
+  name: string;
+
+  @IsString()
   email: string;
 
   @IsString()
@@ -16,6 +19,10 @@ export class SignUpRequest {
   }
 
   async toEntity(): Promise<User> {
-    return await User.signUp(this.email, this.password);
+    return await User.signUp({
+      name: this.name,
+      email: this.email,
+      password: this.password,
+    });
   }
 }

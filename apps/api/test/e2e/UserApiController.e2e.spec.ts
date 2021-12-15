@@ -27,6 +27,7 @@ describe('UserApiController (e2e)', () => {
       const res = await request(app.getHttpServer())
         .post('/users/sign-up')
         .send({
+          name: 'verycosy',
           email: 'test@test.com',
           password: 'password',
           confirmPassword: 'confirmPassword',
@@ -44,6 +45,7 @@ describe('UserApiController (e2e)', () => {
       const res = await request(app.getHttpServer())
         .post('/users/sign-up')
         .send({
+          name: 'verycosy',
           email: 'test@test.com',
           password: 'password',
           confirmPassword: 'password',
