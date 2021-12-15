@@ -23,6 +23,12 @@
       ],
       "@app/entity/*": [
         "libs/entity/src/*"
+      ],
+      "@app/util": [
+        "libs/util/src"
+      ],
+      "@app/util/*": [
+        "libs/util/src/*"
       ]
     }
   }
