@@ -30,6 +30,7 @@ describe('UserApiController (e2e)', () => {
           name: 'verycosy',
           email: 'test@test.com',
           password: 'password',
+          phoneNumber: '010-1111-2222',
           confirmPassword: 'confirmPassword',
         });
 
@@ -48,11 +49,13 @@ describe('UserApiController (e2e)', () => {
           name: 'verycosy',
           email: 'test@test.com',
           password: 'password',
+          phoneNumber: '010-1111-2222',
           confirmPassword: 'password',
         });
 
       expect(res.statusCode).toEqual(201);
       expect(res.body.email).toEqual('test@test.com');
+      expect(res.body.phoneNumber).toEqual('010-1111-2222');
     });
   });
 });

@@ -45,6 +45,7 @@ describe('UserApiController', () => {
       request.email = 'test@test.com';
       request.password = 'password';
       request.confirmPassword = 'password';
+      request.phoneNumber = '010-1111-2222';
 
       const result = await sut.signUp(request);
       expect(result.email).toEqual(request.email);
@@ -74,6 +75,7 @@ describe('UserApiController', () => {
       request.email = 'test@test.com';
       request.password = 'password';
       request.confirmPassword = 'password';
+      request.phoneNumber = '010-1111-2222';
 
       const requestToEntity = await request.toEntity();
       request.toEntity = jest.fn(() => Promise.resolve(requestToEntity));
@@ -84,6 +86,7 @@ describe('UserApiController', () => {
         name: request.name,
         email: request.email,
         password: request.password,
+        phoneNumber: request.phoneNumber,
       });
       sut = new UserApiController(instance(mockUserApiService));
 

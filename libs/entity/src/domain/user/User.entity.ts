@@ -15,17 +15,24 @@ export class User {
   @Column()
   password: string;
 
+  @Column({
+    length: 13,
+    nullable: true,
+  })
+  phoneNumber: string;
+
   static async hashPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, 10);
   }
 
   static async signUp(params: Partial<User>): Promise<User> {
-    const { name, email, password } = params;
+    const { name, email, password, phoneNumber } = params;
     const signUpUser = new User();
 
     signUpUser.name = name;
     signUpUser.email = email;
     signUpUser.password = await User.hashPassword(password);
+    signUpUser.phoneNumber = phoneNumber;
 
     return signUpUser;
   }

@@ -1,5 +1,5 @@
 import { User } from '@app/entity/domain/user/User.entity';
-import { IsString } from 'class-validator';
+import { IsString, Length } from 'class-validator';
 
 export class SignUpRequest {
   @IsString()
@@ -14,6 +14,10 @@ export class SignUpRequest {
   @IsString()
   confirmPassword: string;
 
+  @IsString()
+  @Length(13, 13)
+  phoneNumber: string;
+
   isEqualPassword(): boolean {
     return this.password === this.confirmPassword;
   }
@@ -23,6 +27,7 @@ export class SignUpRequest {
       name: this.name,
       email: this.email,
       password: this.password,
+      phoneNumber: this.phoneNumber,
     });
   }
 }
