@@ -13,6 +13,6 @@ export class UserApiController {
       throw new BadRequestException('Password does not matched');
     }
 
-    return await this.userApiService.signUp(request.toEntity());
+    return await this.userApiService.signUp(await request.toEntity());
   }
 }

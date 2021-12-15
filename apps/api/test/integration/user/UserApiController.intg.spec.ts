@@ -73,8 +73,8 @@ describe('UserApiController', () => {
       request.password = 'password';
       request.confirmPassword = 'password';
 
-      const requestToEntity = request.toEntity();
-      request.toEntity = jest.fn(() => requestToEntity);
+      const requestToEntity = await request.toEntity();
+      request.toEntity = jest.fn(() => Promise.resolve(requestToEntity));
 
       const mockUserApiService = mock<UserApiService>();
       when(mockUserApiService.signUp(requestToEntity)).thenResolve({

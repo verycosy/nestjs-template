@@ -15,7 +15,7 @@ export class SignUpRequest {
     return this.password === this.confirmPassword;
   }
 
-  toEntity(): User {
-    return User.signUp(this.email, this.password);
+  async toEntity(): Promise<User> {
+    return await User.signUp(this.email, this.password);
   }
 }
