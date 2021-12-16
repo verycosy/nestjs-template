@@ -8,6 +8,7 @@ import { User } from '@app/entity/domain/user/User.entity';
 import { SignUpRequest } from '../../../../api/src/user/dto/SignUpRequest';
 import { BadRequestException } from '@nestjs/common';
 import { mock, when, instance } from 'ts-mockito';
+import { SignUpService } from '../../../../api/src/user/SignUpService';
 
 describe('UserApiController', () => {
   let sut: UserApiController;
@@ -16,7 +17,7 @@ describe('UserApiController', () => {
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [TypeOrmTestModule, UserModule],
-      providers: [UserApiService],
+      providers: [UserApiService, SignUpService],
       controllers: [UserApiController],
     }).compile();
 
@@ -58,8 +59,8 @@ describe('UserApiController', () => {
       request.password = 'password';
       request.confirmPassword = 'confirmPassword';
 
-      const stubUserApiService = mock<UserApiService>();
-      sut = new UserApiController(stubUserApiService);
+      const stubSignUpService = mock<SignUpService>();
+      sut = new UserApiController(stubSignUpService);
 
       try {
         await sut.signUp(request);
@@ -80,15 +81,15 @@ describe('UserApiController', () => {
       const requestToEntity = await request.toEntity();
       request.toEntity = jest.fn(() => Promise.resolve(requestToEntity));
 
-      const mockUserApiService = mock<UserApiService>();
-      when(mockUserApiService.signUp(requestToEntity)).thenResolve({
+      const mockSignUpService = mock<SignUpService>();
+      when(mockSignUpService.signUp(requestToEntity)).thenResolve({
         id: 1,
         name: request.name,
         email: request.email,
         password: request.password,
         phoneNumber: request.phoneNumber,
       });
-      sut = new UserApiController(instance(mockUserApiService));
+      sut = new UserApiController(instance(mockSignUpService));
 
       const result = await sut.signUp(request);
       expect(result.email).toEqual(request.email);

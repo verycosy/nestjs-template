@@ -4,8 +4,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class UserApiService {
+export class SignUpService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
+
+  async signUp(newUser: User): Promise<User> {
+    return await this.userRepository.save(newUser);
+  }
 }
