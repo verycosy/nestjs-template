@@ -38,6 +38,6 @@ export class AuthCodeIssuer {
   }
 
   async release(emailOrPhoneNumber: string): Promise<void> {
-    await this.cacheManager.del(emailOrPhoneNumber);
+    await this.cacheManager.del(`verified:${emailOrPhoneNumber}`);
   }
 }

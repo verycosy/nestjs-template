@@ -40,4 +40,12 @@ describe('AuthCodeIssue', () => {
       expect(await sut.isVerified(phoneNumber)).toEqual(true);
     });
   });
+
+  it('release', async () => {
+    const phoneNumber = '010-1111-2222';
+
+    await sut.setVerified(phoneNumber);
+    await sut.release(phoneNumber);
+    expect(await sut.isVerified(phoneNumber)).toEqual(false);
+  });
 });
