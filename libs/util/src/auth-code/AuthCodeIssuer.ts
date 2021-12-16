@@ -5,6 +5,13 @@ import { Cache } from 'cache-manager';
 export class AuthCodeIssuer {
   constructor(@Inject(CACHE_MANAGER) private readonly cacheManager: Cache) {}
 
+  generate(): string {
+    const MIN = 100000;
+    const MAX = 999999;
+
+    return (Math.floor(Math.random() * (MAX - MIN + 1)) + MIN).toString();
+  }
+
   async setAuthCodeTo(
     emailOrPhoneNumber: string,
     authCode: string,

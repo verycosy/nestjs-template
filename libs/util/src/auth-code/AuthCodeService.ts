@@ -1,6 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EMAIL_SERVICE, EmailService } from '../email';
-import { generateAuthCode } from '../generateAuthCode';
 import { SmsService, SMS_SERVICE } from '../sms/SmsService';
 import { AuthCodeIssuer } from './AuthCodeIssuer';
 
@@ -13,14 +12,14 @@ export class AuthCodeService {
   ) {}
 
   async sendViaSms(phoneNumber: string): Promise<void> {
-    const authCode = generateAuthCode();
+    const authCode = this.authCodeIssuer.generate();
 
     await this.authCodeIssuer.setAuthCodeTo(phoneNumber, authCode);
     await this.smsService.send('010-0000-0000', phoneNumber, authCode);
   }
 
   async sendViaEmail(email: string): Promise<void> {
-    const authCode = generateAuthCode();
+    const authCode = this.authCodeIssuer.generate();
 
     await this.authCodeIssuer.setAuthCodeTo(email, authCode);
     await this.emailService.send(
