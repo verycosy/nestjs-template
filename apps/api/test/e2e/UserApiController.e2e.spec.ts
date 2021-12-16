@@ -4,14 +4,13 @@ import { UserApiModule } from '../../../api/src/user/UserApiModule';
 import { TypeOrmTestModule } from '../../../../libs/entity/test/typeorm.test.module';
 import * as request from 'supertest';
 import { getApiModuleProvider } from '../../src/getApiModuleProvider';
-import { RedisModule } from '@app/util/cache';
 
 describe('UserApiController (e2e)', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TypeOrmTestModule, UserApiModule, RedisModule],
+      imports: [TypeOrmTestModule, UserApiModule],
       providers: [...getApiModuleProvider()],
     }).compile();
 

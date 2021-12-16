@@ -8,7 +8,6 @@ import { User } from '@app/entity/domain/user/User.entity';
 import { SignUpRequest } from '../../../../api/src/user/dto/SignUpRequest';
 import { BadRequestException } from '@nestjs/common';
 import { SignUpService } from '../../../../api/src/user/SignUpService';
-import { RedisModule } from '@app/util/cache';
 
 describe('UserApiController', () => {
   let sut: UserApiController;
@@ -16,7 +15,7 @@ describe('UserApiController', () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [TypeOrmTestModule, UserModule, RedisModule],
+      imports: [TypeOrmTestModule, UserModule],
       providers: [UserApiService, SignUpService],
       controllers: [UserApiController],
     }).compile();
