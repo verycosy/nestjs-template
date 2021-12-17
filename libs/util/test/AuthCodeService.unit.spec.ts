@@ -1,8 +1,11 @@
-import { AuthCodeIssuer, AuthCodeService } from '@app/util/auth-code';
+import {
+  AuthCodeIssuer,
+  AuthCodeModule,
+  AuthCodeService,
+} from '@app/util/auth-code';
 import { EMAIL_SERVICE, MockEmailService } from '@app/util/email';
 import { MockSmsService } from '@app/util/sms/MockSmsService';
 import { SMS_SERVICE } from '@app/util/sms/SmsService';
-import { CacheModule } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 describe('AuthCodeService', () => {
@@ -11,20 +14,13 @@ describe('AuthCodeService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [CacheModule.register()],
-      providers: [
-        AuthCodeIssuer,
-        {
-          provide: SMS_SERVICE,
-          useClass: MockSmsService,
-        },
-        {
-          provide: EMAIL_SERVICE,
-          useClass: MockEmailService,
-        },
-        AuthCodeService,
-      ],
-    }).compile();
+      imports: [AuthCodeModule],
+    })
+      .overrideProvider(SMS_SERVICE)
+      .useClass(MockSmsService)
+      .overrideProvider(EMAIL_SERVICE)
+      .useClass(MockEmailService)
+      .compile();
 
     sut = module.get(AuthCodeService);
     authCodeIssuer = module.get(AuthCodeIssuer);
