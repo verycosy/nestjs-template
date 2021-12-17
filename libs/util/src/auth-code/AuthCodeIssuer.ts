@@ -6,6 +6,10 @@ export class AuthCodeIssuer {
   constructor(@Inject(CACHE_MANAGER) private readonly cacheManager: Cache) {}
 
   generate(): string {
+    if (process.env.NODE_ENV === 'test') {
+      return '123456';
+    }
+
     const MIN = 100000;
     const MAX = 999999;
 
