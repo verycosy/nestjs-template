@@ -8,20 +8,23 @@ import { User } from '@app/entity/domain/user/User.entity';
 import { SignUpRequest } from '../../../../api/src/user/dto/SignUpRequest';
 import { BadRequestException } from '@nestjs/common';
 import { SignUpService } from '../../../../api/src/user/SignUpService';
+import { AuthCodeModule, AuthCodeService } from '@app/util/auth-code';
 
 describe('UserApiController', () => {
   let sut: UserApiController;
   let userRepository: Repository<User>;
+  let authCodeService: AuthCodeService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [TypeOrmTestModule, UserModule],
+      imports: [TypeOrmTestModule, UserModule, AuthCodeModule],
       providers: [UserApiService, SignUpService],
       controllers: [UserApiController],
     }).compile();
 
     sut = module.get(UserApiController);
     userRepository = module.get('UserRepository');
+    authCodeService = module.get(AuthCodeService);
   });
 
   afterAll(async () => {
@@ -29,7 +32,17 @@ describe('UserApiController', () => {
   });
 
   describe('signUp', () => {
+    it('sms 인증을 받지 않은 상태면 BadRequestException', async () => {
+      const request = new SignUpRequest();
+
+      expect(sut.signUp(request)).rejects.toThrowError(
+        new BadRequestException('Phone number does not verified'),
+      );
+    });
+
     it('비밀번호가 서로 다르면 BadRequestException', async () => {
+      jest.spyOn(authCodeService, 'isVerified').mockResolvedValue(true);
+
       const request = new SignUpRequest();
       request.password = 'password';
       request.confirmPassword = 'confirmPassword';
@@ -40,6 +53,8 @@ describe('UserApiController', () => {
     });
 
     it('회원가입 성공시 생성된 유저 정보 반환', async () => {
+      jest.spyOn(authCodeService, 'isVerified').mockResolvedValue(true);
+
       const request = new SignUpRequest();
       request.name = 'verycosy';
       request.email = 'test@test.com';
