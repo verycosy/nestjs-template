@@ -1,3 +1,6 @@
+import { applyDecorators } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
+
 export class AuthCode {
   constructor(private readonly value: string) {
     if (value.length !== 6) {
@@ -27,4 +30,15 @@ export class AuthCode {
   equals(authCode: AuthCode): boolean {
     return this.value === authCode.value;
   }
+}
+
+export function AuthCodeApiProperty() {
+  return applyDecorators(
+    ApiProperty({
+      type: 'string',
+      description: '인증코드(6자리)',
+      minLength: 6,
+      maxLength: 6,
+    }),
+  );
 }

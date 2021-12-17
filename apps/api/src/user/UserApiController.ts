@@ -10,7 +10,9 @@ import {
 import { SignUpRequest } from './dto/SignUpRequest';
 import { UserApiService } from './UserApiService';
 import * as SmsRequest from './dto/SmsRequest';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Users API')
 @Controller('/users')
 export class UserApiController {
   constructor(
@@ -23,6 +25,10 @@ export class UserApiController {
     await this.authCodeSevice.sendViaSms(request.phoneNumber);
   }
 
+  @ApiOperation({
+    summary: 'SMS 인증코드 검증',
+  })
+  @ApiBody({ type: SmsRequest.VerifyAuthCode })
   @Patch('/sms')
   async verifyAuthCode(
     @Body() request: SmsRequest.VerifyAuthCode,
