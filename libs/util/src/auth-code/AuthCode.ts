@@ -7,6 +7,19 @@ export class AuthCode {
     this.value = value;
   }
 
+  static generate() {
+    if (process.env.NODE_ENV === 'test') {
+      return new AuthCode('123456');
+    }
+
+    const MIN = 100000;
+    const MAX = 999999;
+
+    return new AuthCode(
+      (Math.floor(Math.random() * (MAX - MIN + 1)) + MIN).toString(),
+    );
+  }
+
   get(): string {
     return this.value;
   }

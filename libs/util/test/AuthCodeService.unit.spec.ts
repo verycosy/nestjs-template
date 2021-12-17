@@ -1,8 +1,4 @@
-import {
-  AuthCodeIssuer,
-  AuthCodeModule,
-  AuthCodeService,
-} from '@app/util/auth-code';
+import { AuthCodeModule, AuthCodeService } from '@app/util/auth-code';
 import { AuthCode } from '@app/util/auth-code/AuthCode';
 import { EMAIL_SERVICE, MockEmailService } from '@app/util/email';
 import { MockSmsService } from '@app/util/sms/MockSmsService';
@@ -11,7 +7,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 describe('AuthCodeService', () => {
   let sut: AuthCodeService;
-  let authCodeIssuer: AuthCodeIssuer;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -24,11 +19,6 @@ describe('AuthCodeService', () => {
       .compile();
 
     sut = module.get(AuthCodeService);
-    authCodeIssuer = module.get(AuthCodeIssuer);
-
-    jest
-      .spyOn(authCodeIssuer, 'generate')
-      .mockImplementation(() => new AuthCode('123456'));
   });
 
   it('인증코드가 일치하는지 확인', async () => {

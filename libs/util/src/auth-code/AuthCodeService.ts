@@ -13,14 +13,14 @@ export class AuthCodeService {
   ) {}
 
   async sendViaSms(phoneNumber: string): Promise<void> {
-    const authCode = this.authCodeIssuer.generate();
+    const authCode = AuthCode.generate();
 
     await this.authCodeIssuer.setAuthCodeTo(phoneNumber, authCode);
     await this.smsService.send('010-0000-0000', phoneNumber, authCode.get());
   }
 
   async sendViaEmail(email: string): Promise<void> {
-    const authCode = this.authCodeIssuer.generate();
+    const authCode = AuthCode.generate();
 
     await this.authCodeIssuer.setAuthCodeTo(email, authCode);
     await this.emailService.send(

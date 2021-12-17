@@ -17,19 +17,6 @@ export class AuthCodeIssuer {
     return `verified:${emailOrPhoneNumber}`;
   }
 
-  generate(): AuthCode {
-    if (process.env.NODE_ENV === 'test') {
-      return new AuthCode('123456');
-    }
-
-    const MIN = 100000;
-    const MAX = 999999;
-
-    return new AuthCode(
-      (Math.floor(Math.random() * (MAX - MIN + 1)) + MIN).toString(),
-    );
-  }
-
   async setAuthCodeTo(
     emailOrPhoneNumber: string,
     authCode: AuthCode,
