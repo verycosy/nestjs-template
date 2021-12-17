@@ -3,7 +3,18 @@ import { Cache } from 'cache-manager';
 
 @Injectable()
 export class AuthCodeIssuer {
+  static EXPIRES_IN = 300; // 5min
+  static VERIFIED = 'verified';
+
   constructor(@Inject(CACHE_MANAGER) private readonly cacheManager: Cache) {}
+
+  private getAuthCodeKey(emailOrPhoneNumber: string): string {
+    return `auth-code:${emailOrPhoneNumber}`;
+  }
+
+  private getVerifiedKey(emailOrPhoneNumber: string) {
+    return `verified:${emailOrPhoneNumber}`;
+  }
 
   generate(): string {
     if (process.env.NODE_ENV === 'test') {
@@ -20,8 +31,9 @@ export class AuthCodeIssuer {
     emailOrPhoneNumber: string,
     authCode: string,
   ): Promise<void> {
-    await this.cacheManager.set(`auth-code:${emailOrPhoneNumber}`, authCode, {
-      ttl: 300,
+    const key = this.getAuthCodeKey(emailOrPhoneNumber);
+    await this.cacheManager.set(key, authCode, {
+      ttl: AuthCodeIssuer.EXPIRES_IN,
     });
   }
 
@@ -29,26 +41,26 @@ export class AuthCodeIssuer {
     emailOrPhoneNumber: string,
     authCode: string,
   ): Promise<boolean> {
-    const correctAuthCode = await this.cacheManager.get(
-      `auth-code:${emailOrPhoneNumber}`,
-    );
+    const key = this.getAuthCodeKey(emailOrPhoneNumber);
+    const correctAuthCode = await this.cacheManager.get(key);
     return correctAuthCode === authCode;
   }
 
   async setVerified(emailOrPhoneNumber: string): Promise<void> {
-    await this.cacheManager.set(`verified:${emailOrPhoneNumber}`, 'true', {
-      ttl: 300,
+    const key = this.getVerifiedKey(emailOrPhoneNumber);
+    await this.cacheManager.set(key, AuthCodeIssuer.VERIFIED, {
+      ttl: AuthCodeIssuer.EXPIRES_IN,
     });
   }
 
   async isVerified(emailOrPhoneNumber: string): Promise<boolean> {
-    const verified = await this.cacheManager.get(
-      `verified:${emailOrPhoneNumber}`,
-    );
-    return verified === 'true';
+    const key = this.getVerifiedKey(emailOrPhoneNumber);
+    const verified = await this.cacheManager.get(key);
+    return verified === AuthCodeIssuer.VERIFIED;
   }
 
   async release(emailOrPhoneNumber: string): Promise<void> {
-    await this.cacheManager.del(`verified:${emailOrPhoneNumber}`);
+    const key = this.getVerifiedKey(emailOrPhoneNumber);
+    await this.cacheManager.del(key);
   }
 }
