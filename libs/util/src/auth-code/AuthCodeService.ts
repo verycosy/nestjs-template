@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EMAIL_SERVICE, EmailService } from '../email';
 import { SmsService, SMS_SERVICE } from '../sms/SmsService';
+import { AuthCode } from './AuthCode';
 import { AuthCodeIssuer } from './AuthCodeIssuer';
 
 @Injectable()
@@ -15,7 +16,7 @@ export class AuthCodeService {
     const authCode = this.authCodeIssuer.generate();
 
     await this.authCodeIssuer.setAuthCodeTo(phoneNumber, authCode);
-    await this.smsService.send('010-0000-0000', phoneNumber, authCode);
+    await this.smsService.send('010-0000-0000', phoneNumber, authCode.get());
   }
 
   async sendViaEmail(email: string): Promise<void> {
@@ -30,7 +31,10 @@ export class AuthCodeService {
     );
   }
 
-  async verify(emailOrPhoneNumber: string, authCode: string): Promise<boolean> {
+  async verify(
+    emailOrPhoneNumber: string,
+    authCode: AuthCode,
+  ): Promise<boolean> {
     const result = await this.authCodeIssuer.verifyAuthCodeVia(
       emailOrPhoneNumber,
       authCode,

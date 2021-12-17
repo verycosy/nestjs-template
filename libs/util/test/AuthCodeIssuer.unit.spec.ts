@@ -1,3 +1,4 @@
+import { AuthCode } from '@app/util/auth-code/AuthCode';
 import { AuthCodeIssuer } from '@app/util/auth-code/AuthCodeIssuer';
 import { CacheModule } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -18,13 +19,17 @@ describe('AuthCodeIssue', () => {
     const phoneNumber = '010-1111-2222';
 
     it('인증코드가 일치하지 않으면 false 반환', async () => {
-      await sut.setAuthCodeTo(phoneNumber, '0000');
-      expect(await sut.verifyAuthCodeVia(phoneNumber, '1234')).toEqual(false);
+      await sut.setAuthCodeTo(phoneNumber, new AuthCode('000000'));
+      expect(
+        await sut.verifyAuthCodeVia(phoneNumber, new AuthCode('123456')),
+      ).toEqual(false);
     });
 
     it('인증코드가 일치하면 true 반환', async () => {
-      await sut.setAuthCodeTo(phoneNumber, '1234');
-      expect(await sut.verifyAuthCodeVia(phoneNumber, '1234')).toEqual(true);
+      await sut.setAuthCodeTo(phoneNumber, new AuthCode('123456'));
+      expect(
+        await sut.verifyAuthCodeVia(phoneNumber, new AuthCode('123456')),
+      ).toEqual(true);
     });
   });
 

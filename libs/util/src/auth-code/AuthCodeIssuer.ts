@@ -1,5 +1,6 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { Cache } from 'cache-manager';
+import { AuthCode } from './AuthCode';
 
 @Injectable()
 export class AuthCodeIssuer {
@@ -16,34 +17,42 @@ export class AuthCodeIssuer {
     return `verified:${emailOrPhoneNumber}`;
   }
 
-  generate(): string {
+  generate(): AuthCode {
     if (process.env.NODE_ENV === 'test') {
-      return '123456';
+      return new AuthCode('123456');
     }
 
     const MIN = 100000;
     const MAX = 999999;
 
-    return (Math.floor(Math.random() * (MAX - MIN + 1)) + MIN).toString();
+    return new AuthCode(
+      (Math.floor(Math.random() * (MAX - MIN + 1)) + MIN).toString(),
+    );
   }
 
   async setAuthCodeTo(
     emailOrPhoneNumber: string,
-    authCode: string,
+    authCode: AuthCode,
   ): Promise<void> {
     const key = this.getAuthCodeKey(emailOrPhoneNumber);
-    await this.cacheManager.set(key, authCode, {
+    await this.cacheManager.set(key, authCode.get(), {
       ttl: AuthCodeIssuer.EXPIRES_IN,
     });
   }
 
   async verifyAuthCodeVia(
     emailOrPhoneNumber: string,
-    authCode: string,
+    authCode: AuthCode,
   ): Promise<boolean> {
     const key = this.getAuthCodeKey(emailOrPhoneNumber);
-    const correctAuthCode = await this.cacheManager.get(key);
-    return correctAuthCode === authCode;
+    const data = await this.cacheManager.get<string>(key);
+
+    if (!data) {
+      return false;
+    }
+
+    const correctAuthCode = new AuthCode(data);
+    return authCode.equals(correctAuthCode);
   }
 
   async setVerified(emailOrPhoneNumber: string): Promise<void> {
