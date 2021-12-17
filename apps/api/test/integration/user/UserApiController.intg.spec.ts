@@ -7,7 +7,6 @@ import { Repository } from 'typeorm';
 import { User } from '@app/entity/domain/user/User.entity';
 import { SignUpRequest } from '../../../../api/src/user/dto/SignUpRequest';
 import { BadRequestException } from '@nestjs/common';
-import { SignUpService } from '../../../../api/src/user/SignUpService';
 import { AuthCodeModule, AuthCodeService } from '@app/util/auth-code';
 
 describe('UserApiController', () => {
@@ -18,7 +17,7 @@ describe('UserApiController', () => {
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [TypeOrmTestModule, UserModule, AuthCodeModule],
-      providers: [UserApiService, SignUpService],
+      providers: [UserApiService],
       controllers: [UserApiController],
     }).compile();
 

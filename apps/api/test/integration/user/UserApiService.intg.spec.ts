@@ -1,21 +1,21 @@
 import { User } from '@app/entity/domain/user/User.entity';
 import { UserModule } from '@app/entity/domain/user/UserModule';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SignUpService } from '../../../src/user/SignUpService';
+import { UserApiService } from '../../../src/user/UserApiService';
 import { Repository } from 'typeorm';
 import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 
-describe('SignUpService', () => {
-  let sut: SignUpService;
+describe('UserApiService', () => {
+  let sut: UserApiService;
   let userRepository: Repository<User>;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TypeOrmTestModule, UserModule],
-      providers: [SignUpService],
+      providers: [UserApiService],
     }).compile();
 
-    sut = module.get(SignUpService);
+    sut = module.get(UserApiService);
     userRepository = module.get('UserRepository');
   });
 

@@ -8,13 +8,13 @@ import {
   Post,
 } from '@nestjs/common';
 import { SignUpRequest } from './dto/SignUpRequest';
-import { SignUpService } from './SignUpService';
+import { UserApiService } from './UserApiService';
 import * as SmsRequest from './dto/SmsRequest';
 
 @Controller('/users')
 export class UserApiController {
   constructor(
-    private readonly signUpService: SignUpService,
+    private readonly userApiService: UserApiService,
     private readonly authCodeSevice: AuthCodeService,
   ) {}
 
@@ -45,6 +45,6 @@ export class UserApiController {
       throw new BadRequestException('Password does not matched');
     }
 
-    return await this.signUpService.signUp(await request.toEntity());
+    return await this.userApiService.signUp(await request.toEntity());
   }
 }
