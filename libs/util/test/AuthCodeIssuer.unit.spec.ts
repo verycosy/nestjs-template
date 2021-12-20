@@ -1,23 +1,18 @@
 import { AuthCode } from '@app/util/auth-code/AuthCode';
 import { AuthCodeIssuer } from '@app/util/auth-code/AuthCodeIssuer';
-import { CacheModule, CACHE_MANAGER } from '@nestjs/common';
+import { RedisModule } from '@app/util/cache';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Cache } from 'cache-manager';
 
 describe('AuthCodeIssue', () => {
   let sut: AuthCodeIssuer;
-  let cacheManager: Cache;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [CacheModule.register()],
+      imports: [RedisModule],
       providers: [AuthCodeIssuer],
     }).compile();
 
     sut = module.get(AuthCodeIssuer);
-    cacheManager = module.get<Cache>(CACHE_MANAGER);
-
-    await cacheManager.reset();
   });
 
   describe('verifyAuthCodeVia', () => {

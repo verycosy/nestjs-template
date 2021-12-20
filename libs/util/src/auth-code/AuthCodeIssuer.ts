@@ -1,5 +1,5 @@
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
-import { Cache } from 'cache-manager';
+import { Inject, Injectable } from '@nestjs/common';
+import { CacheService, CACHE_SERVICE } from '../cache/CacheService';
 import { AuthCode } from './AuthCode';
 
 @Injectable()
@@ -9,7 +9,9 @@ export class AuthCodeIssuer {
   static TRIAL_COUNT_LIMIT = 5;
   static TRIAL_TIME_LIMIT = 60 * 60; // 1hour
 
-  constructor(@Inject(CACHE_MANAGER) private readonly cacheManager: Cache) {}
+  constructor(
+    @Inject(CACHE_SERVICE) private readonly cacheService: CacheService,
+  ) {}
 
   private getAuthCodeKey(emailOrPhoneNumber: string): string {
     return `auth-code:${emailOrPhoneNumber}`;
@@ -21,10 +23,10 @@ export class AuthCodeIssuer {
 
   async checkAuthCodeTrialLimit(emailOrPhoneNumber: string): Promise<number> {
     const key = `trial:${emailOrPhoneNumber}`;
-    const trial = Number((await this.cacheManager.get<string>(key)) ?? 0) + 1;
+    const trial = Number((await this.cacheService.get(key)) ?? 0) + 1;
 
     if (AuthCodeIssuer.TRIAL_COUNT_LIMIT > trial - 1) {
-      await this.cacheManager.set(key, trial, {
+      await this.cacheService.set(key, trial.toString(), {
         ttl: AuthCodeIssuer.TRIAL_TIME_LIMIT,
       });
 
@@ -39,7 +41,7 @@ export class AuthCodeIssuer {
     authCode: AuthCode,
   ): Promise<void> {
     const key = this.getAuthCodeKey(emailOrPhoneNumber);
-    await this.cacheManager.set(key, authCode.get(), {
+    await this.cacheService.set(key, authCode.get(), {
       ttl: AuthCodeIssuer.EXPIRES_IN,
     });
   }
@@ -49,7 +51,7 @@ export class AuthCodeIssuer {
     authCode: AuthCode,
   ): Promise<boolean> {
     const key = this.getAuthCodeKey(emailOrPhoneNumber);
-    const data = await this.cacheManager.get<string>(key);
+    const data = await this.cacheService.get<string>(key);
 
     if (!data) {
       return false;
@@ -61,19 +63,19 @@ export class AuthCodeIssuer {
 
   async setVerified(emailOrPhoneNumber: string): Promise<void> {
     const key = this.getVerifiedKey(emailOrPhoneNumber);
-    await this.cacheManager.set(key, AuthCodeIssuer.VERIFIED, {
+    await this.cacheService.set(key, AuthCodeIssuer.VERIFIED, {
       ttl: AuthCodeIssuer.EXPIRES_IN,
     });
   }
 
   async isVerified(emailOrPhoneNumber: string): Promise<boolean> {
     const key = this.getVerifiedKey(emailOrPhoneNumber);
-    const verified = await this.cacheManager.get(key);
+    const verified = await this.cacheService.get(key);
     return verified === AuthCodeIssuer.VERIFIED;
   }
 
   async release(emailOrPhoneNumber: string): Promise<void> {
     const key = this.getVerifiedKey(emailOrPhoneNumber);
-    await this.cacheManager.del(key);
+    await this.cacheService.del(key);
   }
 }
