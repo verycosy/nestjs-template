@@ -24,13 +24,9 @@ export class AuthCodeIssuer {
     const trial = Number((await this.cacheManager.get<string>(key)) ?? 0) + 1;
 
     if (AuthCodeIssuer.TRIAL_COUNT_LIMIT > trial - 1) {
-      // if (trial === 0) {
       await this.cacheManager.set(key, trial, {
         ttl: AuthCodeIssuer.TRIAL_TIME_LIMIT,
       });
-      // } else {
-      // await this.cacheManager.store.getClient().incr(key);
-      // }
 
       return trial;
     }

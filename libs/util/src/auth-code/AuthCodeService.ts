@@ -13,6 +13,7 @@ export class AuthCodeService {
   ) {}
 
   async sendViaSms(phoneNumber: string): Promise<void> {
+    await this.authCodeIssuer.checkAuthCodeTrialLimit(phoneNumber);
     const authCode = AuthCode.generate();
 
     await this.authCodeIssuer.setAuthCodeTo(phoneNumber, authCode);
@@ -20,6 +21,7 @@ export class AuthCodeService {
   }
 
   async sendViaEmail(email: string): Promise<void> {
+    await this.authCodeIssuer.checkAuthCodeTrialLimit(email);
     const authCode = AuthCode.generate();
 
     await this.authCodeIssuer.setAuthCodeTo(email, authCode);
