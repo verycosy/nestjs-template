@@ -1,6 +1,7 @@
 import { AuthCode } from '@app/util/auth-code/AuthCode';
 import { AuthCodeIssuer } from '@app/util/auth-code/AuthCodeIssuer';
-import { RedisModule } from '@app/util/cache';
+import { getCacheServiceProvider } from '@app/util/cache';
+import { CacheModule } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 describe('AuthCodeIssue', () => {
@@ -8,8 +9,8 @@ describe('AuthCodeIssue', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [RedisModule],
-      providers: [AuthCodeIssuer],
+      imports: [CacheModule.register()],
+      providers: [AuthCodeIssuer, getCacheServiceProvider()],
     }).compile();
 
     sut = module.get(AuthCodeIssuer);
