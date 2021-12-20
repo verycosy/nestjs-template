@@ -1,19 +1,12 @@
 import { AuthCode } from '@app/util/auth-code/AuthCode';
 import { AuthCodeIssuer } from '@app/util/auth-code/AuthCodeIssuer';
-import { getCacheServiceProvider } from '@app/util/cache';
-import { CacheModule } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { MockCacheService } from '@app/util/cache';
 
 describe('AuthCodeIssue', () => {
   let sut: AuthCodeIssuer;
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [CacheModule.register()],
-      providers: [AuthCodeIssuer, getCacheServiceProvider()],
-    }).compile();
-
-    sut = module.get(AuthCodeIssuer);
+    sut = new AuthCodeIssuer(new MockCacheService());
   });
 
   describe('verifyAuthCodeVia', () => {
