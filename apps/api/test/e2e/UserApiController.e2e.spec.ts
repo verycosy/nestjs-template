@@ -1,10 +1,8 @@
 import { CACHE_MANAGER, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserApiModule } from '../../../api/src/user/UserApiModule';
-import { TypeOrmTestModule } from '../../../../libs/entity/test/typeorm.test.module';
 import * as request from 'supertest';
-import { getApiModuleProvider } from '../../src/getApiModuleProvider';
 import { Cache } from 'cache-manager';
+import { ApiModule } from '../../../api/src/api.module';
 
 describe('UserApiController (e2e)', () => {
   let app: INestApplication;
@@ -12,8 +10,8 @@ describe('UserApiController (e2e)', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TypeOrmTestModule, UserApiModule],
-      providers: [...getApiModuleProvider()],
+      imports: [ApiModule],
+      providers: [],
     }).compile();
 
     app = module.createNestApplication();
