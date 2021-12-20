@@ -1,10 +1,12 @@
 import { AuthCode } from '@app/util/auth-code/AuthCode';
 import { AuthCodeIssuer } from '@app/util/auth-code/AuthCodeIssuer';
-import { CacheModule } from '@nestjs/common';
+import { CacheModule, CACHE_MANAGER } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Cache } from 'cache-manager';
 
 describe('AuthCodeIssue', () => {
   let sut: AuthCodeIssuer;
+  let cacheManager: Cache;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -13,6 +15,9 @@ describe('AuthCodeIssue', () => {
     }).compile();
 
     sut = module.get(AuthCodeIssuer);
+    cacheManager = module.get<Cache>(CACHE_MANAGER);
+
+    await cacheManager.reset();
   });
 
   describe('verifyAuthCodeVia', () => {
@@ -52,5 +57,20 @@ describe('AuthCodeIssue', () => {
     await sut.setVerified(phoneNumber);
     await sut.release(phoneNumber);
     expect(await sut.isVerified(phoneNumber)).toEqual(false);
+  });
+
+  it('checkAuthCodeTrialLimit', async () => {
+    const phoneNumber = '010-1111-2222';
+
+    try {
+      expect(await sut.checkAuthCodeTrialLimit(phoneNumber)).toEqual(1);
+      expect(await sut.checkAuthCodeTrialLimit(phoneNumber)).toEqual(2);
+      expect(await sut.checkAuthCodeTrialLimit(phoneNumber)).toEqual(3);
+      expect(await sut.checkAuthCodeTrialLimit(phoneNumber)).toEqual(4);
+      expect(await sut.checkAuthCodeTrialLimit(phoneNumber)).toEqual(5);
+      await sut.checkAuthCodeTrialLimit(phoneNumber);
+    } catch (err) {
+      expect(err.message).toEqual('Exceeded trial limit, try after 1 hour');
+    }
   });
 });

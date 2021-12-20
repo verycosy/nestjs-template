@@ -4,8 +4,10 @@ import { AuthCode } from './AuthCode';
 
 @Injectable()
 export class AuthCodeIssuer {
-  static EXPIRES_IN = 300; // 5min
+  static EXPIRES_IN = 60 * 5; // 5min
   static VERIFIED = 'verified';
+  static TRIAL_COUNT_LIMIT = 5;
+  static TRIAL_TIME_LIMIT = 60 * 60; // 1hour
 
   constructor(@Inject(CACHE_MANAGER) private readonly cacheManager: Cache) {}
 
@@ -15,6 +17,25 @@ export class AuthCodeIssuer {
 
   private getVerifiedKey(emailOrPhoneNumber: string) {
     return `verified:${emailOrPhoneNumber}`;
+  }
+
+  async checkAuthCodeTrialLimit(emailOrPhoneNumber: string): Promise<number> {
+    const key = `trial:${emailOrPhoneNumber}`;
+    const trial = Number((await this.cacheManager.get<string>(key)) ?? 0) + 1;
+
+    if (AuthCodeIssuer.TRIAL_COUNT_LIMIT > trial - 1) {
+      // if (trial === 0) {
+      await this.cacheManager.set(key, trial, {
+        ttl: AuthCodeIssuer.TRIAL_TIME_LIMIT,
+      });
+      // } else {
+      // await this.cacheManager.store.getClient().incr(key);
+      // }
+
+      return trial;
+    }
+
+    throw new Error('Exceeded trial limit, try after 1 hour');
   }
 
   async setAuthCodeTo(
