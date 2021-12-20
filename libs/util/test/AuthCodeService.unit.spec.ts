@@ -1,8 +1,5 @@
 import { AuthCodeModule, AuthCodeService } from '@app/util/auth-code';
 import { AuthCode } from '@app/util/auth-code/AuthCode';
-import { EMAIL_SERVICE, MockEmailService } from '@app/util/email';
-import { MockSmsService } from '@app/util/sms/MockSmsService';
-import { SMS_SERVICE } from '@app/util/sms/SmsService';
 import { Test, TestingModule } from '@nestjs/testing';
 
 describe('AuthCodeService', () => {
@@ -11,12 +8,7 @@ describe('AuthCodeService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [AuthCodeModule],
-    })
-      .overrideProvider(SMS_SERVICE)
-      .useClass(MockSmsService)
-      .overrideProvider(EMAIL_SERVICE)
-      .useClass(MockEmailService)
-      .compile();
+    }).compile();
 
     sut = module.get(AuthCodeService);
   });

@@ -4,8 +4,6 @@ import { UserApiModule } from '../../../api/src/user/UserApiModule';
 import { TypeOrmTestModule } from '../../../../libs/entity/test/typeorm.test.module';
 import * as request from 'supertest';
 import { getApiModuleProvider } from '../../src/getApiModuleProvider';
-import { SMS_SERVICE } from '@app/util/sms/SmsService';
-import { MockSmsService } from '@app/util/sms/MockSmsService';
 import { Cache } from 'cache-manager';
 
 describe('UserApiController (e2e)', () => {
@@ -16,10 +14,7 @@ describe('UserApiController (e2e)', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TypeOrmTestModule, UserApiModule],
       providers: [...getApiModuleProvider()],
-    })
-      .overrideProvider(SMS_SERVICE)
-      .useClass(MockSmsService)
-      .compile();
+    }).compile();
 
     app = module.createNestApplication();
     await app.init();
