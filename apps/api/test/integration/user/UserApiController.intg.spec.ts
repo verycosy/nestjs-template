@@ -10,6 +10,7 @@ import { User } from '@app/entity/domain/user/User.entity';
 import { SignUpRequest } from '../../../../api/src/user/dto/SignUpRequest';
 import { BadRequestException } from '@nestjs/common';
 import { AuthCodeModule, AuthCodeService } from '@app/util/auth-code';
+import { getLoggerOptions } from '../../../../../libs/config/src';
 
 describe('UserApiController', () => {
   let sut: UserApiController;
@@ -20,7 +21,7 @@ describe('UserApiController', () => {
     const module = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot(),
-        WinstonModule.forRoot({}),
+        WinstonModule.forRoot(getLoggerOptions()),
         getTypeOrmTestModule(),
         UserModule,
         AuthCodeModule,
