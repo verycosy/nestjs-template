@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmTestModule } from '../../../libs/entity/test/typeorm.test.module';
+import { ConfigModule } from '@nestjs/config';
+import { getTypeOrmTestModule } from '../../../libs/entity/test/typeorm.test.module';
 import { getApiModuleProvider } from './getApiModuleProvider';
 import { UserApiModule } from './user/UserApiModule';
 
 @Module({
-  imports: [TypeOrmTestModule, UserApiModule],
+  imports: [ConfigModule.forRoot(), getTypeOrmTestModule(), UserApiModule],
   controllers: [],
   providers: [...getApiModuleProvider()],
 })

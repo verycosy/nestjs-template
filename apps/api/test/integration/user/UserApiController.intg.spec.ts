@@ -1,7 +1,8 @@
+import { ConfigModule } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { UserApiService } from '../../../src/user/UserApiService';
 import { UserApiController } from '../../../src/user/UserApiController';
-import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import { UserModule } from '@app/entity/domain/user/UserModule';
 import { Repository } from 'typeorm';
 import { User } from '@app/entity/domain/user/User.entity';
@@ -16,7 +17,12 @@ describe('UserApiController', () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [TypeOrmTestModule, UserModule, AuthCodeModule],
+      imports: [
+        ConfigModule.forRoot(),
+        getTypeOrmTestModule(),
+        UserModule,
+        AuthCodeModule,
+      ],
       providers: [UserApiService],
       controllers: [UserApiController],
     }).compile();

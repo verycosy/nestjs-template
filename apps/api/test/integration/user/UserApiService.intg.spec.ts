@@ -1,9 +1,10 @@
+import { ConfigModule } from '@nestjs/config';
 import { User } from '@app/entity/domain/user/User.entity';
 import { UserModule } from '@app/entity/domain/user/UserModule';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserApiService } from '../../../src/user/UserApiService';
 import { Repository } from 'typeorm';
-import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 
 describe('UserApiService', () => {
   let sut: UserApiService;
@@ -11,7 +12,7 @@ describe('UserApiService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TypeOrmTestModule, UserModule],
+      imports: [ConfigModule.forRoot(), getTypeOrmTestModule(), UserModule],
       providers: [UserApiService],
     }).compile();
 

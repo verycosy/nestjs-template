@@ -12,8 +12,8 @@ import { getSmsServiceProvider } from '../sms';
         ? undefined
         : {
             store: redisStore,
-            host: 'localhost',
-            port: 46379,
+            host: process.env.REDIS_HOST,
+            port: process.env.REDIS_PORT,
           },
     ),
   ],
