@@ -1,5 +1,6 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
+import { WinstonModule } from 'nest-winston';
 import { UserApiService } from '../../../src/user/UserApiService';
 import { UserApiController } from '../../../src/user/UserApiController';
 import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
@@ -19,6 +20,7 @@ describe('UserApiController', () => {
     const module = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot(),
+        WinstonModule.forRoot({}),
         getTypeOrmTestModule(),
         UserModule,
         AuthCodeModule,

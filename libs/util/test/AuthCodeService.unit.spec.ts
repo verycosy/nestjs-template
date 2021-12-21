@@ -1,3 +1,4 @@
+import { createLogger } from 'winston';
 import { AuthCodeIssuer, AuthCodeService } from '@app/util/auth-code';
 import { AuthCode } from '@app/util/auth-code/AuthCode';
 import { MockCacheService } from '@app/util/cache';
@@ -12,6 +13,7 @@ describe('AuthCodeService', () => {
       new AuthCodeIssuer(new MockCacheService()),
       new MockSmsService(),
       new MockEmailService(),
+      createLogger(),
     );
   });
 

@@ -1,4 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 import { EMAIL_SERVICE, EmailService } from '../email';
 import { SmsService, SMS_SERVICE } from '../sms/SmsService';
 import { AuthCode } from './AuthCode';
@@ -10,9 +12,11 @@ export class AuthCodeService {
     private readonly authCodeIssuer: AuthCodeIssuer,
     @Inject(SMS_SERVICE) private readonly smsService: SmsService,
     @Inject(EMAIL_SERVICE) private readonly emailService: EmailService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {}
 
   async sendViaSms(phoneNumber: string): Promise<void> {
+    this.logger.info(`Try to send auth code to ${phoneNumber} via sms`);
     await this.authCodeIssuer.checkAuthCodeTrialLimit(phoneNumber);
     const authCode = AuthCode.generate();
 
