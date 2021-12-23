@@ -4,13 +4,17 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { SignUpRequest } from './dto/SignUpRequest';
 import { UserApiService } from './UserApiService';
 import * as SmsRequest from './dto/SmsRequest';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AuthService, AccessTokenGuard, CurrentUser } from '@app/auth';
+import { LoginRequest } from './dto/LoginRequest';
 
 @ApiTags('Users API')
 @Controller('/users')
@@ -18,6 +22,7 @@ export class UserApiController {
   constructor(
     private readonly userApiService: UserApiService,
     private readonly authCodeSevice: AuthCodeService,
+    private readonly authService: AuthService,
   ) {}
 
   @Post('/sms')
@@ -52,5 +57,17 @@ export class UserApiController {
     }
 
     return await this.userApiService.signUp(await request.toEntity());
+  }
+
+  @Post('/login')
+  async login(@Body() request: LoginRequest) {
+    const { email, password } = request;
+    return await this.authService.login(email, password);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('/me')
+  async getMe(@CurrentUser() user: User) {
+    return user;
   }
 }

@@ -11,6 +11,7 @@ import { SignUpRequest } from '../../../../api/src/user/dto/SignUpRequest';
 import { BadRequestException } from '@nestjs/common';
 import { AuthCodeModule, AuthCodeService } from '@app/util/auth-code';
 import { getLoggerOptions } from '../../../../../libs/config/src';
+import { AuthModule } from '@app/auth';
 
 describe('UserApiController', () => {
   let sut: UserApiController;
@@ -25,6 +26,7 @@ describe('UserApiController', () => {
         getTypeOrmTestModule(),
         UserModule,
         AuthCodeModule,
+        AuthModule,
       ],
       providers: [UserApiService],
       controllers: [UserApiController],
