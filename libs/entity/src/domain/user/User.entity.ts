@@ -36,4 +36,8 @@ export class User {
 
     return signUpUser;
   }
+
+  async validatePassword(plainTextPassword: string): Promise<boolean> {
+    return await bcrypt.compare(plainTextPassword, this.password);
+  }
 }

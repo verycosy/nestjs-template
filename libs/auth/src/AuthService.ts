@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 import { JwtPayload } from './JwtPayload';
 
 @Injectable()
@@ -20,7 +19,7 @@ export class AuthService {
       throw new Error(`User not found`);
     }
 
-    if (!(await bcrypt.compare(plainTextPassword, user.password))) {
+    if (!(await user.validatePassword(plainTextPassword))) {
       throw new Error(`User not found`);
     }
 
