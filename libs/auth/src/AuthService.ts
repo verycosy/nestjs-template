@@ -13,17 +13,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(email: string, plainTextPassword: string) {
-    const user = await this.userRepository.findOne({ email });
-
-    if (!user || !(await user.validatePassword(plainTextPassword))) {
-      throw new UserNotFoundError();
-    }
-
-    const payload: JwtPayload = {
-      id: user.id,
-    };
-
+  private async generateJwtTokens(payload: JwtPayload) {
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: process.env.ACCESS_TOKEN_SECRET,
       expiresIn: `${process.env.ACCESS_TOKEN_EXPIRES_IN}s`,
@@ -34,10 +24,21 @@ export class AuthService {
       expiresIn: `${process.env.REFRESH_TOKEN_EXPIRES_IN}s`,
     });
 
+    return { accessToken, refreshToken };
+  }
+
+  async login(email: string, plainTextPassword: string) {
+    const user = await this.userRepository.findOne({ email });
+
+    if (!user || !(await user.validatePassword(plainTextPassword))) {
+      throw new UserNotFoundError();
+    }
+
+    const jwtTokens = await this.generateJwtTokens({ id: user.id });
+
     return {
       user,
-      accessToken,
-      refreshToken,
+      ...jwtTokens,
     };
   }
 }
