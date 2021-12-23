@@ -4,6 +4,7 @@ import { User } from '@app/entity/domain/user/User.entity';
 import { Repository } from 'typeorm';
 import * as passport from 'passport';
 import { JwtPayload } from '../JwtPayload';
+import { UserNotFoundError } from '../error/UserNotFoundError';
 
 class JwtStrategy extends PassportStrategy(Strategy) {
   protected readonly userRepository: Repository<User>;
@@ -24,7 +25,7 @@ class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await this.userRepository.findOne({ id });
 
     if (!user) {
-      throw new Error(`User not found`);
+      throw new UserNotFoundError();
     }
 
     return user;

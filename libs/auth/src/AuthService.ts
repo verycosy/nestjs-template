@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UserNotFoundError } from './error/UserNotFoundError';
 import { JwtPayload } from './JwtPayload';
 
 @Injectable()
@@ -15,12 +16,8 @@ export class AuthService {
   async login(email: string, plainTextPassword: string) {
     const user = await this.userRepository.findOne({ email });
 
-    if (!user) {
-      throw new Error(`User not found`);
-    }
-
-    if (!(await user.validatePassword(plainTextPassword))) {
-      throw new Error(`User not found`);
+    if (!user || !(await user.validatePassword(plainTextPassword))) {
+      throw new UserNotFoundError();
     }
 
     const payload: JwtPayload = {
