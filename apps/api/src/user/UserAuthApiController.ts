@@ -18,7 +18,7 @@ import { LoginRequest } from './dto/LoginRequest';
 
 @ApiTags('Users API')
 @Controller('/users')
-export class UserApiController {
+export class UserAuthApiController {
   constructor(
     private readonly userApiService: UserApiService,
     private readonly authCodeSevice: AuthCodeService,

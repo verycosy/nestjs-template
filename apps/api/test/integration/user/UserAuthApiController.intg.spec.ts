@@ -2,19 +2,19 @@ import { ConfigModule } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { WinstonModule } from 'nest-winston';
 import { UserApiService } from '../../../src/user/UserApiService';
-import { UserApiController } from '../../../src/user/UserApiController';
+import { UserAuthApiController } from '../../../src/user/UserAuthApiController';
 import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import { UserModule } from '@app/entity/domain/user/UserModule';
 import { Repository } from 'typeorm';
 import { User } from '@app/entity/domain/user/User.entity';
-import { SignUpRequest } from '../../../../api/src/user/dto/SignUpRequest';
+import { SignUpRequest } from '../../../src/user/dto/SignUpRequest';
 import { BadRequestException } from '@nestjs/common';
 import { AuthCodeModule, AuthCodeService } from '@app/util/auth-code';
 import { getLoggerOptions } from '../../../../../libs/config/src';
 import { AuthModule } from '@app/auth';
 
-describe('UserApiController', () => {
-  let sut: UserApiController;
+describe('UserAuthApiController', () => {
+  let sut: UserAuthApiController;
   let userRepository: Repository<User>;
   let authCodeService: AuthCodeService;
 
@@ -29,10 +29,10 @@ describe('UserApiController', () => {
         AuthModule,
       ],
       providers: [UserApiService],
-      controllers: [UserApiController],
+      controllers: [UserAuthApiController],
     }).compile();
 
-    sut = module.get(UserApiController);
+    sut = module.get(UserAuthApiController);
     userRepository = module.get('UserRepository');
     authCodeService = module.get(AuthCodeService);
   });

@@ -2,9 +2,9 @@ import { CACHE_MANAGER, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { Cache } from 'cache-manager';
-import { ApiModule } from '../../../api/src/api.module';
+import { ApiModule } from '../../src/api.module';
 
-describe('UserApiController (e2e)', () => {
+describe('UserAuthApiController (e2e)', () => {
   let app: INestApplication;
   let cacheManager: Cache;
 
