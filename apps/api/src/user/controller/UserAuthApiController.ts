@@ -7,12 +7,12 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { SignUpRequest } from './dto/SignUpRequest';
-import { UserApiService } from './UserApiService';
-import * as SmsRequest from './dto/SmsRequest';
+import { SignUpRequest } from '../dto/SignUpRequest';
+import { UserApiService } from '../UserApiService';
+import * as SmsRequest from '../dto/SmsRequest';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from '@app/auth';
-import { LoginRequest } from './dto/LoginRequest';
+import { LoginRequest } from '../dto/LoginRequest';
 
 @ApiTags('Users API')
 @Controller('/users')

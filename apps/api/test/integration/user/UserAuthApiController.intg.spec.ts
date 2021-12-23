@@ -2,7 +2,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { WinstonModule } from 'nest-winston';
 import { UserApiService } from '../../../src/user/UserApiService';
-import { UserAuthApiController } from '../../../src/user/UserAuthApiController';
+import { UserAuthApiController } from '../../../src/user/controller';
 import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import { UserModule } from '@app/entity/domain/user/UserModule';
 import { Repository } from 'typeorm';
