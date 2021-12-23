@@ -13,6 +13,13 @@ const redisValidationSchema = {
   REDIS_PORT: Joi.number().required(),
 };
 
+const jwtValidationSchema = {
+  ACCESS_TOKEN_SECRET: Joi.string().required(),
+  ACCESS_TOKEN_EXPIRES_IN: Joi.number().required(),
+  REFRESH_TOKEN_SECRET: Joi.string().required(),
+  REFRESH_TOKEN_EXPIRES_IN: Joi.number().required(),
+};
+
 export const configValidationSchema = Joi.object({
   NODE_ENV: Joi.string()
     .valid('local', 'test', 'development', 'production')
@@ -20,4 +27,5 @@ export const configValidationSchema = Joi.object({
   PORT: Joi.number().default(3001),
   ...RdsValidationSchema,
   ...redisValidationSchema,
+  ...jwtValidationSchema,
 });
