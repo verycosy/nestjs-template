@@ -8,7 +8,6 @@ import { WinstonModule } from 'nest-winston';
 import { getTypeOrmTestModule } from '../../../libs/entity/test/typeorm.test.module';
 import { getApiModuleProvider } from './getApiModuleProvider';
 import { UserApiModule } from './user/UserApiModule';
-import { AuthModule } from '../../../libs/auth/src';
 
 @Module({
   imports: [
@@ -18,7 +17,6 @@ import { AuthModule } from '../../../libs/auth/src';
     WinstonModule.forRoot(getLoggerOptions()),
     getTypeOrmTestModule(),
     UserApiModule,
-    AuthModule,
   ],
   controllers: [],
   providers: [...getApiModuleProvider()],
