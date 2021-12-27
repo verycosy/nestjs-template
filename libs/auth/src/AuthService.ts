@@ -27,6 +27,11 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
+  async setRefreshToken(user: User, refreshToken: string): Promise<void> {
+    user.refreshToken = refreshToken;
+    await this.userRepository.save(user);
+  }
+
   async login(email: string, plainTextPassword: string) {
     const user = await this.userRepository.findOne({ email });
 
@@ -35,6 +40,7 @@ export class AuthService {
     }
 
     const jwtTokens = await this.generateJwtTokens({ id: user.id });
+    await this.setRefreshToken(user, jwtTokens.refreshToken);
 
     return {
       user,

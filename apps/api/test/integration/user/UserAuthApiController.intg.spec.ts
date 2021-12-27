@@ -12,6 +12,8 @@ import { BadRequestException } from '@nestjs/common';
 import { AuthCodeModule, AuthCodeService } from '@app/util/auth-code';
 import { getLoggerOptions } from '../../../../../libs/config/src';
 import { AuthModule } from '@app/auth';
+import { LoginRequest } from '../../../../api/src/user/dto/LoginRequest';
+import { UserNotFoundError } from '@app/auth/error/UserNotFoundError';
 
 describe('UserAuthApiController', () => {
   let sut: UserAuthApiController;
@@ -41,6 +43,19 @@ describe('UserAuthApiController', () => {
     await userRepository.clear();
   });
 
+  async function signUp(email: string, password: string) {
+    jest.spyOn(authCodeService, 'isVerified').mockResolvedValue(true);
+
+    const request = new SignUpRequest();
+    request.name = 'verycosy';
+    request.email = email;
+    request.password = password;
+    request.confirmPassword = password;
+    request.phoneNumber = '010-1111-2222';
+
+    return await sut.signUp(request);
+  }
+
   describe('signUp', () => {
     it('sms 인증을 받지 않은 상태면 BadRequestException', async () => {
       const request = new SignUpRequest();
@@ -63,17 +78,52 @@ describe('UserAuthApiController', () => {
     });
 
     it('회원가입 성공시 생성된 유저 정보 반환', async () => {
-      jest.spyOn(authCodeService, 'isVerified').mockResolvedValue(true);
+      const email = 'test@test.com';
+      const result = await signUp(email, 'password');
 
-      const request = new SignUpRequest();
-      request.name = 'verycosy';
-      request.email = 'test@test.com';
+      expect(result.email).toEqual(email);
+    });
+  });
+
+  describe('login', () => {
+    it('회원을 찾지 못하면 UserNotFoundError', async () => {
+      const request = new LoginRequest();
+      request.email = 'verycosyyyyyy@test.com';
       request.password = 'password';
-      request.confirmPassword = 'password';
-      request.phoneNumber = '010-1111-2222';
 
-      const result = await sut.signUp(request);
-      expect(result.email).toEqual(request.email);
+      expect(sut.login(request)).rejects.toThrowError(UserNotFoundError);
+    });
+
+    it('비밀번호가 일치하지 않으면 UserNotFoundError', async () => {
+      const email = 'verycosy@test.com';
+      const password = 'password';
+
+      await signUp(email, password);
+
+      const request = new LoginRequest();
+      request.email = email;
+      request.password = password + 'oops';
+
+      expect(sut.login(request)).rejects.toThrowError(UserNotFoundError);
+    });
+
+    it('refresh token을 갱신하고 회원 정보 반환', async () => {
+      const email = 'verycosy@test.com';
+      const password = 'password';
+      await signUp(email, password);
+
+      const request = new LoginRequest();
+      request.email = email;
+      request.password = password;
+
+      const result = await sut.login(request);
+
+      expect(result.user.email).toEqual(email);
+      expect(result.accessToken).toBeDefined();
+      expect(result.refreshToken).toBeDefined();
+
+      const user = await userRepository.findOne({ email });
+      expect(user.refreshToken).toEqual(result.refreshToken);
     });
   });
 });

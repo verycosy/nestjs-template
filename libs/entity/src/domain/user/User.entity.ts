@@ -21,6 +21,11 @@ export class User {
   })
   phoneNumber: string;
 
+  @Column({
+    nullable: true,
+  })
+  refreshToken: string;
+
   static async hashPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, 10);
   }
