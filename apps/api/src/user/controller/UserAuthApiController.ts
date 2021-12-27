@@ -8,7 +8,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { SignUpRequest } from '../dto/SignUpRequest';
+import { SignUpRequest, LoginRequest, ChangePasswordRequest } from '../dto';
 import * as SmsRequest from '../dto/SmsRequest';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
@@ -17,7 +17,6 @@ import {
   CurrentUser,
   RefreshTokenGuard,
 } from '@app/auth';
-import { LoginRequest } from '../dto/LoginRequest';
 import { AuthToken } from '@app/auth/interface';
 
 @ApiTags('Users API')
@@ -78,5 +77,20 @@ export class UserAuthApiController {
   @Patch('/refresh')
   async refresh(@CurrentUser() user: User): Promise<AuthToken> {
     return await this.authService.refresh(user);
+  }
+
+  @AccessTokenGuard()
+  @Patch('/password')
+  async changePassword(
+    @CurrentUser() user: User,
+    @Body() request: ChangePasswordRequest,
+  ): Promise<void> {
+    const { oldPassword, newPassword } = request;
+
+    if (!request.isEqualNewPassword()) {
+      throw new BadRequestException('Password does not matched');
+    }
+
+    await this.authService.changePassword(user, oldPassword, newPassword);
   }
 }

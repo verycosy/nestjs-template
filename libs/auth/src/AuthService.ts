@@ -70,4 +70,18 @@ export class AuthService {
 
     return jwtTokens;
   }
+
+  async changePassword(
+    user: User,
+    oldPassword: string,
+    newPassword: string,
+  ): Promise<void> {
+    if (await user.validatePassword(oldPassword)) {
+      await user.changePassword(newPassword);
+      await this.userRepository.save(user);
+      return;
+    }
+
+    throw new PasswordNotMatchedError();
+  }
 }

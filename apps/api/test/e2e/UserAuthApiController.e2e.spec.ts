@@ -210,4 +210,78 @@ describe('UserAuthApiController (e2e)', () => {
       expect(res.statusCode).toEqual(401);
     });
   });
+
+  describe('/password (PATCH)', () => {
+    it('기존 비밀번호가 틀린 경우', async () => {
+      const email = 'test@test.com';
+      const password = 'password';
+      const phoneNumber = '010-1111-2222';
+
+      await signUp(email, password, phoneNumber);
+      const {
+        body: { accessToken },
+      } = await login(email, password);
+
+      const { statusCode } = await request(app.getHttpServer())
+        .patch('/users/password')
+        .set('Authorization', 'Bearer ' + accessToken)
+        .send({
+          oldPassword: 'password' + 'oops',
+          newPassword: 'this is new password',
+          confirmNewPassword: 'this is new password',
+        });
+
+      expect(statusCode).toEqual(500);
+    });
+
+    it('기존 비밀번호가 틀린 경우', async () => {
+      const email = 'test@test.com';
+      const password = 'password';
+      const phoneNumber = '010-1111-2222';
+
+      await signUp(email, password, phoneNumber);
+      const {
+        body: { accessToken },
+      } = await login(email, password);
+
+      const { statusCode } = await request(app.getHttpServer())
+        .patch('/users/password')
+        .set('Authorization', 'Bearer ' + accessToken)
+        .send({
+          oldPassword: 'password',
+          newPassword: 'this is new password',
+          confirmNewPassword: 'this is wrong new password',
+        });
+
+      expect(statusCode).toEqual(400);
+    });
+
+    it('새로운 비밀번호로 변경', async () => {
+      const email = 'test@test.com';
+      const password = 'password';
+      const phoneNumber = '010-1111-2222';
+
+      await signUp(email, password, phoneNumber);
+      const {
+        body: { accessToken },
+      } = await login(email, password);
+
+      const { statusCode } = await request(app.getHttpServer())
+        .patch('/users/password')
+        .set('Authorization', 'Bearer ' + accessToken)
+        .send({
+          oldPassword: 'password',
+          newPassword: 'this is new password',
+          confirmNewPassword: 'this is new password',
+        });
+
+      expect(statusCode).toEqual(200);
+
+      const { statusCode: loginStatusCode } = await login(
+        email,
+        'this is new password',
+      );
+      expect(loginStatusCode).toEqual(201);
+    });
+  });
 });
