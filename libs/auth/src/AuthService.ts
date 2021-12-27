@@ -56,4 +56,11 @@ export class AuthService {
     user.refreshToken = null;
     await this.userRepository.save(user);
   }
+
+  async refresh(user: User): Promise<AuthToken> {
+    const jwtTokens = await this.generateJwtTokens({ id: user.id });
+    await this.setRefreshToken(user, jwtTokens.refreshToken);
+
+    return jwtTokens;
+  }
 }

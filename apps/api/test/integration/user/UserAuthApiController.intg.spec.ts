@@ -144,4 +144,23 @@ describe('UserAuthApiController', () => {
       expect(refreshToken).toBeNull();
     });
   });
+
+  describe('refresh', () => {
+    it('refresh token을 갱신하고 새로운 jwt 토큰들을 반환한다', async () => {
+      const email = 'verycosy@test.com';
+      const password = 'password';
+      await signUp(email, password);
+
+      const loginRequest = new LoginRequest();
+      loginRequest.email = email;
+      loginRequest.password = password;
+
+      const { user } = await sut.login(loginRequest);
+
+      const result = await sut.refresh(user);
+      const { refreshToken } = await userRepository.findOne({ id: user.id });
+      expect(result.accessToken).toBeDefined();
+      expect(result.refreshToken).toEqual(refreshToken);
+    });
+  });
 });

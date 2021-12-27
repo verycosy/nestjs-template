@@ -13,8 +13,14 @@ import { SignUpRequest } from '../dto/SignUpRequest';
 import { UserApiService } from '../UserApiService';
 import * as SmsRequest from '../dto/SmsRequest';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AccessTokenGuard, AuthService, CurrentUser } from '@app/auth';
+import {
+  AccessTokenGuard,
+  AuthService,
+  CurrentUser,
+  RefreshTokenGuard,
+} from '@app/auth';
 import { LoginRequest } from '../dto/LoginRequest';
+import { AuthToken } from '@app/auth/AuthToken';
 
 @ApiTags('Users API')
 @Controller('/users')
@@ -69,5 +75,11 @@ export class UserAuthApiController {
   @Get('/logout')
   async logout(@CurrentUser() user: User): Promise<void> {
     await this.authService.logout(user);
+  }
+
+  @UseGuards(RefreshTokenGuard)
+  @Patch('/refresh')
+  async refresh(@CurrentUser() user: User): Promise<AuthToken> {
+    return await this.authService.refresh(user);
   }
 }
