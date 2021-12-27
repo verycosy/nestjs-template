@@ -19,7 +19,7 @@ import {
   RefreshTokenGuard,
 } from '@app/auth';
 import { LoginRequest } from '../dto/LoginRequest';
-import { AuthToken } from '@app/auth/AuthToken';
+import { AuthToken } from '@app/auth/interface';
 
 @ApiTags('Users API')
 @Controller('/users')

@@ -4,7 +4,7 @@ import { User } from '@app/entity/domain/user/User.entity';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { JwtPayload } from '../JwtPayload';
+import { JwtPayload } from '../interface/JwtPayload';
 import { UserNotFoundError } from '../error/UserNotFoundError';
 
 export const REFRESH_TOKEN_STRATEGY_NAME = 'refresh-token-jwt';

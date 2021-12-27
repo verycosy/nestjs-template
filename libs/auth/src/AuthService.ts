@@ -3,9 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { AuthToken } from './AuthToken';
+import { AuthToken, JwtPayload } from './interface';
 import { PasswordNotMatchedError, UserNotFoundError } from './error';
-import { JwtPayload } from './JwtPayload';
 
 @Injectable()
 export class AuthService {
