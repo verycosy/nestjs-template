@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { REFRESH_TOKEN_STRATEGY_NAME } from '../strategy';
 
-@Injectable()
-export class RefreshTokenGuard extends AuthGuard(REFRESH_TOKEN_STRATEGY_NAME) {}
+export function RefreshTokenGuard() {
+  return UseGuards(AuthGuard(REFRESH_TOKEN_STRATEGY_NAME));
+}

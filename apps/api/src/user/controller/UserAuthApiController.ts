@@ -7,7 +7,6 @@ import {
   Get,
   Patch,
   Post,
-  UseGuards,
 } from '@nestjs/common';
 import { SignUpRequest } from '../dto/SignUpRequest';
 import { UserApiService } from '../UserApiService';
@@ -71,13 +70,13 @@ export class UserAuthApiController {
     return await this.authService.login(email, password);
   }
 
-  @UseGuards(AccessTokenGuard)
+  @AccessTokenGuard()
   @Get('/logout')
   async logout(@CurrentUser() user: User): Promise<void> {
     await this.authService.logout(user);
   }
 
-  @UseGuards(RefreshTokenGuard)
+  @RefreshTokenGuard()
   @Patch('/refresh')
   async refresh(@CurrentUser() user: User): Promise<AuthToken> {
     return await this.authService.refresh(user);

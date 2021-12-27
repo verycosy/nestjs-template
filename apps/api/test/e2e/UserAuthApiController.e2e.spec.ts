@@ -181,7 +181,7 @@ describe('UserAuthApiController (e2e)', () => {
     await new Promise((resolve) => {
       setTimeout(() => {
         resolve(null);
-      }, 500);
+      }, 1000);
     });
 
     const { body, statusCode } = await request(app.getHttpServer())
