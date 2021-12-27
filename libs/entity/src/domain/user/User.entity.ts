@@ -13,7 +13,7 @@ export class User {
   email: string;
 
   @Column()
-  password: string;
+  private password: string;
 
   @Column({
     length: 13,
@@ -26,8 +26,8 @@ export class User {
   })
   refreshToken: string;
 
-  static async hashPassword(password: string): Promise<string> {
-    return await bcrypt.hash(password, 10);
+  async changePassword(newPassword: string): Promise<void> {
+    this.password = await bcrypt.hash(newPassword, 10);
   }
 
   static async signUp(params: SignUpParams): Promise<User> {
@@ -36,7 +36,7 @@ export class User {
 
     signUpUser.name = name;
     signUpUser.email = email;
-    signUpUser.password = await User.hashPassword(password);
+    await signUpUser.changePassword(password);
     signUpUser.phoneNumber = phoneNumber;
 
     return signUpUser;
