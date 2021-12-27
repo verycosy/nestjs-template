@@ -27,6 +27,10 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
+  async signUp(newUser: User): Promise<User> {
+    return await this.userRepository.save(newUser);
+  }
+
   async setRefreshToken(user: User, refreshToken: string): Promise<void> {
     user.refreshToken = refreshToken;
     await this.userRepository.save(user);

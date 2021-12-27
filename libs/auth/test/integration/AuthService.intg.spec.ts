@@ -1,22 +1,28 @@
-import { ConfigModule } from '@nestjs/config';
-import { User } from '@app/entity/domain/user/User.entity';
-import { UserModule } from '@app/entity/domain/user/UserModule';
+import { AuthService } from '../../src/AuthService';
+import { User } from '../../../entity/src/domain/user/User.entity';
+import { UserModule } from '../../../entity/src/domain/user/UserModule';
+import { JwtModule } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserApiService } from '../../../src/user/UserApiService';
+import { getTypeOrmTestModule } from '../../../entity/test/typeorm.test.module';
 import { Repository } from 'typeorm';
-import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { ConfigModule } from '@nestjs/config';
 
-describe('UserApiService', () => {
-  let sut: UserApiService;
+describe('AuthService', () => {
+  let sut: AuthService;
   let userRepository: Repository<User>;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [ConfigModule.forRoot(), getTypeOrmTestModule(), UserModule],
-      providers: [UserApiService],
+      imports: [
+        ConfigModule.forRoot(),
+        getTypeOrmTestModule(),
+        JwtModule.register({}),
+        UserModule,
+      ],
+      providers: [AuthService],
     }).compile();
 
-    sut = module.get(UserApiService);
+    sut = module.get(AuthService);
     userRepository = module.get('UserRepository');
   });
 

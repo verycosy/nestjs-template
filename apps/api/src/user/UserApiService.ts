@@ -8,8 +8,4 @@ export class UserApiService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
-
-  async signUp(newUser: User): Promise<User> {
-    return await this.userRepository.save(newUser);
-  }
 }
