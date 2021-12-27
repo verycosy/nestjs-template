@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { AuthToken } from './AuthToken';
 import { UserNotFoundError } from './error/UserNotFoundError';
 import { JwtPayload } from './JwtPayload';
 
@@ -13,7 +14,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  private async generateJwtTokens(payload: JwtPayload) {
+  private async generateJwtTokens(payload: JwtPayload): Promise<AuthToken> {
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: process.env.ACCESS_TOKEN_SECRET,
       expiresIn: `${process.env.ACCESS_TOKEN_EXPIRES_IN}s`,
@@ -32,7 +33,10 @@ export class AuthService {
     await this.userRepository.save(user);
   }
 
-  async login(email: string, plainTextPassword: string) {
+  async login(
+    email: string,
+    plainTextPassword: string,
+  ): Promise<{ user: User } & AuthToken> {
     const user = await this.userRepository.findOne({ email });
 
     if (!user || !(await user.validatePassword(plainTextPassword))) {
