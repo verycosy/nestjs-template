@@ -168,29 +168,46 @@ describe('UserAuthApiController (e2e)', () => {
     expect(statusCode).toEqual(200);
   });
 
-  it('/refresh (PATCH)', async () => {
-    const email = 'test@test.com';
-    const password = 'password';
-    const phoneNumber = '010-1111-2222';
+  describe('/refresh (PATCH)', () => {
+    async function refresh() {
+      const email = 'test@test.com';
+      const password = 'password';
+      const phoneNumber = '010-1111-2222';
 
-    await signUp(email, password, phoneNumber);
-    const {
-      body: { refreshToken },
-    } = await login(email, password);
+      await signUp(email, password, phoneNumber);
+      const {
+        body: { refreshToken: oldRefreshToken },
+      } = await login(email, password);
 
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(null);
-      }, 1000);
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(null);
+        }, 1000);
+      });
+
+      const { body, statusCode } = await request(app.getHttpServer())
+        .patch('/users/refresh')
+        .set('Authorization', 'Bearer ' + oldRefreshToken);
+
+      return { body, statusCode, oldRefreshToken };
+    }
+
+    it('새로운 인증 토큰을 반환한다', async () => {
+      const { body, statusCode, oldRefreshToken } = await refresh();
+
+      expect(statusCode).toEqual(200);
+      expect(body.accessToken).toBeDefined();
+      expect(body.refreshToken).toBeDefined();
+      expect(body.refreshToken).not.toEqual(oldRefreshToken);
     });
 
-    const { body, statusCode } = await request(app.getHttpServer())
-      .patch('/users/refresh')
-      .set('Authorization', 'Bearer ' + refreshToken);
+    it('대체된 refresh token으로 갱신 시도 시 error', async () => {
+      const { oldRefreshToken } = await refresh();
 
-    expect(statusCode).toEqual(200);
-    expect(body.accessToken).toBeDefined();
-    expect(body.refreshToken).toBeDefined();
-    expect(body.refreshToken).not.toEqual(refreshToken);
+      const res = await request(app.getHttpServer())
+        .patch('/users/refresh')
+        .set('Authorization', 'Bearer ' + oldRefreshToken);
+      expect(res.statusCode).toEqual(401);
+    });
   });
 });
