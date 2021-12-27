@@ -39,7 +39,7 @@ describe('UserAuthApiController', () => {
     authCodeService = module.get(AuthCodeService);
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await userRepository.clear();
   });
 
@@ -124,6 +124,24 @@ describe('UserAuthApiController', () => {
 
       const user = await userRepository.findOne({ email });
       expect(user.refreshToken).toEqual(result.refreshToken);
+    });
+  });
+
+  describe('logout', () => {
+    it('로그아웃 성공 시 refresh token을 null로 설정한다', async () => {
+      const email = 'verycosy@test.com';
+      const password = 'password';
+      await signUp(email, password);
+
+      const loginRequest = new LoginRequest();
+      loginRequest.email = email;
+      loginRequest.password = password;
+
+      const { user } = await sut.login(loginRequest);
+
+      await sut.logout(user);
+      const { refreshToken } = await userRepository.findOne({ id: user.id });
+      expect(refreshToken).toBeNull();
     });
   });
 });

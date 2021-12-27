@@ -4,14 +4,16 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { SignUpRequest } from '../dto/SignUpRequest';
 import { UserApiService } from '../UserApiService';
 import * as SmsRequest from '../dto/SmsRequest';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthService } from '@app/auth';
+import { AccessTokenGuard, AuthService, CurrentUser } from '@app/auth';
 import { LoginRequest } from '../dto/LoginRequest';
 
 @ApiTags('Users API')
@@ -61,5 +63,11 @@ export class UserAuthApiController {
   async login(@Body() request: LoginRequest) {
     const { email, password } = request;
     return await this.authService.login(email, password);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('/logout')
+  async logout(@CurrentUser() user: User): Promise<void> {
+    await this.authService.logout(user);
   }
 }

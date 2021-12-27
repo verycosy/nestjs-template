@@ -47,4 +47,9 @@ export class AuthService {
       ...jwtTokens,
     };
   }
+
+  async logout(user: User): Promise<void> {
+    user.refreshToken = null;
+    await this.userRepository.save(user);
+  }
 }
