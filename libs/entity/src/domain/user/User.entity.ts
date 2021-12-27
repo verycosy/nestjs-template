@@ -30,7 +30,7 @@ export class User {
     return await bcrypt.hash(password, 10);
   }
 
-  static async signUp(params: Partial<User>): Promise<User> {
+  static async signUp(params: SignUpParams): Promise<User> {
     const { name, email, password, phoneNumber } = params;
     const signUpUser = new User();
 
@@ -45,4 +45,11 @@ export class User {
   async validatePassword(plainTextPassword: string): Promise<boolean> {
     return await bcrypt.compare(plainTextPassword, this.password);
   }
+}
+
+interface SignUpParams {
+  name: string;
+  email: string;
+  password: string;
+  phoneNumber: string;
 }

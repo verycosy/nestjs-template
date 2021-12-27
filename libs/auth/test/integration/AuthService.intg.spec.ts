@@ -35,6 +35,7 @@ describe('AuthService', () => {
       name: 'verycosy',
       email: 'test@test.com',
       password: 'password',
+      phoneNumber: '010-1111-2222',
     });
 
     const newUser = await sut.signUp(signUpUser);
