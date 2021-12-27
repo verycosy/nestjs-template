@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AuthToken } from './AuthToken';
-import { UserNotFoundError } from './error/UserNotFoundError';
+import { PasswordNotMatchedError, UserNotFoundError } from './error';
 import { JwtPayload } from './JwtPayload';
 
 @Injectable()
@@ -39,8 +39,12 @@ export class AuthService {
   ): Promise<{ user: User } & AuthToken> {
     const user = await this.userRepository.findOne({ email });
 
-    if (!user || !(await user.validatePassword(plainTextPassword))) {
+    if (!user) {
       throw new UserNotFoundError();
+    }
+
+    if (!(await user.validatePassword(plainTextPassword))) {
+      throw new PasswordNotMatchedError();
     }
 
     const jwtTokens = await this.generateJwtTokens({ id: user.id });
