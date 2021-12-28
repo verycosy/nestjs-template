@@ -7,7 +7,7 @@ export class User {
   id: number;
 
   @Column()
-  name: string;
+  private name: string;
 
   @Column()
   email: string;
@@ -26,6 +26,14 @@ export class User {
   })
   refreshToken: string;
 
+  setName(name: string): void {
+    this.name = name;
+  }
+
+  getName(): string {
+    return this.name;
+  }
+
   async changePassword(newPassword: string): Promise<void> {
     this.password = await bcrypt.hash(newPassword, 10);
   }
@@ -34,7 +42,7 @@ export class User {
     const { name, email, password, phoneNumber } = params;
     const signUpUser = new User();
 
-    signUpUser.name = name;
+    signUpUser.setName(name);
     signUpUser.email = email;
     await signUpUser.changePassword(password);
     signUpUser.phoneNumber = phoneNumber;
