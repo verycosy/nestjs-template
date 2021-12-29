@@ -12,7 +12,7 @@ import { AuthCodeModule, AuthCodeService } from '@app/util/auth-code';
 import { getLoggerOptions } from '../../../../../libs/config/src';
 import { AuthModule } from '@app/auth';
 import { LoginRequest } from '../../../../api/src/user/dto/LoginRequest';
-import { PasswordNotMatchedError, UserNotFoundError } from '@app/auth/error';
+import { WrongPasswordError, UserNotFoundError } from '@app/auth/error';
 
 describe('UserAuthApiController', () => {
   let sut: UserAuthApiController;
@@ -102,7 +102,7 @@ describe('UserAuthApiController', () => {
       request.email = email;
       request.password = password + 'oops';
 
-      expect(sut.login(request)).rejects.toThrowError(PasswordNotMatchedError);
+      expect(sut.login(request)).rejects.toThrowError(WrongPasswordError);
     });
 
     it('refresh token을 갱신하고 회원 정보 반환', async () => {

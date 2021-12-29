@@ -1,2 +1,2 @@
-export * from './PasswordNotMatchedError';
+export * from './WrongPasswordError';
 export * from './UserNotFoundError';

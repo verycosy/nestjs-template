@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AuthToken, JwtPayload } from './interface';
-import { PasswordNotMatchedError, UserNotFoundError } from './error';
+import { WrongPasswordError, UserNotFoundError } from './error';
 
 @Injectable()
 export class AuthService {
@@ -47,7 +47,7 @@ export class AuthService {
     }
 
     if (!(await user.validatePassword(plainTextPassword))) {
-      throw new PasswordNotMatchedError();
+      throw new WrongPasswordError();
     }
 
     const jwtTokens = await this.generateJwtTokens({ id: user.id });
@@ -82,6 +82,6 @@ export class AuthService {
       return;
     }
 
-    throw new PasswordNotMatchedError();
+    throw new WrongPasswordError();
   }
 }

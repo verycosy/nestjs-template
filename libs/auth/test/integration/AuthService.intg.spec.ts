@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getTypeOrmTestModule } from '../../../entity/test/typeorm.test.module';
 import { Repository } from 'typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { PasswordNotMatchedError } from '@app/auth/error';
+import { WrongPasswordError } from '@app/auth/error';
 
 describe('AuthService', () => {
   let sut: AuthService;
@@ -51,7 +51,7 @@ describe('AuthService', () => {
 
       expect(
         sut.changePassword(user, 'wrong old password', 'new password'),
-      ).rejects.toThrowError(PasswordNotMatchedError);
+      ).rejects.toThrowError(WrongPasswordError);
     });
 
     it('새로운 비밀번호로 변경', async () => {
