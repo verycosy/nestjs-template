@@ -1,6 +1,13 @@
 import { AccessTokenGuard, CurrentUser } from '@app/auth';
 import { User } from '@app/entity/domain/user/User.entity';
-import { Controller, Get, Patch } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { UserApiService } from '../UserApiService';
 
 @AccessTokenGuard()
@@ -14,5 +21,12 @@ export class UserApiController {
   }
 
   @Patch('/me')
-  async updateProfile() {}
+  @UseInterceptors(FileInterceptor('file'))
+  async updateProfile(
+    @CurrentUser() user: User,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    await this.userApiService.updateProfile(user, file.path);
+    return { profileImageUrl: file.path };
+  }
 }

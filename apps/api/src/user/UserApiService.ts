@@ -8,4 +8,12 @@ export class UserApiService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
+
+  async updateProfile(
+    user: User,
+    uploadedProfileImageUrl: string,
+  ): Promise<void> {
+    user.profileImageUrl = uploadedProfileImageUrl;
+    await this.userRepository.save(user);
+  }
 }
