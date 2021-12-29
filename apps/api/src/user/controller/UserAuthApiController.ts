@@ -23,13 +23,13 @@ import { AuthToken } from '@app/auth/interface';
 @Controller('/users')
 export class UserAuthApiController {
   constructor(
-    private readonly authCodeSevice: AuthCodeService,
+    private readonly authCodeService: AuthCodeService,
     private readonly authService: AuthService,
   ) {}
 
   @Post('/sms')
   async sendAuthCode(@Body() request: SmsRequest.SendAuthCode): Promise<void> {
-    await this.authCodeSevice.sendViaSms(request.phoneNumber);
+    await this.authCodeService.sendViaSms(request.phoneNumber);
   }
 
   @ApiOperation({
@@ -41,12 +41,12 @@ export class UserAuthApiController {
     @Body() request: SmsRequest.VerifyAuthCode,
   ): Promise<void> {
     const { phoneNumber, authCode } = request;
-    await this.authCodeSevice.verify(phoneNumber, authCode);
+    await this.authCodeService.verify(phoneNumber, authCode);
   }
 
   @Post('/sign-up')
   async signUp(@Body() request: SignUpRequest): Promise<User> {
-    const isVerifiedPhoneNumber = await this.authCodeSevice.isVerified(
+    const isVerifiedPhoneNumber = await this.authCodeService.isVerified(
       request.phoneNumber,
     );
 
