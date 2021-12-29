@@ -8,9 +8,4 @@ export class UserApiService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
-
-  async updateProfile(user: User, newName: string): Promise<User> {
-    user.setName(newName);
-    return await this.userRepository.save(user);
-  }
 }

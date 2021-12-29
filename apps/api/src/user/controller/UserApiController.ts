@@ -1,7 +1,6 @@
 import { AccessTokenGuard, CurrentUser } from '@app/auth';
 import { User } from '@app/entity/domain/user/User.entity';
-import { Body, Controller, Get, Patch } from '@nestjs/common';
-import { UpdateProfileRequest } from '../dto/UpdateProfileRequest';
+import { Controller, Get, Patch } from '@nestjs/common';
 import { UserApiService } from '../UserApiService';
 
 @AccessTokenGuard()
@@ -15,13 +14,5 @@ export class UserApiController {
   }
 
   @Patch('/me')
-  async updateProfile(
-    @CurrentUser() user: User,
-    @Body() request: UpdateProfileRequest,
-  ) {
-    await this.userApiService.updateProfile(user, request.name);
-    return {
-      name: user.getName(),
-    };
-  }
+  async updateProfile() {}
 }

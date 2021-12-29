@@ -26,31 +26,6 @@ describe('UserApiController (e2e)', () => {
   });
 
   describe('/me (PATCH)', () => {
-    it('회원 이름을 변경하고 변경된 이름을 반환', async () => {
-      const email = 'test@test.com';
-      const password = 'password';
-      const user = await User.signUp({
-        name: 'tester',
-        phoneNumber: '010-1111-222',
-        email,
-        password,
-      });
-      await userRepository.save(user);
-
-      const {
-        body: { accessToken },
-      } = await request(app.getHttpServer()).post('/users/login').send({
-        email,
-        password,
-      });
-
-      const { body, statusCode } = await request(app.getHttpServer())
-        .patch('/users/me')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .send({ name: 'this is new name' });
-
-      expect(statusCode).toEqual(200);
-      expect(body.name).toEqual('this is new name');
-    });
+    it('', async () => {});
   });
 });
