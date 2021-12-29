@@ -26,6 +26,9 @@ export class User {
   })
   refreshToken: string;
 
+  @Column({ nullable: true })
+  profileImageUrl: string | null;
+
   setName(name: string): void {
     this.name = name;
   }
