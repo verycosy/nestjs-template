@@ -16,4 +16,9 @@ export class UserApiService {
     user.profileImageUrl = uploadedProfileImageUrl;
     await this.userRepository.save(user);
   }
+
+  async updatePhoneNumber(user: User, newPhoneNumber: string): Promise<void> {
+    user.phoneNumber = newPhoneNumber;
+    await this.userRepository.save(user);
+  }
 }
