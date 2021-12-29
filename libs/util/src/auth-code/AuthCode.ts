@@ -11,7 +11,7 @@ export class AuthCode {
   }
 
   static generate() {
-    if (process.env.NODE_ENV === 'test') {
+    if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'local') {
       return new AuthCode('123456');
     }
 
