@@ -13,8 +13,9 @@ import {
   LoginRequest,
   ChangePasswordRequest,
   CheckEmailExistsRequest,
+  FindEmailRequest,
+  SmsRequest,
 } from '../dto';
-import * as SmsRequest from '../dto/SmsRequest';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   AccessTokenGuard,
@@ -23,7 +24,8 @@ import {
   RefreshTokenGuard,
 } from '@app/auth';
 import { AuthToken } from '@app/auth/interface';
-import { FindEmailRequest } from '../dto/FindEmailRequest';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @ApiTags('Users API')
 @Controller('/users')
@@ -31,6 +33,7 @@ export class UserAuthApiController {
   constructor(
     private readonly authCodeService: AuthCodeService,
     private readonly authService: AuthService,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
   @Post('/sms')
@@ -94,9 +97,13 @@ export class UserAuthApiController {
       throw new BadRequestException('Phone number does not verified');
     }
 
-    const email = await this.authService.findEmail(name, phoneNumber);
+    const user = await this.userRepository.findOne({ name, phoneNumber });
 
-    return { email };
+    if (user) {
+      return { email: user.email };
+    }
+
+    return { email: null };
   }
 
   @AccessTokenGuard()
