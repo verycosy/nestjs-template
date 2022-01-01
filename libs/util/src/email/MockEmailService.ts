@@ -7,7 +7,6 @@ export class MockEmailService implements EmailService {
     subject: string,
     content: string,
   ): Promise<void> {
-    console.log(`Send email(${content}) to ${to}`);
     return;
   }
 }
