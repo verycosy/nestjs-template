@@ -4,6 +4,7 @@ import { AuthCode } from '@app/util/auth-code/AuthCode';
 import { MockCacheService } from '@app/util/cache';
 import { MockEmailService } from '@app/util/email';
 import { MockSmsService } from '@app/util/sms';
+import { getLoggerOptions } from '@app/config';
 
 describe('AuthCodeService', () => {
   let sut: AuthCodeService;
@@ -13,7 +14,7 @@ describe('AuthCodeService', () => {
       new AuthCodeIssuer(new MockCacheService()),
       new MockSmsService(),
       new MockEmailService(),
-      createLogger(),
+      createLogger(getLoggerOptions()),
     );
   });
 
