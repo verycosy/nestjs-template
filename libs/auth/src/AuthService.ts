@@ -84,4 +84,9 @@ export class AuthService {
 
     throw new WrongPasswordError();
   }
+
+  async checkEmailExists(email: string): Promise<boolean> {
+    const user = await this.userRepository.findOne({ email });
+    return Boolean(user);
+  }
 }

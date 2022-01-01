@@ -284,4 +284,28 @@ describe('UserAuthApiController (e2e)', () => {
       expect(loginStatusCode).toEqual(201);
     });
   });
+
+  describe('/check-email', () => {
+    it('가입된 이메일이 있는지 확인', async () => {
+      const email = 'exists@test.com';
+      const password = 'password';
+      const phoneNumber = '010-1111-2222';
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/users/check-email')
+        .send({ email });
+
+      expect(statusCode).toEqual(201);
+      expect(body.exists).toEqual(false);
+
+      await signUp(email, password, phoneNumber);
+
+      const result = await request(app.getHttpServer())
+        .post('/users/check-email')
+        .send({ email });
+
+      expect(result.statusCode).toEqual(201);
+      expect(result.body.exists).toEqual(true);
+    });
+  });
 });

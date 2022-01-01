@@ -18,6 +18,7 @@ import {
   RefreshTokenGuard,
 } from '@app/auth';
 import { AuthToken } from '@app/auth/interface';
+import { CheckEmailExistsRequest } from '../dto/CheckEmailExistsRequest';
 
 @ApiTags('Users API')
 @Controller('/users')
@@ -42,6 +43,15 @@ export class UserAuthApiController {
   ): Promise<void> {
     const { phoneNumber, authCode } = request;
     await this.authCodeService.verify(phoneNumber, authCode);
+  }
+
+  @Post('/check-email')
+  async checkEmailExists(@Body() request: CheckEmailExistsRequest) {
+    const isExists = await this.authService.checkEmailExists(request.email);
+
+    return {
+      exists: isExists,
+    };
   }
 
   @Post('/sign-up')
