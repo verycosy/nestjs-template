@@ -3,10 +3,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { Cache } from 'cache-manager';
 import { ApiModule } from '../../src/api.module';
+import { AuthCodeService } from '@app/util/auth-code';
 
 describe('UserAuthApiController (e2e)', () => {
   let app: INestApplication;
   let cacheManager: Cache;
+  let authCodeService: AuthCodeService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -18,6 +20,7 @@ describe('UserAuthApiController (e2e)', () => {
     await app.init();
 
     cacheManager = module.get<Cache>(CACHE_MANAGER);
+    authCodeService = module.get(AuthCodeService);
   });
 
   afterEach(async () => {
@@ -38,11 +41,16 @@ describe('UserAuthApiController (e2e)', () => {
     });
   }
 
-  async function signUp(email: string, password: string, phoneNumber: string) {
+  async function signUp(
+    email: string,
+    password: string,
+    phoneNumber: string,
+    name = 'verycosy',
+  ) {
     await authSms(phoneNumber);
 
     return await request(app.getHttpServer()).post('/users/sign-up').send({
-      name: 'verycosy',
+      name,
       email,
       password,
       phoneNumber,
@@ -285,7 +293,7 @@ describe('UserAuthApiController (e2e)', () => {
     });
   });
 
-  describe('/check-email', () => {
+  describe('/check-email (POST)', () => {
     it('가입된 이메일이 있는지 확인', async () => {
       const email = 'exists@test.com';
       const password = 'password';
@@ -306,6 +314,32 @@ describe('UserAuthApiController (e2e)', () => {
 
       expect(result.statusCode).toEqual(201);
       expect(result.body.exists).toEqual(true);
+    });
+  });
+
+  describe('/find-email (POST)', () => {
+    it('가입된 이메일이 있는지 확인', async () => {
+      const name = 'exists';
+      const email = 'exists@test.com';
+      const password = 'password';
+      const phoneNumber = '010-1111-2222';
+
+      jest.spyOn(authCodeService, 'isVerified').mockResolvedValue(true);
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/users/find-email')
+        .send({ name, phoneNumber });
+
+      expect(statusCode).toEqual(201);
+      expect(body.email).toBeNull();
+
+      await signUp(email, password, phoneNumber, name);
+
+      const result = await request(app.getHttpServer())
+        .post('/users/find-email')
+        .send({ name, phoneNumber });
+
+      expect(result.statusCode).toEqual(201);
+      expect(result.body.email).toEqual(email);
     });
   });
 });

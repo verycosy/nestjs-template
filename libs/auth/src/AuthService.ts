@@ -89,4 +89,14 @@ export class AuthService {
     const user = await this.userRepository.findOne({ email });
     return Boolean(user);
   }
+
+  async findEmail(name: string, phoneNumber: string): Promise<string> {
+    const user = await this.userRepository.findOne({ name, phoneNumber });
+
+    if (user) {
+      return user.email;
+    }
+
+    return null;
+  }
 }
