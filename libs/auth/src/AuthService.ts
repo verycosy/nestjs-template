@@ -13,7 +13,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  private async generateJwtTokens(payload: JwtPayload): Promise<AuthToken> {
+  async generateJwtTokens(payload: JwtPayload): Promise<AuthToken> {
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: process.env.ACCESS_TOKEN_SECRET,
       expiresIn: `${process.env.ACCESS_TOKEN_EXPIRES_IN}s`,

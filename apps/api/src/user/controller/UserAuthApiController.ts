@@ -15,6 +15,7 @@ import {
   CheckEmailExistsRequest,
   FindEmailRequest,
   SmsRequest,
+  FindPasswordRequest,
 } from '../dto';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
@@ -26,6 +27,7 @@ import {
 import { AuthToken } from '@app/auth/interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UserNotFoundError } from '@app/auth/error';
 
 @ApiTags('Users API')
 @Controller('/users')
@@ -104,6 +106,47 @@ export class UserAuthApiController {
     }
 
     return { email: null };
+  }
+
+  @Post('/find-password')
+  async findPasswordVerify(@Body() request: FindPasswordRequest.Verify) {
+    const { email, phoneNumber } = request;
+
+    const isVerifiedPhoneNumber = await this.authCodeService.isVerified(
+      phoneNumber,
+    );
+
+    if (!isVerifiedPhoneNumber) {
+      throw new BadRequestException('Phone number does not verified');
+    }
+
+    const user = await this.userRepository.findOne({ email, phoneNumber });
+
+    if (user) {
+      const jwtTokens = await this.authService.generateJwtTokens({
+        id: user.id,
+      });
+
+      return {
+        accessToken: jwtTokens.accessToken,
+      };
+    }
+
+    throw new UserNotFoundError();
+  }
+
+  @AccessTokenGuard()
+  @Patch('/find-password')
+  async findPassword(
+    @CurrentUser() user: User,
+    @Body() request: FindPasswordRequest.ChangePassword,
+  ): Promise<void> {
+    if (!request.isEqualPassword()) {
+      throw new BadRequestException('Password does not matched');
+    }
+
+    await user.changePassword(request.password);
+    await this.userRepository.save(user);
   }
 
   @AccessTokenGuard()

@@ -4,11 +4,14 @@ import * as request from 'supertest';
 import { Cache } from 'cache-manager';
 import { ApiModule } from '../../src/api.module';
 import { AuthCodeService } from '@app/util/auth-code';
+import { Repository } from 'typeorm';
+import { User } from '@app/entity/domain/user/User.entity';
 
 describe('UserAuthApiController (e2e)', () => {
   let app: INestApplication;
   let cacheManager: Cache;
   let authCodeService: AuthCodeService;
+  let userRepository: Repository<User>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -21,11 +24,13 @@ describe('UserAuthApiController (e2e)', () => {
 
     cacheManager = module.get<Cache>(CACHE_MANAGER);
     authCodeService = module.get(AuthCodeService);
+    userRepository = module.get('UserRepository');
   });
 
   afterEach(async () => {
     await app.close();
     await cacheManager.reset();
+    jest.clearAllMocks();
   });
 
   async function authSms(phoneNumber: string) {
@@ -341,5 +346,29 @@ describe('UserAuthApiController (e2e)', () => {
       expect(result.statusCode).toEqual(201);
       expect(result.body.email).toEqual(email);
     });
+  });
+
+  it('/find-password (POST, PATCH)', async () => {
+    const email = 'findpassword@test.com';
+    const password = 'password';
+    const phoneNumber = '010-1111-2222';
+
+    await signUp(email, password, phoneNumber);
+
+    jest.spyOn(authCodeService, 'isVerified').mockResolvedValue(true);
+    const { statusCode, body } = await request(app.getHttpServer())
+      .post('/users/find-password')
+      .send({ email, phoneNumber });
+
+    expect(statusCode).toEqual(201);
+    expect(body.accessToken).toBeDefined();
+
+    await request(app.getHttpServer())
+      .patch('/users/find-password')
+      .send({ password: 'new password', confirmPassword: 'new password' })
+      .set('Authorization', `Bearer ${body.accessToken}`);
+
+    const user = await userRepository.findOne({ email });
+    expect(user.validatePassword('new password')).resolves.toEqual(true);
   });
 });

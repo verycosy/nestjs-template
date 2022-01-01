@@ -6,3 +6,4 @@ export * from './CheckEmailExistsRequest';
 export * from './FindEmailRequest';
 export * from './FindPasswordRequest';
 export * as SmsRequest from './SmsRequest';
+export * as FindPasswordRequest from './FindPasswordRequest';
