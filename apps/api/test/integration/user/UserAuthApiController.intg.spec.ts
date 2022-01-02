@@ -19,7 +19,7 @@ describe('UserAuthApiController', () => {
   let userRepository: Repository<User>;
   let authCodeService: AuthCodeService;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const module = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot(),
@@ -39,19 +39,18 @@ describe('UserAuthApiController', () => {
 
   afterEach(async () => {
     await userRepository.clear();
+    await userRepository.manager.connection.close();
   });
 
   async function signUp(email: string, password: string) {
-    jest.spyOn(authCodeService, 'isVerified').mockResolvedValue(true);
+    const user = await User.signUp({
+      name: 'verycosy',
+      email,
+      password,
+      phoneNumber: '010-1111-2222',
+    });
 
-    const request = new SignUpRequest();
-    request.name = 'verycosy';
-    request.email = email;
-    request.password = password;
-    request.confirmPassword = password;
-    request.phoneNumber = '010-1111-2222';
-
-    return await sut.signUp(request);
+    return await userRepository.save(user);
   }
 
   describe('signUp', () => {
@@ -76,15 +75,22 @@ describe('UserAuthApiController', () => {
     });
 
     it('회원가입 성공시 생성된 유저 정보 반환', async () => {
-      const email = 'test@test.com';
-      const result = await signUp(email, 'password');
+      jest.spyOn(authCodeService, 'isVerified').mockResolvedValue(true);
 
-      expect(result.email).toEqual(email);
+      const request = new SignUpRequest();
+      request.name = 'verycosy';
+      request.email = 'test@test.com';
+      request.password = 'password';
+      request.confirmPassword = 'password';
+      request.phoneNumber = '010-1111-2222';
+      const result = await sut.signUp(request);
+
+      expect(result.email).toEqual(request.email);
     });
   });
 
   describe('login', () => {
-    it('회원을 찾지 못하면 UserNotFoundError', async () => {
+    it('회원을 찾지 못하면 UserNotFoundError', () => {
       const request = new LoginRequest();
       request.email = 'verycosyyyyyy@test.com';
       request.password = 'password';

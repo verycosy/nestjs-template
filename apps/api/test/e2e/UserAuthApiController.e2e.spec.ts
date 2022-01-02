@@ -6,11 +6,13 @@ import { ApiModule } from '../../src/api.module';
 import { AuthCodeService } from '@app/util/auth-code';
 import { Repository } from 'typeorm';
 import { User } from '@app/entity/domain/user/User.entity';
+import { AuthService } from '@app/auth';
 
 describe('UserAuthApiController (e2e)', () => {
   let app: INestApplication;
   let cacheManager: Cache;
   let authCodeService: AuthCodeService;
+  let authService: AuthService;
   let userRepository: Repository<User>;
 
   beforeEach(async () => {
@@ -24,27 +26,16 @@ describe('UserAuthApiController (e2e)', () => {
 
     cacheManager = module.get<Cache>(CACHE_MANAGER);
     authCodeService = module.get(AuthCodeService);
+    authService = module.get(AuthService);
     userRepository = module.get('UserRepository');
   });
 
   afterEach(async () => {
+    await userRepository.clear();
     await app.close();
     await cacheManager.reset();
     jest.clearAllMocks();
   });
-
-  async function authSms(phoneNumber: string) {
-    const url = '/users/sms';
-
-    await request(app.getHttpServer()).post(url).send({
-      phoneNumber,
-    });
-
-    await request(app.getHttpServer()).patch(url).send({
-      phoneNumber,
-      authCode: '123456',
-    });
-  }
 
   async function signUp(
     email: string,
@@ -52,22 +43,15 @@ describe('UserAuthApiController (e2e)', () => {
     phoneNumber: string,
     name = 'verycosy',
   ) {
-    await authSms(phoneNumber);
-
-    return await request(app.getHttpServer()).post('/users/sign-up').send({
+    jest.spyOn(authCodeService, 'isVerified').mockResolvedValue(true);
+    const user = await User.signUp({
       name,
       email,
       password,
       phoneNumber,
-      confirmPassword: password,
     });
-  }
 
-  async function login(email: string, password: string) {
-    return await request(app.getHttpServer()).post('/users/login').send({
-      email,
-      password,
-    });
+    return await userRepository.save(user);
   }
 
   describe('/sign-up (POST)', () => {
@@ -92,7 +76,7 @@ describe('UserAuthApiController (e2e)', () => {
 
     it('비밀번호가 서로 다르면 에러 메시지', async () => {
       const phoneNumber = '010-1111-2222';
-      await authSms(phoneNumber);
+      jest.spyOn(authCodeService, 'isVerified').mockResolvedValue(true);
 
       const res = await request(app.getHttpServer())
         .post('/users/sign-up')
@@ -117,7 +101,17 @@ describe('UserAuthApiController (e2e)', () => {
       const password = 'password';
       const phoneNumber = '010-1111-2222';
 
-      const res = await signUp(email, password, phoneNumber);
+      jest.spyOn(authCodeService, 'isVerified').mockResolvedValue(true);
+
+      const res = await request(app.getHttpServer())
+        .post('/users/sign-up')
+        .send({
+          email,
+          password,
+          name: 'verycosy',
+          phoneNumber,
+          confirmPassword: password,
+        });
 
       expect(res.statusCode).toEqual(201);
       expect(res.body.email).toEqual(email);
@@ -126,9 +120,17 @@ describe('UserAuthApiController (e2e)', () => {
   });
 
   describe('/login (POST)', () => {
+    const email = 'test@test.com';
+    const password = 'password';
+    const phoneNumber = '010-1111-2222';
+
+    beforeEach(async () => {
+      await signUp(email, password, phoneNumber);
+    });
+
     it('존재하지 않는 계정이면 error', async () => {
       const res = await request(app.getHttpServer()).post('/users/login').send({
-        email: 'test@test.com',
+        email: 'not-found@test.com',
         password: 'passwood',
       });
 
@@ -136,12 +138,6 @@ describe('UserAuthApiController (e2e)', () => {
     });
 
     it('비밀번호가 일치하지 않으면 error', async () => {
-      const email = 'test@test.com';
-      const password = 'password';
-      const phoneNumber = '010-1111-2222';
-
-      await signUp(email, password, phoneNumber);
-
       const res = await request(app.getHttpServer()).post('/users/login').send({
         email,
         password: 'passwood',
@@ -153,10 +149,13 @@ describe('UserAuthApiController (e2e)', () => {
     it('회원 정보와 jwt 토큰 반환', async () => {
       const email = 'test@test.com';
       const password = 'password';
-      const phoneNumber = '010-1111-2222';
 
-      await signUp(email, password, phoneNumber);
-      const { body, statusCode } = await login(email, password);
+      const { body, statusCode } = await request(app.getHttpServer())
+        .post('/users/login')
+        .send({
+          email,
+          password,
+        });
 
       expect(statusCode).toEqual(201);
       expect(body.user.email).toEqual(email);
@@ -171,9 +170,7 @@ describe('UserAuthApiController (e2e)', () => {
     const phoneNumber = '010-1111-2222';
 
     await signUp(email, password, phoneNumber);
-    const {
-      body: { accessToken },
-    } = await login(email, password);
+    const { accessToken } = await authService.login(email, password);
 
     const { statusCode } = await request(app.getHttpServer())
       .get('/users/logout')
@@ -188,9 +185,10 @@ describe('UserAuthApiController (e2e)', () => {
       const phoneNumber = '010-1111-2222';
 
       await signUp(email, password, phoneNumber);
-      const {
-        body: { refreshToken: oldRefreshToken },
-      } = await login(email, password);
+      const { refreshToken: oldRefreshToken } = await authService.login(
+        email,
+        password,
+      );
 
       await new Promise((resolve) => {
         setTimeout(() => {
@@ -231,9 +229,7 @@ describe('UserAuthApiController (e2e)', () => {
       const phoneNumber = '010-1111-2222';
 
       await signUp(email, password, phoneNumber);
-      const {
-        body: { accessToken },
-      } = await login(email, password);
+      const { accessToken } = await authService.login(email, password);
 
       const { statusCode } = await request(app.getHttpServer())
         .patch('/users/password')
@@ -253,9 +249,7 @@ describe('UserAuthApiController (e2e)', () => {
       const phoneNumber = '010-1111-2222';
 
       await signUp(email, password, phoneNumber);
-      const {
-        body: { accessToken },
-      } = await login(email, password);
+      const { accessToken } = await authService.login(email, password);
 
       const { statusCode } = await request(app.getHttpServer())
         .patch('/users/password')
@@ -275,9 +269,7 @@ describe('UserAuthApiController (e2e)', () => {
       const phoneNumber = '010-1111-2222';
 
       await signUp(email, password, phoneNumber);
-      const {
-        body: { accessToken },
-      } = await login(email, password);
+      const { accessToken } = await authService.login(email, password);
 
       const { statusCode } = await request(app.getHttpServer())
         .patch('/users/password')
@@ -290,11 +282,9 @@ describe('UserAuthApiController (e2e)', () => {
 
       expect(statusCode).toEqual(200);
 
-      const { statusCode: loginStatusCode } = await login(
-        email,
-        'this is new password',
-      );
-      expect(loginStatusCode).toEqual(201);
+      await expect(
+        authService.login(email, 'this is new password'),
+      ).resolves.not.toThrowError();
     });
   });
 
