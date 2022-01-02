@@ -1,3 +1,4 @@
+import { WrongPasswordError } from '@app/auth/error';
 import { User } from '@app/entity/domain/user/User.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -20,5 +21,19 @@ export class UserApiService {
   async updatePhoneNumber(user: User, newPhoneNumber: string): Promise<void> {
     user.phoneNumber = newPhoneNumber;
     await this.userRepository.save(user);
+  }
+
+  async changePassword(
+    user: User,
+    oldPassword: string,
+    newPassword: string,
+  ): Promise<void> {
+    if (await user.validatePassword(oldPassword)) {
+      await user.changePassword(newPassword);
+      await this.userRepository.save(user);
+      return;
+    }
+
+    throw new WrongPasswordError();
   }
 }

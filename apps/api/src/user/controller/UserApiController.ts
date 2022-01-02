@@ -11,7 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UpdatePhoneNumberRequest } from '../dto';
+import { ChangePasswordRequest, UpdatePhoneNumberRequest } from '../dto';
 import { UserApiService } from '../UserApiService';
 
 @AccessTokenGuard()
@@ -54,5 +54,19 @@ export class UserApiController {
     await this.userApiService.updatePhoneNumber(user, newPhoneNumber);
 
     return { phoneNumber: newPhoneNumber };
+  }
+
+  @Patch('/me/password')
+  async changePassword(
+    @CurrentUser() user: User,
+    @Body() request: ChangePasswordRequest,
+  ): Promise<void> {
+    const { oldPassword, newPassword } = request;
+
+    if (!request.isEqualNewPassword()) {
+      throw new BadRequestException('Password does not matched');
+    }
+
+    await this.userApiService.changePassword(user, oldPassword, newPassword);
   }
 }

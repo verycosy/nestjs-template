@@ -11,7 +11,6 @@ import {
 import {
   SignUpRequest,
   LoginRequest,
-  ChangePasswordRequest,
   CheckEmailExistsRequest,
   FindEmailRequest,
   SmsRequest,
@@ -159,20 +158,5 @@ export class UserAuthApiController {
   @Patch('/refresh')
   async refresh(@CurrentUser() user: User): Promise<AuthToken> {
     return await this.authService.refresh(user);
-  }
-
-  @AccessTokenGuard()
-  @Patch('/password')
-  async changePassword(
-    @CurrentUser() user: User,
-    @Body() request: ChangePasswordRequest,
-  ): Promise<void> {
-    const { oldPassword, newPassword } = request;
-
-    if (!request.isEqualNewPassword()) {
-      throw new BadRequestException('Password does not matched');
-    }
-
-    await this.authService.changePassword(user, oldPassword, newPassword);
   }
 }
