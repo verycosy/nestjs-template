@@ -5,6 +5,7 @@ import { EMAIL_SERVICE, EmailService } from '../email';
 import { SmsService, SMS_SERVICE } from '../sms/SmsService';
 import { AuthCode } from './AuthCode';
 import { AuthCodeIssuer } from './AuthCodeIssuer';
+import { NotVerifiedError } from './error';
 
 @Injectable()
 export class AuthCodeService {
@@ -57,7 +58,7 @@ export class AuthCodeService {
     const isVerified = await this.authCodeIssuer.isVerified(emailOrPhoneNumber);
 
     if (!isVerified) {
-      throw new Error('Phone number does not verified');
+      throw new NotVerifiedError(emailOrPhoneNumber);
     }
 
     await this.authCodeIssuer.release(emailOrPhoneNumber);

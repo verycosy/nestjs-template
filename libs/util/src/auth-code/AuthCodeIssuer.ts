@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CacheService, CACHE_SERVICE } from '../cache/CacheService';
 import { AuthCode } from './AuthCode';
+import { ExceedTrialLimitError } from './error';
 
 @Injectable()
 export class AuthCodeIssuer {
@@ -33,7 +34,7 @@ export class AuthCodeIssuer {
       return trial;
     }
 
-    throw new Error('Exceeded trial limit, try after 1 hour');
+    throw new ExceedTrialLimitError();
   }
 
   async setAuthCodeTo(

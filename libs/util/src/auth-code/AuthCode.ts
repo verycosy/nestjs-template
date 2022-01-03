@@ -1,10 +1,11 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
+import { InvalidAuthCodeError } from './error';
 
 export class AuthCode {
   constructor(private readonly value: string) {
     if (value.length !== 6) {
-      throw new Error('invalid auth code');
+      throw new InvalidAuthCodeError(value);
     }
 
     this.value = value;

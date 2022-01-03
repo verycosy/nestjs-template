@@ -68,7 +68,7 @@ describe('UserAuthApiController (e2e)', () => {
       expect(res.statusCode).toEqual(400);
       expect(res.body).toEqual({
         error: 'Bad Request',
-        message: 'Phone number does not verified',
+        message: '010-1111-2222 does not verified',
         statusCode: 400,
       });
     });

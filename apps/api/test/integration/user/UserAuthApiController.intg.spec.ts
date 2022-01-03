@@ -58,10 +58,14 @@ describe('UserAuthApiController', () => {
   describe('signUp', () => {
     it('sms 인증을 받지 않은 상태면 BadRequestException', async () => {
       const request = new SignUpRequest();
+      request.phoneNumber = '010-1111-2222';
 
-      expect(sut.signUp(request)).rejects.toThrowError(
-        new BadRequestException('Phone number does not verified'),
-      );
+      try {
+        await sut.signUp(request);
+      } catch (err) {
+        expect(err instanceof BadRequestException).toBe(true);
+        expect(err.message).toBe('010-1111-2222 does not verified');
+      }
     });
 
     it('비밀번호가 서로 다르면 BadRequestException', async () => {
