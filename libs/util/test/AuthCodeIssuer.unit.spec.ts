@@ -27,7 +27,7 @@ describe('AuthCodeIssue', () => {
     });
   });
 
-  describe('isVerified', () => {
+  describe('checkVerified', () => {
     const phoneNumber = '010-1111-2222';
 
     it('인증이 되지 않은 상태면 false 반환', async () => {

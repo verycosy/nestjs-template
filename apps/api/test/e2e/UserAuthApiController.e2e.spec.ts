@@ -75,7 +75,7 @@ describe('UserAuthApiController (e2e)', () => {
 
     it('비밀번호가 서로 다르면 에러 메시지', async () => {
       const phoneNumber = '010-1111-2222';
-      jest.spyOn(authCodeService, 'isVerified').mockResolvedValue(true);
+      jest.spyOn(authCodeService, 'checkVerified').mockResolvedValue(undefined);
 
       const res = await request(app.getHttpServer())
         .post('/users/sign-up')
@@ -100,7 +100,7 @@ describe('UserAuthApiController (e2e)', () => {
       const password = 'password';
       const phoneNumber = '010-1111-2222';
 
-      jest.spyOn(authCodeService, 'isVerified').mockResolvedValue(true);
+      jest.spyOn(authCodeService, 'checkVerified').mockResolvedValue(undefined);
 
       const res = await request(app.getHttpServer())
         .post('/users/sign-up')
@@ -254,7 +254,7 @@ describe('UserAuthApiController (e2e)', () => {
       const password = 'password';
       const phoneNumber = '010-1111-2222';
 
-      jest.spyOn(authCodeService, 'isVerified').mockResolvedValue(true);
+      jest.spyOn(authCodeService, 'checkVerified').mockResolvedValue(undefined);
       const { statusCode, body } = await request(app.getHttpServer())
         .post('/users/find-email')
         .send({ name, phoneNumber });
@@ -280,7 +280,7 @@ describe('UserAuthApiController (e2e)', () => {
 
     await signUp(email, password, phoneNumber);
 
-    jest.spyOn(authCodeService, 'isVerified').mockResolvedValue(true);
+    jest.spyOn(authCodeService, 'checkVerified').mockResolvedValue(undefined);
     const { statusCode, body } = await request(app.getHttpServer())
       .post('/users/find-password')
       .send({ email, phoneNumber });

@@ -36,7 +36,7 @@ describe('AuthCodeService', () => {
 
     await sut.sendViaSms(phoneNumber);
     expect(await sut.verify(phoneNumber, new AuthCode('123456'))).toEqual(true);
-    expect(await sut.isVerified(phoneNumber)).toEqual(true);
-    expect(await sut.isVerified(phoneNumber)).toEqual(false);
+    expect(await sut.checkVerified(phoneNumber)).toEqual(true);
+    expect(await sut.checkVerified(phoneNumber)).toEqual(false);
   });
 });

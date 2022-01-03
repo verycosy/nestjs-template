@@ -68,12 +68,10 @@ export class UserAuthApiController {
 
   @Post('/sign-up')
   async signUp(@Body() request: SignUpRequest): Promise<User> {
-    const isVerifiedPhoneNumber = await this.authCodeService.isVerified(
-      request.phoneNumber,
-    );
-
-    if (!isVerifiedPhoneNumber) {
-      throw new BadRequestException('Phone number does not verified');
+    try {
+      await this.authCodeService.checkVerified(request.phoneNumber);
+    } catch (err) {
+      throw new BadRequestException(err.message);
     }
 
     if (!request.isEqualPassword()) {
@@ -93,13 +91,7 @@ export class UserAuthApiController {
   async findEmail(@Body() request: FindEmailRequest) {
     const { name, phoneNumber, role } = request;
 
-    const isVerifiedPhoneNumber = await this.authCodeService.isVerified(
-      phoneNumber,
-    );
-
-    if (!isVerifiedPhoneNumber) {
-      throw new BadRequestException('Phone number does not verified');
-    }
+    await this.authCodeService.checkVerified(phoneNumber);
 
     const user = await this.userRepository.findOne({
       name,
@@ -118,13 +110,7 @@ export class UserAuthApiController {
   async findPasswordVerify(@Body() request: FindPasswordRequest.Verify) {
     const { email, phoneNumber, role } = request;
 
-    const isVerifiedPhoneNumber = await this.authCodeService.isVerified(
-      phoneNumber,
-    );
-
-    if (!isVerifiedPhoneNumber) {
-      throw new BadRequestException('Phone number does not verified');
-    }
+    await this.authCodeService.checkVerified(phoneNumber);
 
     const user = await this.userRepository.findOne({
       email,

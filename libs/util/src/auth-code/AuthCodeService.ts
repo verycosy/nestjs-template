@@ -53,13 +53,13 @@ export class AuthCodeService {
     return result;
   }
 
-  async isVerified(emailOrPhoneNumber: string): Promise<boolean> {
-    const result = await this.authCodeIssuer.isVerified(emailOrPhoneNumber);
+  async checkVerified(emailOrPhoneNumber: string): Promise<void> {
+    const isVerified = await this.authCodeIssuer.isVerified(emailOrPhoneNumber);
 
-    if (result) {
-      await this.authCodeIssuer.release(emailOrPhoneNumber);
+    if (!isVerified) {
+      throw new Error('Phone number does not verified');
     }
 
-    return result;
+    await this.authCodeIssuer.release(emailOrPhoneNumber);
   }
 }

@@ -43,13 +43,7 @@ export class UserApiController {
     @Body() request: UpdatePhoneNumberRequest,
   ) {
     const { phoneNumber: newPhoneNumber } = request;
-    const isVerifiedPhoneNumber = await this.authCodeService.isVerified(
-      newPhoneNumber,
-    );
-
-    if (!isVerifiedPhoneNumber) {
-      throw new BadRequestException('Phone number does not verified');
-    }
+    await this.authCodeService.checkVerified(newPhoneNumber);
 
     await this.userApiService.updatePhoneNumber(user, newPhoneNumber);
 

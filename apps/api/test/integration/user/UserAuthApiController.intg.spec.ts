@@ -65,7 +65,7 @@ describe('UserAuthApiController', () => {
     });
 
     it('비밀번호가 서로 다르면 BadRequestException', async () => {
-      jest.spyOn(authCodeService, 'isVerified').mockResolvedValue(true);
+      jest.spyOn(authCodeService, 'checkVerified').mockResolvedValue(undefined);
 
       const request = new SignUpRequest();
       request.password = 'password';
@@ -77,7 +77,7 @@ describe('UserAuthApiController', () => {
     });
 
     it('회원가입 성공시 생성된 유저 정보 반환', async () => {
-      jest.spyOn(authCodeService, 'isVerified').mockResolvedValue(true);
+      jest.spyOn(authCodeService, 'checkVerified').mockResolvedValue(undefined);
 
       const request = new SignUpRequest();
       request.name = 'verycosy';
