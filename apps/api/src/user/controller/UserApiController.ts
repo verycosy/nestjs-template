@@ -55,12 +55,12 @@ export class UserApiController {
     @CurrentUser() user: User,
     @Body() request: ChangePasswordRequest,
   ): Promise<void> {
-    const { oldPassword, newPassword } = request;
+    const { oldPassword, password } = request;
 
-    if (!request.isEqualNewPassword()) {
+    if (!request.isEqualPassword()) {
       throw new BadRequestException('Password does not matched');
     }
 
-    await this.userApiService.changePassword(user, oldPassword, newPassword);
+    await this.userApiService.changePassword(user, oldPassword, password);
   }
 }

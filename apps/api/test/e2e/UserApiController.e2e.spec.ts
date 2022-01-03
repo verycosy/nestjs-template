@@ -62,8 +62,8 @@ describe('UserApiController (e2e)', () => {
         .set('Authorization', 'Bearer ' + accessToken)
         .send({
           oldPassword: 'password' + 'oops',
-          newPassword: 'this is new password',
-          confirmNewPassword: 'this is new password',
+          password: 'this is new password',
+          confirmPassword: 'this is new password',
         });
 
       expect(statusCode).toEqual(500);
@@ -77,8 +77,8 @@ describe('UserApiController (e2e)', () => {
         .set('Authorization', 'Bearer ' + accessToken)
         .send({
           oldPassword: 'password',
-          newPassword: 'this is new password',
-          confirmNewPassword: 'this is wrong new password',
+          password: 'this is new password',
+          confirmPassword: 'this is wrong new password',
         });
 
       expect(statusCode).toEqual(400);
@@ -92,8 +92,8 @@ describe('UserApiController (e2e)', () => {
         .set('Authorization', 'Bearer ' + accessToken)
         .send({
           oldPassword: 'password',
-          newPassword: 'this is new password',
-          confirmNewPassword: 'this is new password',
+          password: 'this is new password',
+          confirmPassword: 'this is new password',
         });
 
       expect(statusCode).toEqual(200);

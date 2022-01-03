@@ -1,5 +1,6 @@
 import { Role } from '@app/entity/domain/user/type/Role';
 import { IsEnum, IsString } from 'class-validator';
+import { ConfirmPasswordRequest } from './ConfirmPasswordRequest';
 
 export class Verify {
   @IsEnum(Role)
@@ -12,14 +13,4 @@ export class Verify {
   phoneNumber: string;
 }
 
-export class ChangePassword {
-  @IsString()
-  password: string;
-
-  @IsString()
-  confirmPassword: string;
-
-  isEqualPassword(): boolean {
-    return this.password === this.confirmPassword;
-  }
-}
+export class ChangePassword extends ConfirmPasswordRequest {}
