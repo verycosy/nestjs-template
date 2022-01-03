@@ -56,7 +56,10 @@ export class UserAuthApiController {
 
   @Post('/check-email')
   async checkEmailExists(@Body() request: CheckEmailExistsRequest) {
-    const isExists = await this.authService.checkEmailExists(request.email);
+    const isExists = await this.authService.checkEmailExists(
+      request.email,
+      request.role,
+    );
 
     return {
       exists: isExists,
@@ -88,7 +91,7 @@ export class UserAuthApiController {
 
   @Post('/find-email')
   async findEmail(@Body() request: FindEmailRequest) {
-    const { name, phoneNumber } = request;
+    const { name, phoneNumber, role } = request;
 
     const isVerifiedPhoneNumber = await this.authCodeService.isVerified(
       phoneNumber,
@@ -98,7 +101,11 @@ export class UserAuthApiController {
       throw new BadRequestException('Phone number does not verified');
     }
 
-    const user = await this.userRepository.findOne({ name, phoneNumber });
+    const user = await this.userRepository.findOne({
+      name,
+      phoneNumber,
+      role,
+    });
 
     if (user) {
       return { email: user.email };
@@ -109,7 +116,7 @@ export class UserAuthApiController {
 
   @Post('/find-password')
   async findPasswordVerify(@Body() request: FindPasswordRequest.Verify) {
-    const { email, phoneNumber } = request;
+    const { email, phoneNumber, role } = request;
 
     const isVerifiedPhoneNumber = await this.authCodeService.isVerified(
       phoneNumber,
@@ -119,7 +126,11 @@ export class UserAuthApiController {
       throw new BadRequestException('Phone number does not verified');
     }
 
-    const user = await this.userRepository.findOne({ email, phoneNumber });
+    const user = await this.userRepository.findOne({
+      email,
+      phoneNumber,
+      role,
+    });
 
     if (user) {
       const jwtTokens = await this.authService.generateJwtTokens({

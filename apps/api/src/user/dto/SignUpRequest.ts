@@ -1,7 +1,11 @@
+import { Role } from '@app/entity/domain/user/type/Role';
 import { User } from '@app/entity/domain/user/User.entity';
-import { IsString, Length } from 'class-validator';
+import { IsEnum, IsString, Length } from 'class-validator';
 
 export class SignUpRequest {
+  @IsEnum(Role)
+  role: Role = Role.Customer;
+
   @IsString()
   name: string;
 

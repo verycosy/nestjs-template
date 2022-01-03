@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AuthToken, JwtPayload } from './interface';
 import { WrongPasswordError, UserNotFoundError } from './error';
+import { Role } from '@app/entity/domain/user/type/Role';
 
 @Injectable()
 export class AuthService {
@@ -39,8 +40,9 @@ export class AuthService {
   async login(
     email: string,
     plainTextPassword: string,
+    role: Role = Role.Customer,
   ): Promise<{ user: User } & AuthToken> {
-    const user = await this.userRepository.findOne({ email });
+    const user = await this.userRepository.findOne({ email, role });
 
     if (!user) {
       throw new UserNotFoundError();
@@ -71,8 +73,11 @@ export class AuthService {
     return jwtTokens;
   }
 
-  async checkEmailExists(email: string): Promise<boolean> {
-    const user = await this.userRepository.findOne({ email });
+  async checkEmailExists(
+    email: string,
+    role: Role = Role.Customer,
+  ): Promise<boolean> {
+    const user = await this.userRepository.findOne({ email, role });
     return Boolean(user);
   }
 }

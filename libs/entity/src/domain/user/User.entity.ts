@@ -43,9 +43,10 @@ export class User {
   }
 
   static async signUp(params: SignUpParams): Promise<User> {
-    const { name, email, password, phoneNumber } = params;
+    const { name, email, password, phoneNumber, role = Role.Customer } = params;
     const signUpUser = new User();
 
+    signUpUser.role = role;
     signUpUser.setName(name);
     signUpUser.email = email;
     await signUpUser.changePassword(password);
@@ -64,4 +65,5 @@ interface SignUpParams {
   email: string;
   password: string;
   phoneNumber: string;
+  role?: Role;
 }
