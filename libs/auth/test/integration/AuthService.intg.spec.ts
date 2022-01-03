@@ -5,7 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getTypeOrmTestModule } from '../../../entity/test/typeorm.test.module';
 import { Repository } from 'typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { getConfigModule } from '@app/config';
 
 describe('AuthService', () => {
   let sut: AuthService;
@@ -14,7 +14,7 @@ describe('AuthService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        ConfigModule.forRoot(),
+        getConfigModule(),
         getTypeOrmTestModule(),
         JwtModule.register({}),
         UserModule,

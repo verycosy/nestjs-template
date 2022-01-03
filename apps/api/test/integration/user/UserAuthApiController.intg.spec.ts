@@ -1,4 +1,3 @@
-import { ConfigModule } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { WinstonModule } from 'nest-winston';
 import { UserAuthApiController } from '../../../src/user/controller';
@@ -9,7 +8,10 @@ import { User } from '@app/entity/domain/user/User.entity';
 import { SignUpRequest } from '../../../src/user/dto/SignUpRequest';
 import { BadRequestException } from '@nestjs/common';
 import { AuthCodeModule, AuthCodeService } from '@app/util/auth-code';
-import { getLoggerOptions } from '../../../../../libs/config/src';
+import {
+  getConfigModule,
+  getLoggerOptions,
+} from '../../../../../libs/config/src';
 import { AuthModule } from '@app/auth';
 import { LoginRequest } from '../../../../api/src/user/dto/LoginRequest';
 import { WrongPasswordError, UserNotFoundError } from '@app/auth/error';
@@ -22,7 +24,7 @@ describe('UserAuthApiController', () => {
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       imports: [
-        ConfigModule.forRoot(),
+        getConfigModule(),
         WinstonModule.forRoot(getLoggerOptions()),
         getTypeOrmTestModule(),
         UserModule,
