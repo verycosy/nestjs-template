@@ -178,12 +178,15 @@ describe('UserAuthApiController (e2e)', () => {
   });
 
   describe('/refresh (PATCH)', () => {
-    async function refresh() {
-      const email = 'test@test.com';
-      const password = 'password';
-      const phoneNumber = '010-1111-2222';
+    const email = 'test@test.com';
+    const password = 'password';
+    const phoneNumber = '010-1111-2222';
 
+    beforeEach(async () => {
       await signUp(email, password, phoneNumber);
+    });
+
+    async function refresh() {
       const { refreshToken: oldRefreshToken } = await authService.login(
         email,
         password,
@@ -204,7 +207,6 @@ describe('UserAuthApiController (e2e)', () => {
 
     it('새로운 인증 토큰을 반환한다', async () => {
       const { body, statusCode, oldRefreshToken } = await refresh();
-
       expect(statusCode).toEqual(200);
       expect(body.accessToken).toBeDefined();
       expect(body.refreshToken).toBeDefined();

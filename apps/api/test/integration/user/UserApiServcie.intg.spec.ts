@@ -6,9 +6,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserApiService } from '../../../src/user/UserApiService';
 import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import { getConfigModule } from '@app/config';
+import { Repository } from 'typeorm';
 
 describe('UserApiService', () => {
   let sut: UserApiService;
+  let userRepository: Repository<User>;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -22,6 +24,11 @@ describe('UserApiService', () => {
     }).compile();
 
     sut = module.get(UserApiService);
+    userRepository = module.get('UserRepository');
+  });
+
+  afterEach(async () => {
+    await userRepository.clear();
   });
 
   describe('changePassword', () => {

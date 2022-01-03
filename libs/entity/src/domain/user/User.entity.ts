@@ -1,10 +1,15 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { Role } from './type/Role';
 
 @Entity('user')
+@Index(['role', 'email'], { unique: true })
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ type: 'enum', enum: Role, default: Role.Customer })
+  role: Role;
 
   @Column()
   private name: string;
