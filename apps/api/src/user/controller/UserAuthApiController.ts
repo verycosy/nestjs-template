@@ -70,15 +70,12 @@ export class UserAuthApiController {
   async signUp(@Body() request: SignUpRequest): Promise<User> {
     try {
       await this.authCodeService.checkVerified(request.phoneNumber);
+      request.checkEqualPassword();
+
+      return await this.authService.signUp(await request.toEntity());
     } catch (err) {
       throw new BadRequestException(err.message);
     }
-
-    if (!request.isEqualPassword()) {
-      throw new BadRequestException('Password does not matched');
-    }
-
-    return await this.authService.signUp(await request.toEntity());
   }
 
   @Post('/login')
@@ -137,12 +134,14 @@ export class UserAuthApiController {
     @CurrentUser() user: User,
     @Body() request: FindPasswordRequest.ChangePassword,
   ): Promise<void> {
-    if (!request.isEqualPassword()) {
-      throw new BadRequestException('Password does not matched');
-    }
+    try {
+      request.checkEqualPassword();
 
-    await user.changePassword(request.password);
-    await this.userRepository.save(user);
+      await user.changePassword(request.password);
+      await this.userRepository.save(user);
+    } catch (err) {
+      throw new BadRequestException(err.message);
+    }
   }
 
   @AccessTokenGuard()

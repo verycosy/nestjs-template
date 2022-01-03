@@ -7,7 +7,9 @@ export class ConfirmPasswordRequest {
   @IsString()
   confirmPassword: string;
 
-  isEqualPassword(): boolean {
-    return this.password === this.confirmPassword;
+  checkEqualPassword(): void {
+    if (this.password !== this.confirmPassword) {
+      throw new Error('Password does not matched');
+    }
   }
 }

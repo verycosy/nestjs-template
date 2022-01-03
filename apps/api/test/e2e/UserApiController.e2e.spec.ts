@@ -66,10 +66,10 @@ describe('UserApiController (e2e)', () => {
           confirmPassword: 'this is new password',
         });
 
-      expect(statusCode).toEqual(500);
+      expect(statusCode).toEqual(400);
     });
 
-    it('기존 비밀번호가 틀린 경우', async () => {
+    it('새로운 비밀번호가 서로 일치하지 않는 경우', async () => {
       const { accessToken } = await authService.login(email, password);
 
       const { statusCode } = await request(app.getHttpServer())
