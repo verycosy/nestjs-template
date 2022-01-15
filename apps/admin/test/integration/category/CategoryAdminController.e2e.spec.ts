@@ -54,10 +54,10 @@ describe('CategoryAdminController', () => {
       request.name = 'apple';
 
       const result = await sut.createSubCategory(1, request);
+      const data = (result as ResponseEntity<SubCategory>).data;
 
-      expect((result as ResponseEntity<SubCategory>).data.name).toEqual(
-        'apple',
-      );
+      expect(data.id).toEqual(1);
+      expect(data.name).toEqual('apple');
     });
   });
 });
