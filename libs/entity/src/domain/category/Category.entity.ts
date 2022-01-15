@@ -13,11 +13,15 @@ export class Category {
   @Column()
   name: string;
 
-  @OneToMany(() => SubCategory, (subCategory) => subCategory.category)
+  @OneToMany(() => SubCategory, (subCategory) => subCategory.category, {
+    eager: true,
+  })
   subCategories: SubCategory[];
 
-  addSubCategory(subCategoryName: string) {
+  addSubCategory(subCategoryName: string): SubCategory {
     const subCategory = new SubCategory(subCategoryName);
     this.subCategories.push(subCategory);
+
+    return subCategory;
   }
 }
