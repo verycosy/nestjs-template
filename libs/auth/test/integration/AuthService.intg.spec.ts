@@ -7,12 +7,13 @@ import { getTypeOrmTestModule } from '../../../entity/test/typeorm.test.module';
 import { Repository } from 'typeorm';
 import { getConfigModule } from '@app/config';
 import { Role } from '@app/entity/domain/user/type/Role';
+import { UserAlreadyExistsError } from '@app/auth/error';
 
 describe('AuthService', () => {
   let sut: AuthService;
   let userRepository: Repository<User>;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         getConfigModule(),
@@ -27,20 +28,34 @@ describe('AuthService', () => {
     userRepository = module.get('UserRepository');
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await userRepository.clear();
+    await userRepository.manager.connection.close();
   });
 
-  it('sign up', async () => {
-    const signUpUser = await User.signUp({
-      name: 'verycosy',
-      email: 'test@test.com',
-      password: 'password',
-      phoneNumber: '010-1111-2222',
+  describe('sign up', () => {
+    let signUpUser: User;
+
+    beforeEach(async () => {
+      signUpUser = await User.signUp({
+        name: 'verycosy',
+        email: 'test@test.com',
+        password: 'password',
+        phoneNumber: '010-1111-2222',
+      });
     });
 
-    const newUser = await sut.signUp(signUpUser);
-    expect(newUser.email).toEqual(signUpUser.email);
+    it('이미 같은 이메일과 role로 가입된 user가 있으면 UserAlreadyExistsError를 던진다', async () => {
+      await sut.signUp(signUpUser);
+
+      expect(sut.signUp(signUpUser)).rejects.toThrow(UserAlreadyExistsError);
+    });
+
+    it('회원가입이 성공하면 가입된 user 객체 반환', async () => {
+      const newUser = await sut.signUp(signUpUser);
+
+      expect(newUser.email).toEqual(signUpUser.email);
+    });
   });
 
   describe('checkEmailExists', () => {

@@ -4,7 +4,11 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AuthToken, JwtPayload } from './interface';
-import { WrongPasswordError, UserNotFoundError } from './error';
+import {
+  WrongPasswordError,
+  UserNotFoundError,
+  UserAlreadyExistsError,
+} from './error';
 import { Role } from '@app/entity/domain/user/type/Role';
 
 @Injectable()
@@ -29,6 +33,15 @@ export class AuthService {
   }
 
   async signUp(newUser: User): Promise<User> {
+    const user = await this.userRepository.findOne({
+      email: newUser.email,
+      role: newUser.role,
+    });
+
+    if (user) {
+      throw new UserAlreadyExistsError();
+    }
+
     return await this.userRepository.save(newUser);
   }
 

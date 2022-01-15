@@ -12,7 +12,7 @@ describe('UserApiService', () => {
   let sut: UserApiService;
   let userRepository: Repository<User>;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         getConfigModule(),
@@ -29,6 +29,7 @@ describe('UserApiService', () => {
 
   afterEach(async () => {
     await userRepository.clear();
+    await userRepository.manager.connection.close();
   });
 
   describe('changePassword', () => {
