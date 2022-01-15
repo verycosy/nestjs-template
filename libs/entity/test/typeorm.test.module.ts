@@ -12,5 +12,6 @@ export function getTypeOrmTestModule() {
     autoLoadEntities: true,
     synchronize: true,
     namingStrategy: new SnakeNamingStrategy(),
+    dropSchema: process.env.NODE_ENV === 'test',
   });
 }
