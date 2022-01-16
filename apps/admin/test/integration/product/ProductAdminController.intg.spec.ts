@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AddProductRequest } from '../../../../admin/src/product/dto/AddProductRequest';
 import { ProductAdminController } from '../../../../../apps/admin/src/product/controller/ProductAdminController';
 import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { ProductAdminService } from '../../../../admin/src/product/ProductAdminService';
 
 describe('ProductAdminController', () => {
   let module: TestingModule;
@@ -12,6 +13,7 @@ describe('ProductAdminController', () => {
   beforeEach(async () => {
     module = await Test.createTestingModule({
       imports: [getConfigModule(), getTypeOrmTestModule(), ProductModule],
+      providers: [ProductAdminService],
       controllers: [ProductAdminController],
     }).compile();
 
