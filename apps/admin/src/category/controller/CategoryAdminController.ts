@@ -1,3 +1,4 @@
+import { AdminGuard } from '@app/auth';
 import { ResponseEntity } from '@app/config/response';
 import { Category, SubCategory } from '@app/entity/domain/category';
 import { Body, Controller, Param, Post } from '@nestjs/common';
@@ -5,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateCategoryRequest, CreateSubCategoryRequest } from '../dto';
 
+@AdminGuard()
 @Controller('/category')
 export class CategoryAdminController {
   constructor(
