@@ -1,6 +1,15 @@
+import { AuthModule } from '@app/auth';
+import { getConfigModule } from '@app/config';
 import { Module } from '@nestjs/common';
+import { getTypeOrmTestModule } from '../../../libs/entity/test/typeorm.test.module';
+import { CategoryAdminModule } from './category/CategoryAdminModule';
 
 @Module({
-  imports: [],
+  imports: [
+    getConfigModule(),
+    getTypeOrmTestModule(),
+    AuthModule,
+    CategoryAdminModule,
+  ],
 })
 export class AdminModule {}
