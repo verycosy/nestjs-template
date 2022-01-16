@@ -28,10 +28,20 @@ export class Product {
 
   static create(name: string, price: number, detail: string): Product {
     const product = new Product();
-    product.name = name;
-    product.price = price;
-    product.detail = detail;
+    product.update(name, price, detail, ProductStatus.SELL);
 
     return product;
+  }
+
+  update(
+    name: string,
+    price: number,
+    detail: string,
+    status: ProductStatus,
+  ): void {
+    this.name = name;
+    this.price = price;
+    this.detail = detail;
+    this.status = status;
   }
 }
