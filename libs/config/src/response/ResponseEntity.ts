@@ -1,4 +1,4 @@
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { ResponseStatus } from './ResponseStatus';
 
 export class ResponseEntity<T> {
@@ -43,14 +43,17 @@ export class ResponseEntity<T> {
     return new ResponseEntity<T>(code, message, data);
   }
 
+  @Expose()
   get statusCode(): string {
     return this._statusCode;
   }
 
+  @Expose()
   get message(): string {
     return this._message;
   }
 
+  @Expose()
   get data(): T {
     return this._data;
   }
