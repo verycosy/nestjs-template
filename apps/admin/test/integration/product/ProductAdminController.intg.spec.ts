@@ -10,6 +10,7 @@ import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.te
 import { ProductAdminService } from '../../../../admin/src/product/ProductAdminService';
 import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
 import { Product } from '@app/entity/domain/product/Product.entity';
+import { ResponseStatus } from '@app/config/response';
 
 describe('ProductAdminController', () => {
   let module: TestingModule;
@@ -52,8 +53,9 @@ describe('ProductAdminController', () => {
     request.status = ProductStatus.SOLD_OUT;
 
     it('수정할 상품이 없으면 Error Response Entity 반환', async () => {
-      const { message } = await sut.updateProduct(1, request);
+      const { message, statusCode } = await sut.updateProduct(1, request);
       expect(message).toBe('Product not found');
+      expect(statusCode).toBe(ResponseStatus.NOT_FOUND);
     });
 
     it('수정된 상품 반환', async () => {

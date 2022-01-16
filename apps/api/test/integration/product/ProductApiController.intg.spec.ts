@@ -5,6 +5,7 @@ import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.te
 import { ProductApiController } from '../../../../../apps/api/src/product/controller/ProductApiController';
 import { ProductAdminService } from '../../../../admin/src/product/ProductAdminService';
 import { Product } from '@app/entity/domain/product/Product.entity';
+import { ResponseStatus } from '@app/config/response';
 
 describe('ProductApiController', () => {
   let sut: ProductApiController;
@@ -26,8 +27,9 @@ describe('ProductApiController', () => {
 
   describe('findProduct', () => {
     it('상품이 없으면 Error Response Entity 반환', async () => {
-      const { message } = await sut.findProduct(1);
+      const { message, statusCode } = await sut.findProduct(1);
       expect(message).toBe('Product not found');
+      expect(statusCode).toBe(ResponseStatus.NOT_FOUND);
     });
 
     it('상품 반환', async () => {

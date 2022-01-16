@@ -1,4 +1,4 @@
-import { ResponseEntity } from '@app/config/response';
+import { ResponseEntity, ResponseStatus } from '@app/config/response';
 import { Product } from '@app/entity/domain/product/Product.entity';
 import { Controller, Get, Param } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -18,7 +18,10 @@ export class ProductApiController {
     const product = await this.productRepository.findOne({ id });
 
     if (!product) {
-      return ResponseEntity.ERROR_WITH('Product not found');
+      return ResponseEntity.ERROR_WITH(
+        'Product not found',
+        ResponseStatus.NOT_FOUND,
+      );
     }
 
     return ResponseEntity.OK_WITH(product);

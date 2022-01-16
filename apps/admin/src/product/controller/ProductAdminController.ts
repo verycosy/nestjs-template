@@ -1,5 +1,5 @@
 import { AdminGuard } from '@app/auth';
-import { ResponseEntity } from '@app/config/response';
+import { ResponseEntity, ResponseStatus } from '@app/config/response';
 import { Product } from '@app/entity/domain/product/Product.entity';
 import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
 import { AddProductRequest, UpdateProductRequest } from '../dto';
@@ -41,7 +41,10 @@ export class ProductAdminController {
     );
 
     if (updatedProduct === null) {
-      return ResponseEntity.ERROR_WITH('Product not found');
+      return ResponseEntity.ERROR_WITH(
+        'Product not found',
+        ResponseStatus.NOT_FOUND,
+      );
     }
 
     return ResponseEntity.OK_WITH(updatedProduct);
