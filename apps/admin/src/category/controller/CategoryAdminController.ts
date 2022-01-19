@@ -1,10 +1,12 @@
-import { ResponseEntity } from '@app/config/response';
+import { AdminGuard } from '@app/auth';
+import { ResponseEntity, ResponseStatus } from '@app/config/response';
 import { Category, SubCategory } from '@app/entity/domain/category';
 import { Body, Controller, Param, Post } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateCategoryRequest, CreateSubCategoryRequest } from '../dto';
 
+@AdminGuard()
 @Controller('/category')
 export class CategoryAdminController {
   constructor(
@@ -33,7 +35,10 @@ export class CategoryAdminController {
     });
 
     if (!category) {
-      return ResponseEntity.ERROR_WITH('Category Not Found');
+      return ResponseEntity.ERROR_WITH(
+        'Category not Found',
+        ResponseStatus.NOT_FOUND,
+      );
     }
 
     const subCategory = category.addSubCategory(request.name);

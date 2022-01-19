@@ -9,7 +9,7 @@ import {
 } from '../../../src/category/dto';
 import { Repository } from 'typeorm';
 import { Category, SubCategory } from '@app/entity/domain/category';
-import { ResponseEntity } from '@app/config/response';
+import { ResponseEntity, ResponseStatus } from '@app/config/response';
 
 describe('CategoryAdminController', () => {
   let sut: CategoryAdminController;
@@ -45,7 +45,12 @@ describe('CategoryAdminController', () => {
 
       const result = await sut.createSubCategory(1, request);
 
-      expect(result).toEqual(ResponseEntity.ERROR_WITH('Category Not Found'));
+      expect(result).toEqual(
+        ResponseEntity.ERROR_WITH(
+          'Category not Found',
+          ResponseStatus.NOT_FOUND,
+        ),
+      );
     });
 
     it('생성된 서브 카테고리 반환', async () => {
