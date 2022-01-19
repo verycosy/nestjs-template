@@ -38,6 +38,10 @@ export class User {
     this.name = name;
   }
 
+  getName(): string {
+    return this.name;
+  }
+
   async changePassword(newPassword: string): Promise<void> {
     this.password = await bcrypt.hash(newPassword, 10);
   }
