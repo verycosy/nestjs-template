@@ -13,14 +13,22 @@ export class ProductAdminController {
   @Post()
   async addProduct(
     @Body() request: AddProductRequest,
-  ): Promise<ResponseEntity<Product>> {
-    const { name, price, detail } = request;
+  ): Promise<ResponseEntity<Product | string>> {
+    const { subCategoryId, name, price, detail } = request;
 
     const product = await this.productAdminService.addProduct(
+      subCategoryId,
       name,
       price,
       detail,
     );
+
+    if (product === null) {
+      return ResponseEntity.ERROR_WITH(
+        'Category not found',
+        ResponseStatus.NOT_FOUND,
+      );
+    }
 
     return ResponseEntity.OK_WITH(product);
   }
@@ -30,10 +38,11 @@ export class ProductAdminController {
     @Param('id') id: number,
     @Body() request: UpdateProductRequest,
   ): Promise<ResponseEntity<Product | string>> {
-    const { name, price, detail, status } = request;
+    const { subCategoryId, name, price, detail, status } = request;
 
     const updatedProduct = await this.productAdminService.updateProduct(
       id,
+      subCategoryId,
       name,
       price,
       detail,

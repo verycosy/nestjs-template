@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { Category, SubCategory } from '@app/entity/domain/category';
 import { ResponseEntity, ResponseStatus } from '@app/config/response';
 import { CategoryAdminService } from '../../../src/category/CategoryAdminService';
+import { ProductModule } from '@app/entity/domain/product/ProductModule';
 
 describe('CategoryAdminController', () => {
   let sut: CategoryAdminController;
@@ -18,7 +19,12 @@ describe('CategoryAdminController', () => {
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      imports: [getConfigModule(), getTypeOrmTestModule(), CategoryModule],
+      imports: [
+        getConfigModule(),
+        getTypeOrmTestModule(),
+        CategoryModule,
+        ProductModule,
+      ],
       controllers: [CategoryAdminController],
       providers: [CategoryAdminService],
     }).compile();

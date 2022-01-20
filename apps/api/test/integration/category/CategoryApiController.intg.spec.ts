@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CategoryApiController } from '../../../src/category/controller/CategoryApiController';
 import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import { Repository } from 'typeorm';
+import { ProductModule } from '@app/entity/domain/product/ProductModule';
 
 describe('CategoryApiController', () => {
   let module: TestingModule;
@@ -12,7 +13,12 @@ describe('CategoryApiController', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [getConfigModule(), getTypeOrmTestModule(), CategoryModule],
+      imports: [
+        getConfigModule(),
+        getTypeOrmTestModule(),
+        CategoryModule,
+        ProductModule,
+      ],
       controllers: [CategoryApiController],
     }).compile();
 

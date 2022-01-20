@@ -1,5 +1,4 @@
 import { getConfigModule } from '@app/config';
-import { ProductModule } from '@app/entity/domain/product/ProductModule';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   AddProductRequest,
@@ -11,21 +10,35 @@ import { ProductAdminService } from '../../../../admin/src/product/ProductAdminS
 import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
 import { Product } from '@app/entity/domain/product/Product.entity';
 import { ResponseStatus } from '@app/config/response';
+import { Category, CategoryModule } from '@app/entity/domain/category';
+import { ProductModule } from '@app/entity/domain/product/ProductModule';
+import { Repository } from 'typeorm';
 
 describe('ProductAdminController', () => {
   let module: TestingModule;
   let sut: ProductAdminController;
   let productAdminService: ProductAdminService;
+  let categoryRepository: Repository<Category>;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [getConfigModule(), getTypeOrmTestModule(), ProductModule],
+      imports: [
+        getConfigModule(),
+        getTypeOrmTestModule(),
+        CategoryModule,
+        ProductModule,
+      ],
       providers: [ProductAdminService],
       controllers: [ProductAdminController],
     }).compile();
 
     sut = module.get(ProductAdminController);
     productAdminService = module.get(ProductAdminService);
+    categoryRepository = module.get('CategoryRepository');
+
+    const category = new Category('fruit');
+    category.addSubCategory('tropics');
+    await categoryRepository.save(category);
   });
 
   afterEach(async () => {
@@ -33,9 +46,15 @@ describe('ProductAdminController', () => {
   });
 
   it('addProduct', async () => {
-    const request = AddProductRequest.create('awesome banana', 30000, 'yummy');
+    const request = AddProductRequest.create(
+      1,
+      'awesome banana',
+      30000,
+      'yummy',
+    );
 
-    const { data } = await sut.addProduct(request);
+    const result = await sut.addProduct(request);
+    const data = result.data as Product;
 
     expect(data.id).toBe(1);
     expect(data.name).toBe('awesome banana');
@@ -45,6 +64,7 @@ describe('ProductAdminController', () => {
 
   describe('updateProduct', () => {
     const request = UpdateProductRequest.create(
+      1,
       'brilliant banana',
       20000,
       'yummm',
@@ -59,7 +79,7 @@ describe('ProductAdminController', () => {
     });
 
     it('수정된 상품 반환', async () => {
-      await productAdminService.addProduct('banana', 5000, 'yeah');
+      await productAdminService.addProduct(1, 'banana', 5000, 'yeah');
 
       const result = await sut.updateProduct(1, request);
 
@@ -70,6 +90,10 @@ describe('ProductAdminController', () => {
         price: 20000,
         detail: 'yummm',
         status: ProductStatus.SOLD_OUT,
+        subCategory: {
+          id: 1,
+          name: 'tropics',
+        },
       });
     });
   });

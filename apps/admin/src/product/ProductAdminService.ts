@@ -1,3 +1,4 @@
+import { SubCategory } from '@app/entity/domain/category';
 import { Product } from '@app/entity/domain/product/Product.entity';
 import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
 import { Injectable } from '@nestjs/common';
@@ -9,19 +10,31 @@ export class ProductAdminService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    @InjectRepository(SubCategory)
+    private readonly subCategoryRepository: Repository<SubCategory>,
   ) {}
 
   async addProduct(
+    subCategoryId: number,
     name: string,
     price: number,
     detail: string,
   ): Promise<Product> {
-    const product = Product.create(name, price, detail);
+    const subCategory = await this.subCategoryRepository.findOne({
+      id: subCategoryId,
+    });
+
+    if (!subCategory) {
+      return null;
+    }
+
+    const product = Product.create(subCategory, name, price, detail);
     return await this.productRepository.save(product);
   }
 
   async updateProduct(
     id: number,
+    subCategoryId: number,
     name: string,
     price: number,
     detail: string,
@@ -33,8 +46,15 @@ export class ProductAdminService {
       return null;
     }
 
-    product.update(name, price, detail, status);
+    const subCategory = await this.subCategoryRepository.findOne({
+      id: subCategoryId,
+    });
 
+    if (!subCategory) {
+      return null;
+    }
+
+    product.update(subCategory, name, price, detail, status);
     return await this.productRepository.save(product);
   }
 }

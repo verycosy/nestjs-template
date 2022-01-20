@@ -3,6 +3,7 @@ import { getConfigModule } from '@app/config';
 import { Module } from '@nestjs/common';
 import { getTypeOrmTestModule } from '../../../libs/entity/test/typeorm.test.module';
 import { CategoryAdminModule } from './category/CategoryAdminModule';
+import { ProductAdminModule } from './product/ProductAdminModule';
 
 @Module({
   imports: [
@@ -10,6 +11,7 @@ import { CategoryAdminModule } from './category/CategoryAdminModule';
     getTypeOrmTestModule(),
     AuthModule,
     CategoryAdminModule,
+    ProductAdminModule,
   ],
 })
 export class AdminModule {}
