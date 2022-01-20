@@ -5,6 +5,7 @@ import { MockCacheService } from '@app/util/cache';
 import { MockEmailService } from '@app/util/email';
 import { MockSmsService } from '@app/util/sms';
 import { getLoggerOptions } from '@app/config';
+import { NotVerifiedError } from '@app/util/auth-code/error';
 
 describe('AuthCodeService', () => {
   let sut: AuthCodeService;
@@ -36,7 +37,9 @@ describe('AuthCodeService', () => {
 
     await sut.sendViaSms(phoneNumber);
     expect(await sut.verify(phoneNumber, new AuthCode('123456'))).toEqual(true);
-    expect(await sut.checkVerified(phoneNumber)).toEqual(true);
-    expect(await sut.checkVerified(phoneNumber)).toEqual(false);
+    expect(await sut.checkVerified(phoneNumber)).toBeUndefined();
+    expect(sut.checkVerified(phoneNumber)).rejects.toThrow(
+      new NotVerifiedError(phoneNumber),
+    );
   });
 });
