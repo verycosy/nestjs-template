@@ -5,7 +5,6 @@ describe('User', () => {
     let user: User;
 
     const newName = 'new tester';
-    const newEmail = 'new_tester@tester.com';
     const newPhoneNumber = '010-3333-4444';
 
     beforeEach(async () => {
@@ -18,19 +17,17 @@ describe('User', () => {
     });
 
     it('비밀번호 제외하고 수정', async () => {
-      await user.update(newName, newEmail, newPhoneNumber);
+      await user.update(newName, newPhoneNumber);
 
       expect(user.getName()).toBe(newName);
-      expect(user.email).toBe(newEmail);
       expect(user.phoneNumber).toBe(newPhoneNumber);
       expect(user.validatePassword('password')).resolves.toBe(true);
     });
 
     it('비밀번호까지 수정', async () => {
-      await user.update(newName, newEmail, newPhoneNumber, 'new password');
+      await user.update(newName, newPhoneNumber, 'new password');
 
       expect(user.getName()).toBe(newName);
-      expect(user.email).toBe(newEmail);
       expect(user.phoneNumber).toBe(newPhoneNumber);
       expect(user.validatePassword('new password')).resolves.toBe(true);
     });

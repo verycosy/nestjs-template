@@ -73,16 +73,10 @@ describe('UserAdminService', () => {
 
     const result = await sut.updateUser(
       1,
-      UpdateUserRequest.create(
-        'new',
-        'new@new.com',
-        '010-3333-4444',
-        'new password',
-      ),
+      UpdateUserRequest.create('new', '010-3333-4444', 'new password'),
     );
 
     expect(result.getName()).toBe('new');
-    expect(result.email).toBe('new@new.com');
     expect(result.phoneNumber).toBe('010-3333-4444');
     expect(result.validatePassword('new password')).resolves.toBe(true);
   });

@@ -26,14 +26,14 @@ export class UserAdminService {
   }
 
   async updateUser(userId: number, body: UpdateUserRequest): Promise<User> {
-    const { name, email, phoneNumber, password } = body;
+    const { name, phoneNumber, password } = body;
     const user = await this.userRepository.findOne({ id: userId });
 
     if (!user) {
       return null;
     }
 
-    await user.update(name, email, phoneNumber, password);
+    await user.update(name, phoneNumber, password);
     return await this.userRepository.save(user);
   }
 }

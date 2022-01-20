@@ -50,8 +50,9 @@ export class User {
     const { name, email, password, phoneNumber, role = Role.Customer } = params;
 
     const signUpUser = new User();
-    await signUpUser.update(name, email, phoneNumber, password);
+    await signUpUser.update(name, phoneNumber, password);
     signUpUser.role = role;
+    signUpUser.email = email;
 
     return signUpUser;
   }
@@ -62,12 +63,10 @@ export class User {
 
   async update(
     name: string,
-    email: string,
     phoneNumber: string,
     password?: string,
   ): Promise<void> {
     this.setName(name);
-    this.email = email;
     this.phoneNumber = phoneNumber;
 
     if (password !== undefined) {
