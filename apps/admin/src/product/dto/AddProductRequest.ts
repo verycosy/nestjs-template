@@ -9,4 +9,17 @@ export class AddProductRequest {
 
   @IsString()
   detail: string;
+
+  static create(
+    name: string,
+    price: number,
+    detail: string,
+  ): AddProductRequest {
+    const dto = new AddProductRequest();
+    dto.name = name;
+    dto.price = price;
+    dto.detail = detail;
+
+    return dto;
+  }
 }

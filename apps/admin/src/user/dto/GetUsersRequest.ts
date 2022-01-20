@@ -7,11 +7,11 @@ export class GetUsersRequest extends PageRequest {
   role: Role;
 
   static create(pageNo: number, pageSize: number, role: Role) {
-    const query = new GetUsersRequest();
-    query.pageNo = pageNo;
-    query.pageSize = pageSize;
-    query.role = role;
+    const dto = new GetUsersRequest();
+    dto.pageNo = pageNo;
+    dto.pageSize = pageSize;
+    dto.role = role;
 
-    return query;
+    return dto;
   }
 }

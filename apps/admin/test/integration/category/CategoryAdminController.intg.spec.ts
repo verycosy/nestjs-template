@@ -32,8 +32,7 @@ describe('CategoryAdminController', () => {
   });
 
   it('createCategory', async () => {
-    const request = new CreateCategoryRequest();
-    request.name = 'fruit';
+    const request = CreateCategoryRequest.create('fruit');
 
     const result = await sut.createCategory(request);
 
@@ -42,8 +41,7 @@ describe('CategoryAdminController', () => {
 
   describe('createSubCategory', () => {
     it('부모 카테고리가 없으면 Error Response Entity 반환', async () => {
-      const request = new CreateSubCategoryRequest();
-      request.name = 'apple';
+      const request = CreateSubCategoryRequest.create('apple');
 
       const result = await sut.createSubCategory(1, request);
 
@@ -57,8 +55,7 @@ describe('CategoryAdminController', () => {
 
     it('생성된 서브 카테고리 반환', async () => {
       await categoryRepository.save({ name: 'fruit' });
-      const request = new CreateSubCategoryRequest();
-      request.name = 'apple';
+      const request = CreateSubCategoryRequest.create('apple');
 
       const result = await sut.createSubCategory(1, request);
       const data = (result as ResponseEntity<SubCategory>).data;

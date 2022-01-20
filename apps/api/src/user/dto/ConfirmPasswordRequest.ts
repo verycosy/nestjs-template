@@ -1,15 +1,14 @@
-import { IsString } from 'class-validator';
+import { ConfirmPassword } from './ConfirmPassword';
 
-export class ConfirmPasswordRequest {
-  @IsString()
-  password: string;
+export class ConfirmPasswordRequest extends ConfirmPassword {
+  static create(
+    password: string,
+    confirmPassword: string,
+  ): ConfirmPasswordRequest {
+    const dto = new ConfirmPasswordRequest();
+    dto.password = password;
+    dto.confirmPassword = confirmPassword;
 
-  @IsString()
-  confirmPassword: string;
-
-  checkEqualPassword(): void {
-    if (this.password !== this.confirmPassword) {
-      throw new Error('Password does not matched');
-    }
+    return dto;
   }
 }

@@ -7,4 +7,12 @@ export class CheckEmailExistsRequest {
 
   @IsString()
   email: string;
+
+  static create(role: Role, email: string): CheckEmailExistsRequest {
+    const dto = new CheckEmailExistsRequest();
+    dto.role = role;
+    dto.email = email;
+
+    return dto;
+  }
 }

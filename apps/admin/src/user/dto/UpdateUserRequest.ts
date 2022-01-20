@@ -12,11 +12,11 @@ export class UpdateUserRequest {
   password?: string;
 
   static create(name: string, phoneNumber: string, password?: string) {
-    const request = new UpdateUserRequest();
-    request.name = name;
-    request.phoneNumber = phoneNumber;
-    request.password = password;
+    const dto = new UpdateUserRequest();
+    dto.name = name;
+    dto.phoneNumber = phoneNumber;
+    dto.password = password;
 
-    return request;
+    return dto;
   }
 }

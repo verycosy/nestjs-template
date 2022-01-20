@@ -10,4 +10,17 @@ export class FindEmailRequest {
 
   @IsString()
   phoneNumber: string;
+
+  static create(
+    role: Role,
+    name: string,
+    phoneNumber: string,
+  ): FindEmailRequest {
+    const dto = new FindEmailRequest();
+    dto.role = role;
+    dto.name = name;
+    dto.phoneNumber = phoneNumber;
+
+    return dto;
+  }
 }

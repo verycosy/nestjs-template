@@ -15,6 +15,7 @@ import {
 import { AuthModule } from '@app/auth';
 import { LoginRequest } from '../../../../api/src/user/dto/LoginRequest';
 import { WrongPasswordError, UserNotFoundError } from '@app/auth/error';
+import { Role } from '@app/entity/domain/user/type/Role';
 
 describe('UserAuthApiController', () => {
   let sut: UserAuthApiController;
@@ -57,8 +58,9 @@ describe('UserAuthApiController', () => {
 
   describe('signUp', () => {
     it('sms 인증을 받지 않은 상태면 BadRequestException', async () => {
-      const request = new SignUpRequest();
-      request.phoneNumber = '010-1111-2222';
+      const request = SignUpRequest.create({
+        phoneNumber: '010-1111-2222',
+      });
 
       try {
         await sut.signUp(request);
@@ -71,9 +73,10 @@ describe('UserAuthApiController', () => {
     it('비밀번호가 서로 다르면 BadRequestException', async () => {
       jest.spyOn(authCodeService, 'checkVerified').mockResolvedValue(undefined);
 
-      const request = new SignUpRequest();
-      request.password = 'password';
-      request.confirmPassword = 'confirmPassword';
+      const request = SignUpRequest.create({
+        password: 'password',
+        confirmPassword: 'confirmPassword',
+      });
 
       expect(sut.signUp(request)).rejects.toThrowError(
         new BadRequestException('Password does not matched'),
@@ -82,13 +85,14 @@ describe('UserAuthApiController', () => {
 
     it('회원가입 성공시 생성된 유저 정보 반환', async () => {
       jest.spyOn(authCodeService, 'checkVerified').mockResolvedValue(undefined);
+      const request = SignUpRequest.create({
+        name: 'verycosy',
+        email: 'test@test.com',
+        password: 'password',
+        confirmPassword: 'password',
+        phoneNumber: '010-1111-2222',
+      });
 
-      const request = new SignUpRequest();
-      request.name = 'verycosy';
-      request.email = 'test@test.com';
-      request.password = 'password';
-      request.confirmPassword = 'password';
-      request.phoneNumber = '010-1111-2222';
       const result = await sut.signUp(request);
 
       expect(result.email).toEqual(request.email);
@@ -97,9 +101,11 @@ describe('UserAuthApiController', () => {
 
   describe('login', () => {
     it('회원을 찾지 못하면 UserNotFoundError', () => {
-      const request = new LoginRequest();
-      request.email = 'verycosyyyyyy@test.com';
-      request.password = 'password';
+      const request = LoginRequest.create(
+        Role.Customer,
+        'verycosyyyyyy@test.com',
+        'password',
+      );
 
       expect(sut.login(request)).rejects.toThrowError(UserNotFoundError);
     });
@@ -110,9 +116,11 @@ describe('UserAuthApiController', () => {
 
       await signUp(email, password);
 
-      const request = new LoginRequest();
-      request.email = email;
-      request.password = password + 'oops';
+      const request = LoginRequest.create(
+        Role.Customer,
+        email,
+        password + 'oops',
+      );
 
       expect(sut.login(request)).rejects.toThrowError(WrongPasswordError);
     });
@@ -122,9 +130,7 @@ describe('UserAuthApiController', () => {
       const password = 'password';
       await signUp(email, password);
 
-      const request = new LoginRequest();
-      request.email = email;
-      request.password = password;
+      const request = LoginRequest.create(Role.Customer, email, password);
 
       const result = await sut.login(request);
 
@@ -143,9 +149,7 @@ describe('UserAuthApiController', () => {
       const password = 'password';
       await signUp(email, password);
 
-      const loginRequest = new LoginRequest();
-      loginRequest.email = email;
-      loginRequest.password = password;
+      const loginRequest = LoginRequest.create(Role.Customer, email, password);
 
       const { user } = await sut.login(loginRequest);
 
@@ -161,9 +165,7 @@ describe('UserAuthApiController', () => {
       const password = 'password';
       await signUp(email, password);
 
-      const loginRequest = new LoginRequest();
-      loginRequest.email = email;
-      loginRequest.password = password;
+      const loginRequest = LoginRequest.create(Role.Customer, email, password);
 
       const { user } = await sut.login(loginRequest);
 

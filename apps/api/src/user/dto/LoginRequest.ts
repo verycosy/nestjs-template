@@ -10,4 +10,13 @@ export class LoginRequest {
 
   @IsString()
   password: string;
+
+  static create(role: Role, email: string, password: string): LoginRequest {
+    const dto = new LoginRequest();
+    dto.role = role;
+    dto.email = email;
+    dto.password = password;
+
+    return dto;
+  }
 }

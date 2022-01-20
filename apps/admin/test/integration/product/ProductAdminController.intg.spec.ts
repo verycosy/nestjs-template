@@ -33,12 +33,10 @@ describe('ProductAdminController', () => {
   });
 
   it('addProduct', async () => {
-    const request = new AddProductRequest();
-    request.name = 'awesome banana';
-    request.price = 30000;
-    request.detail = 'yummy';
+    const request = AddProductRequest.create('awesome banana', 30000, 'yummy');
 
     const { data } = await sut.addProduct(request);
+
     expect(data.id).toBe(1);
     expect(data.name).toBe('awesome banana');
     expect(data.price).toBe(30000);
@@ -46,14 +44,16 @@ describe('ProductAdminController', () => {
   });
 
   describe('updateProduct', () => {
-    const request = new UpdateProductRequest();
-    request.name = 'brilliant banana';
-    request.price = 20000;
-    request.detail = 'yummm';
-    request.status = ProductStatus.SOLD_OUT;
+    const request = UpdateProductRequest.create(
+      'brilliant banana',
+      20000,
+      'yummm',
+      ProductStatus.SOLD_OUT,
+    );
 
     it('수정할 상품이 없으면 Error Response Entity 반환', async () => {
       const { message, statusCode } = await sut.updateProduct(1, request);
+
       expect(message).toBe('Product not found');
       expect(statusCode).toBe(ResponseStatus.NOT_FOUND);
     });
