@@ -2,27 +2,20 @@ import { AdminGuard } from '@app/auth';
 import { ResponseEntity, ResponseStatus } from '@app/config/response';
 import { Category, SubCategory } from '@app/entity/domain/category';
 import { Body, Controller, Param, Post } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { CategoryAdminService } from '../CategoryAdminService';
 import { CreateCategoryRequest, CreateSubCategoryRequest } from '../dto';
 
 @AdminGuard()
 @Controller('/category')
 export class CategoryAdminController {
-  constructor(
-    @InjectRepository(Category)
-    private readonly categoryRepository: Repository<Category>,
-  ) {}
+  constructor(private readonly categoryAdminService: CategoryAdminService) {}
 
   @Post()
   async createCategory(
     @Body() request: CreateCategoryRequest,
   ): Promise<ResponseEntity<Category>> {
-    const category = await this.categoryRepository.save(
-      new Category(request.name),
-    );
-
-    return ResponseEntity.OK_WITH(category);
+    const result = await this.categoryAdminService.createCategory(request.name);
+    return ResponseEntity.OK_WITH(result);
   }
 
   @Post('/:categoryId')
@@ -30,20 +23,18 @@ export class CategoryAdminController {
     @Param('categoryId') categoryId: number,
     @Body() request: CreateSubCategoryRequest,
   ): Promise<ResponseEntity<SubCategory | string>> {
-    const category = await this.categoryRepository.findOne({
-      id: categoryId,
-    });
+    const result = await this.categoryAdminService.createSubCategory(
+      categoryId,
+      request.name,
+    );
 
-    if (!category) {
+    if (result === null) {
       return ResponseEntity.ERROR_WITH(
         'Category not Found',
         ResponseStatus.NOT_FOUND,
       );
     }
 
-    const subCategory = category.addSubCategory(request.name);
-    await this.categoryRepository.save(category);
-
-    return ResponseEntity.OK_WITH(subCategory);
+    return ResponseEntity.OK_WITH(result);
   }
 }

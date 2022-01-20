@@ -10,6 +10,7 @@ import {
 import { Repository } from 'typeorm';
 import { Category, SubCategory } from '@app/entity/domain/category';
 import { ResponseEntity, ResponseStatus } from '@app/config/response';
+import { CategoryAdminService } from '../../../src/category/CategoryAdminService';
 
 describe('CategoryAdminController', () => {
   let sut: CategoryAdminController;
@@ -19,6 +20,7 @@ describe('CategoryAdminController', () => {
     const module = await Test.createTestingModule({
       imports: [getConfigModule(), getTypeOrmTestModule(), CategoryModule],
       controllers: [CategoryAdminController],
+      providers: [CategoryAdminService],
     }).compile();
 
     sut = module.get(CategoryAdminController);
