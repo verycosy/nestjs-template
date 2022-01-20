@@ -5,7 +5,10 @@ import { UserQueryRepository } from '@app/entity/domain/user/UserQueryRepository
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { GetUsersRequest } from '../../../../admin/src/user/dto';
+import {
+  GetUsersRequest,
+  UpdateUserRequest,
+} from '../../../../admin/src/user/dto';
 import { UserAdminService } from '../../../../../apps/admin/src/user/UserAdminService';
 import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 
@@ -32,7 +35,7 @@ describe('UserAdminService', () => {
     await module.close();
   });
 
-  it('', async () => {
+  it('Role 기준으로 사용자 목록 페이징', async () => {
     await repository.save(
       await User.signUp({
         name: 'tester',
@@ -56,5 +59,31 @@ describe('UserAdminService', () => {
       email: 'test@test.com',
       phoneNumber: '010-1111-2222',
     });
+  });
+
+  it('사용자 정보 업데이트', async () => {
+    await repository.save(
+      await User.signUp({
+        name: 'tester',
+        email: 'test@test.com',
+        password: 'password',
+        phoneNumber: '010-1111-2222',
+      }),
+    );
+
+    const result = await sut.updateUser(
+      1,
+      UpdateUserRequest.create(
+        'new',
+        'new@new.com',
+        '010-3333-4444',
+        'new password',
+      ),
+    );
+
+    expect(result.getName()).toBe('new');
+    expect(result.email).toBe('new@new.com');
+    expect(result.phoneNumber).toBe('010-3333-4444');
+    expect(result.validatePassword('new password')).resolves.toBe(true);
   });
 });

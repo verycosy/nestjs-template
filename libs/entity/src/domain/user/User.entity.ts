@@ -48,19 +48,31 @@ export class User {
 
   static async signUp(params: SignUpParams): Promise<User> {
     const { name, email, password, phoneNumber, role = Role.Customer } = params;
-    const signUpUser = new User();
 
+    const signUpUser = new User();
+    await signUpUser.update(name, email, phoneNumber, password);
     signUpUser.role = role;
-    signUpUser.setName(name);
-    signUpUser.email = email;
-    await signUpUser.changePassword(password);
-    signUpUser.phoneNumber = phoneNumber;
 
     return signUpUser;
   }
 
   async validatePassword(plainTextPassword: string): Promise<boolean> {
     return await bcrypt.compare(plainTextPassword, this.password);
+  }
+
+  async update(
+    name: string,
+    email: string,
+    phoneNumber: string,
+    password?: string,
+  ): Promise<void> {
+    this.setName(name);
+    this.email = email;
+    this.phoneNumber = phoneNumber;
+
+    if (password !== undefined) {
+      await this.changePassword(password);
+    }
   }
 }
 
