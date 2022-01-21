@@ -1,14 +1,17 @@
 import { getConfigModule } from '@app/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
-import { ProductApiController } from '../../../../../apps/api/src/product/controller/ProductApiController';
+import {
+  ProductApiController,
+  ProductApiService,
+  GetProductsRequest,
+} from '../../../../../apps/api/src/product';
 import { ProductAdminService } from '../../../../admin/src/product/ProductAdminService';
 import { Product } from '@app/entity/domain/product/Product.entity';
 import { ResponseStatus } from '@app/config/response';
 import { Category, CategoryModule } from '@app/entity/domain/category';
 import { ProductModule } from '@app/entity/domain/product/ProductModule';
 import { Repository } from 'typeorm';
-import { GetProductsRequest } from '../../../../../apps/api/src/product/dto/GetProductsRequest';
 import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
 
 describe('ProductApiController', () => {
@@ -24,7 +27,7 @@ describe('ProductApiController', () => {
         CategoryModule,
         ProductModule,
       ],
-      providers: [ProductAdminService],
+      providers: [ProductAdminService, ProductApiService],
       controllers: [ProductApiController],
     }).compile();
 
