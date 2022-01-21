@@ -9,6 +9,7 @@ import { basename, extname } from 'path';
 import { v4 as uuid } from 'uuid';
 import { UserAuthApiController, UserApiController } from './controller';
 import { UserApiService } from './UserApiService';
+import { CartModule } from '@app/entity/domain/cart/CartModule';
 
 function processingFilename(file: Express.Multer.File): string {
   const originalFilename = basename(file.originalname);
@@ -37,6 +38,7 @@ const diskStorageOption = diskStorage({
     UserModule,
     AuthCodeModule,
     AuthModule,
+    CartModule,
     MulterModule.register({
       storage: diskStorageOption,
     }),

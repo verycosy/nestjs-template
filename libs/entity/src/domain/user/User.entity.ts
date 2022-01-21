@@ -1,6 +1,13 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Role } from './type/Role';
+import { Cart } from '../cart/Cart.entity';
 
 @Entity('user')
 @Index(['role', 'email'], { unique: true })
@@ -33,6 +40,9 @@ export class User {
 
   @Column({ nullable: true })
   profileImageUrl: string | null;
+
+  @OneToOne(() => Cart, (cart) => cart.user)
+  cart: Cart;
 
   setName(name: string): void {
     this.name = name;
