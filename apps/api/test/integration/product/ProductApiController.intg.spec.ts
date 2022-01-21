@@ -8,6 +8,8 @@ import { ResponseStatus } from '@app/config/response';
 import { Category, CategoryModule } from '@app/entity/domain/category';
 import { ProductModule } from '@app/entity/domain/product/ProductModule';
 import { Repository } from 'typeorm';
+import { GetProductsRequest } from '../../../../../apps/api/src/product/dto/GetProductsRequest';
+import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
 
 describe('ProductApiController', () => {
   let sut: ProductApiController;
@@ -54,6 +56,70 @@ describe('ProductApiController', () => {
       const data = result.data as Product;
       expect(data.id).toBe(1);
       expect(data.name).toBe('banana');
+    });
+  });
+
+  describe('getProducts', () => {
+    beforeEach(async () => {
+      const category1 = new Category('fruit');
+      category1.addSubCategory('tropics');
+
+      const category2 = new Category('drink');
+      category2.addSubCategory('soda');
+
+      await categoryRepository.save([category1, category2]);
+
+      await module
+        .get(ProductAdminService)
+        .addProduct(1, 'banana', 3000, 'yummy');
+      await module.get(ProductAdminService).addProduct(2, 'coke', 1000, 'pop');
+    });
+
+    it('sub category에 아무 상품도 없으면 빈 목록 페이징 조회', async () => {
+      const dto = GetProductsRequest.create(1, 10, 3);
+
+      const result = await sut.getProducts(dto);
+
+      expect(result.items.length).toBe(0);
+      expect(result.totalCount).toBe(0);
+    });
+
+    it('sub category id가 1인 상품만 페이징 조회', async () => {
+      const dto = GetProductsRequest.create(1, 10, 1);
+
+      const result = await sut.getProducts(dto);
+
+      expect(result.items.length).toBe(1);
+      expect(result.items[0]).toEqual({
+        id: 1,
+        name: 'banana',
+        price: 3000,
+        status: ProductStatus.SELL,
+      });
+      expect(result.totalCount).toBe(1);
+    });
+
+    it('모든 상품 페이징 조회', async () => {
+      const dto = GetProductsRequest.create(1, 10);
+
+      const result = await sut.getProducts(dto);
+
+      expect(result.items.length).toBe(2);
+      expect(result.items).toEqual([
+        {
+          id: 2,
+          name: 'coke',
+          price: 1000,
+          status: ProductStatus.SELL,
+        },
+        {
+          id: 1,
+          name: 'banana',
+          price: 3000,
+          status: ProductStatus.SELL,
+        },
+      ]);
+      expect(result.totalCount).toBe(2);
     });
   });
 });
