@@ -3,9 +3,11 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { SubCategory } from '../category';
+import { ProductOption } from './ProductOption.entity';
 import { ProductStatus } from './type/ProductStatus';
 
 @Entity('product')
@@ -37,6 +39,11 @@ export class Product {
   @JoinColumn({ name: 'sub_category_id', referencedColumnName: 'id' })
   subCategory: SubCategory;
 
+  @OneToMany(() => ProductOption, (productOption) => productOption.product, {
+    cascade: ['insert'],
+  })
+  options: ProductOption[];
+
   static create(
     subCategory: SubCategory,
     name: string,
@@ -61,5 +68,17 @@ export class Product {
     this.detail = detail;
     this.status = status;
     this.subCategory = subCategory;
+  }
+
+  addOption(detail: string, price: number): ProductOption {
+    const productOption = ProductOption.create(detail, price);
+
+    if (!Array.isArray(this.options)) {
+      this.options = [];
+    }
+
+    this.options.push(productOption);
+
+    return productOption;
   }
 }

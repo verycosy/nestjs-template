@@ -1,8 +1,10 @@
 import { AdminGuard } from '@app/auth';
 import { ResponseEntity, ResponseStatus } from '@app/config/response';
 import { Product } from '@app/entity/domain/product/Product.entity';
+import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
 import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
 import { AddProductRequest, UpdateProductRequest } from '../dto';
+import { AddProductOptionRequest } from '../dto/AddProductOptionRequest';
 import { ProductAdminService } from '../ProductAdminService';
 
 @AdminGuard()
@@ -57,5 +59,28 @@ export class ProductAdminController {
     }
 
     return ResponseEntity.OK_WITH(updatedProduct);
+  }
+
+  @Post('/:id')
+  async addProductOption(
+    @Param('id') id: number,
+    @Body() body: AddProductOptionRequest,
+  ): Promise<ResponseEntity<ProductOption | string>> {
+    const { detail, price } = body;
+
+    const productOption = await this.productAdminService.addProductOption(
+      id,
+      detail,
+      price,
+    );
+
+    if (productOption === null) {
+      return ResponseEntity.ERROR_WITH(
+        'Product not found',
+        ResponseStatus.NOT_FOUND,
+      );
+    }
+
+    return ResponseEntity.OK_WITH(productOption);
   }
 }

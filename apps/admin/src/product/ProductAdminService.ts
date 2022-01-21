@@ -1,5 +1,6 @@
 import { SubCategory } from '@app/entity/domain/category';
 import { Product } from '@app/entity/domain/product/Product.entity';
+import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
 import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -56,5 +57,22 @@ export class ProductAdminService {
 
     product.update(subCategory, name, price, detail, status);
     return await this.productRepository.save(product);
+  }
+
+  async addProductOption(
+    id: number,
+    detail: string,
+    price: number,
+  ): Promise<ProductOption> {
+    const product = await this.productRepository.findOne({ id });
+
+    if (!product) {
+      return null;
+    }
+
+    const productOption = product.addOption(detail, price);
+    await this.productRepository.save(product);
+
+    return productOption;
   }
 }

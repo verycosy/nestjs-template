@@ -1,6 +1,7 @@
 import { getConfigModule } from '@app/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
+  AddProductOptionRequest,
   AddProductRequest,
   UpdateProductRequest,
 } from '../../../../admin/src/product/dto';
@@ -13,6 +14,7 @@ import { ResponseStatus } from '@app/config/response';
 import { Category, CategoryModule } from '@app/entity/domain/category';
 import { ProductModule } from '@app/entity/domain/product/ProductModule';
 import { Repository } from 'typeorm';
+import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
 
 describe('ProductAdminController', () => {
   let module: TestingModule;
@@ -94,6 +96,30 @@ describe('ProductAdminController', () => {
           id: 1,
           name: 'tropics',
         },
+      });
+    });
+  });
+
+  describe('addProductOption', () => {
+    const dto = AddProductOptionRequest.create('100g', 4000);
+
+    it('옵션을 추가할 상품이 없으면 not found error response 반환', async () => {
+      const result = await sut.addProductOption(1, dto);
+
+      expect(result.message).toBe('Product not found');
+      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+    });
+
+    it('추가된 상품 옵션 반환', async () => {
+      await productAdminService.addProduct(1, 'banana', 5000, 'yeah');
+
+      const result = await sut.addProductOption(1, dto);
+
+      const data = result.data as ProductOption;
+      expect(data).toEqual({
+        id: 1,
+        detail: '100g',
+        price: 4000,
       });
     });
   });
