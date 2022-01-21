@@ -123,4 +123,29 @@ describe('ProductAdminController', () => {
       });
     });
   });
+
+  describe('updateProductOption', () => {
+    const dto = AddProductOptionRequest.create('200g', 6000);
+
+    it('수정할 상품 옵션이 없으면 not found error response 반환', async () => {
+      const result = await sut.updateProductOption(1, dto);
+
+      expect(result.message).toBe('Product option not found');
+      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+    });
+
+    it('수정된 상품 옵션 반환', async () => {
+      await productAdminService.addProduct(1, 'banana', 5000, 'yeah');
+      await productAdminService.addProductOption(1, '400g', 4000);
+
+      const result = await sut.updateProductOption(1, dto);
+
+      const data = result.data as ProductOption;
+      expect(data).toEqual({
+        id: 1,
+        detail: '200g',
+        price: 6000,
+      });
+    });
+  });
 });

@@ -24,9 +24,13 @@ export class ProductOption {
 
   static create(detail: string, price: number): ProductOption {
     const productOption = new ProductOption();
-    productOption.detail = detail;
-    productOption.price = price;
+    productOption.update(detail, price);
 
     return productOption;
+  }
+
+  update(detail: string, price: number): void {
+    this.detail = detail;
+    this.price = price;
   }
 }

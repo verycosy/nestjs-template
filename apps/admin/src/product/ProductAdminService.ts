@@ -11,6 +11,8 @@ export class ProductAdminService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    @InjectRepository(ProductOption)
+    private readonly productOptionRepository: Repository<ProductOption>,
     @InjectRepository(SubCategory)
     private readonly subCategoryRepository: Repository<SubCategory>,
   ) {}
@@ -74,5 +76,22 @@ export class ProductAdminService {
     await this.productRepository.save(product);
 
     return productOption;
+  }
+
+  async updateProductOption(
+    productOptionId: number,
+    detail: string,
+    price: number,
+  ): Promise<ProductOption> {
+    const productOption = await this.productOptionRepository.findOne({
+      id: productOptionId,
+    });
+
+    if (!productOption) {
+      return null;
+    }
+
+    productOption.update(detail, price);
+    return await this.productOptionRepository.save(productOption);
   }
 }

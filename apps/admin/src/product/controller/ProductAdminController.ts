@@ -83,4 +83,27 @@ export class ProductAdminController {
 
     return ResponseEntity.OK_WITH(productOption);
   }
+
+  @Patch('/option/:productOptionId')
+  async updateProductOption(
+    @Param('productOptionId') id: number,
+    @Body() body: AddProductOptionRequest,
+  ): Promise<ResponseEntity<ProductOption | string>> {
+    const { detail, price } = body;
+
+    const productOption = await this.productAdminService.updateProductOption(
+      id,
+      detail,
+      price,
+    );
+
+    if (productOption === null) {
+      return ResponseEntity.ERROR_WITH(
+        'Product option not found',
+        ResponseStatus.NOT_FOUND,
+      );
+    }
+
+    return ResponseEntity.OK_WITH(productOption);
+  }
 }
