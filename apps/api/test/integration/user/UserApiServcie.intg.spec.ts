@@ -6,30 +6,29 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserApiService } from '../../../src/user/UserApiService';
 import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import { getConfigModule } from '@app/config';
-import { Repository } from 'typeorm';
+import { ProductModule } from '@app/entity/domain/product/ProductModule';
 
 describe('UserApiService', () => {
   let sut: UserApiService;
-  let userRepository: Repository<User>;
+  let module: TestingModule;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         getConfigModule(),
         getTypeOrmTestModule(),
         JwtModule.register({}),
         UserModule,
+        ProductModule,
       ],
       providers: [UserApiService],
     }).compile();
 
     sut = module.get(UserApiService);
-    userRepository = module.get('UserRepository');
   });
 
   afterEach(async () => {
-    await userRepository.clear();
-    await userRepository.manager.connection.close();
+    await module.close();
   });
 
   describe('changePassword', () => {

@@ -11,6 +11,7 @@ import { UserAlreadyExistsError } from '@app/auth/error';
 
 describe('AuthService', () => {
   let sut: AuthService;
+  let module: TestingModule;
   let userRepository: Repository<User>;
 
   beforeEach(async () => {
@@ -29,8 +30,7 @@ describe('AuthService', () => {
   });
 
   afterEach(async () => {
-    await userRepository.clear();
-    await userRepository.manager.connection.close();
+    await module.close();
   });
 
   describe('sign up', () => {

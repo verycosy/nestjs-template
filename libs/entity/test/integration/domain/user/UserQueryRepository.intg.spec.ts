@@ -3,10 +3,11 @@ import { Role } from '@app/entity/domain/user/type/Role';
 import { User } from '@app/entity/domain/user/User.entity';
 import { UserQueryRepository } from '@app/entity/domain/user/UserQueryRepository';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { GetUsersRequest } from '../../../../../../apps/admin/src/user/dto/GetUsersRequest';
 import { getTypeOrmTestModule } from '../../../../../../libs/entity/test/typeorm.test.module';
 import { Repository } from 'typeorm';
+import { UserModule } from '@app/entity/domain/user/UserModule';
+import { ProductModule } from '@app/entity/domain/product/ProductModule';
 
 describe('UserQueryRepository', () => {
   let sut: UserQueryRepository;
@@ -18,7 +19,8 @@ describe('UserQueryRepository', () => {
       imports: [
         getConfigModule(),
         getTypeOrmTestModule(),
-        TypeOrmModule.forFeature([User, UserQueryRepository]),
+        UserModule,
+        ProductModule,
       ],
     }).compile();
 

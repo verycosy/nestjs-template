@@ -31,7 +31,6 @@ describe('UserAuthApiController (e2e)', () => {
   });
 
   afterEach(async () => {
-    await userRepository.clear();
     await app.close();
     await cacheManager.reset();
     jest.clearAllMocks();

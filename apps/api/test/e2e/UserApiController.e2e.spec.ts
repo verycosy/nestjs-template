@@ -25,7 +25,6 @@ describe('UserApiController (e2e)', () => {
   });
 
   afterEach(async () => {
-    await userRepository.clear();
     await app.close();
   });
 

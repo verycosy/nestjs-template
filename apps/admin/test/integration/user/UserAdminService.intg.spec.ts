@@ -1,9 +1,8 @@
 import { getConfigModule } from '@app/config';
 import { Role } from '@app/entity/domain/user/type/Role';
 import { User } from '@app/entity/domain/user/User.entity';
-import { UserQueryRepository } from '@app/entity/domain/user/UserQueryRepository';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserModule } from '@app/entity/domain/user/UserModule';
 import { Repository } from 'typeorm';
 import {
   GetUsersRequest,
@@ -11,6 +10,7 @@ import {
 } from '../../../../admin/src/user/dto';
 import { UserAdminService } from '../../../../../apps/admin/src/user/UserAdminService';
 import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { ProductModule } from '@app/entity/domain/product/ProductModule';
 
 describe('UserAdminService', () => {
   let module: TestingModule;
@@ -22,7 +22,8 @@ describe('UserAdminService', () => {
       imports: [
         getConfigModule(),
         getTypeOrmTestModule(),
-        TypeOrmModule.forFeature([User, UserQueryRepository]),
+        UserModule,
+        ProductModule,
       ],
       providers: [UserAdminService],
     }).compile();

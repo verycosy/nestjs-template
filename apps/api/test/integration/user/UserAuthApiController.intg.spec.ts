@@ -1,4 +1,4 @@
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { WinstonModule } from 'nest-winston';
 import { UserAuthApiController } from '../../../src/user/controller';
 import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
@@ -16,14 +16,16 @@ import { AuthModule } from '@app/auth';
 import { LoginRequest } from '../../../../api/src/user/dto/LoginRequest';
 import { WrongPasswordError, UserNotFoundError } from '@app/auth/error';
 import { Role } from '@app/entity/domain/user/type/Role';
+import { ProductModule } from '@app/entity/domain/product/ProductModule';
 
 describe('UserAuthApiController', () => {
   let sut: UserAuthApiController;
+  let module: TestingModule;
   let userRepository: Repository<User>;
   let authCodeService: AuthCodeService;
 
   beforeEach(async () => {
-    const module = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         getConfigModule(),
         WinstonModule.forRoot(getLoggerOptions()),
@@ -31,6 +33,7 @@ describe('UserAuthApiController', () => {
         UserModule,
         AuthCodeModule,
         AuthModule,
+        ProductModule,
       ],
       controllers: [UserAuthApiController],
     }).compile();
@@ -41,8 +44,7 @@ describe('UserAuthApiController', () => {
   });
 
   afterEach(async () => {
-    await userRepository.clear();
-    await userRepository.manager.connection.close();
+    await module.close();
   });
 
   async function signUp(email: string, password: string) {
@@ -100,17 +102,21 @@ describe('UserAuthApiController', () => {
   });
 
   describe('login', () => {
-    it('회원을 찾지 못하면 UserNotFoundError', () => {
+    it('회원을 찾지 못하면 UserNotFoundError', async () => {
       const request = LoginRequest.create(
         Role.Customer,
         'verycosyyyyyy@test.com',
         'password',
       );
 
-      expect(sut.login(request)).rejects.toThrowError(UserNotFoundError);
+      try {
+        await sut.login(request);
+      } catch (err) {
+        expect(err).toBeInstanceOf(UserNotFoundError);
+      }
     });
 
-    it('비밀번호가 일치하지 않으면 UserNotFoundError', async () => {
+    it('비밀번호가 일치하지 않으면 WrongPasswordError', async () => {
       const email = 'verycosy@test.com';
       const password = 'password';
 
@@ -122,7 +128,11 @@ describe('UserAuthApiController', () => {
         password + 'oops',
       );
 
-      expect(sut.login(request)).rejects.toThrowError(WrongPasswordError);
+      try {
+        await sut.login(request);
+      } catch (err) {
+        expect(err).toBeInstanceOf(WrongPasswordError);
+      }
     });
 
     it('refresh token을 갱신하고 회원 정보 반환', async () => {
