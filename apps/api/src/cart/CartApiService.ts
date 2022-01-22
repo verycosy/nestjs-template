@@ -14,6 +14,17 @@ export class CartApiService {
     private readonly productRepository: Repository<Product>,
   ) {}
 
+  private async findCartItemWithUserId(cartItemId: number): Promise<CartItem> {
+    return await this.cartItemRepository
+      .createQueryBuilder('cart_item')
+      .where({ id: cartItemId })
+      .leftJoin('cart_item.product', 'product')
+      .leftJoin('cart_item.cart', 'cart')
+      .leftJoin('cart.user', 'user')
+      .select(['cart_item', 'product', 'cart.id', 'user.id'])
+      .getOne();
+  }
+
   async addCartItem(
     cart: Cart,
     productId: number,
@@ -34,14 +45,7 @@ export class CartApiService {
     cartItemId: number,
     quantity: number,
   ): Promise<CartItem> {
-    const cartItem = await this.cartItemRepository
-      .createQueryBuilder('cart_item')
-      .where({ id: cartItemId })
-      .leftJoin('cart_item.product', 'product')
-      .leftJoin('cart_item.cart', 'cart')
-      .leftJoin('cart.user', 'user')
-      .select(['cart_item', 'product', 'cart.id', 'user.id'])
-      .getOne();
+    const cartItem = await this.findCartItemWithUserId(cartItemId);
 
     if (!cartItem || !cartItem.cart.isBelongsTo(userId)) {
       return null;
@@ -49,5 +53,16 @@ export class CartApiService {
 
     cartItem.updateQuantity(quantity);
     return await this.cartItemRepository.save(cartItem);
+  }
+
+  async removeCartItem(userId: number, cartItemId: number): Promise<boolean> {
+    const cartItem = await this.findCartItemWithUserId(cartItemId);
+
+    if (!cartItem || !cartItem.cart.isBelongsTo(userId)) {
+      return false;
+    }
+
+    await this.cartItemRepository.remove(cartItem);
+    return true;
   }
 }

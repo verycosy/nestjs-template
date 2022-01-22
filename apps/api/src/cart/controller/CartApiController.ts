@@ -1,7 +1,7 @@
 import { AccessTokenGuard, CurrentUser } from '@app/auth';
 import { ResponseEntity, ResponseStatus } from '@app/config/response';
 import { User } from '@app/entity/domain/user/User.entity';
-import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
 import { CartApiService } from '../CartApiService';
 import { AddCartItemRequest, CartItemDto } from '../dto';
 import { UpdateCartItemQuantityRequest } from '../dto/UpdateCartItemQuantityRequest';
@@ -54,5 +54,25 @@ export class CartApiController {
     }
 
     return ResponseEntity.OK_WITH(new CartItemDto(cartItem));
+  }
+
+  @Delete('/:cartItemId')
+  async removeCartItem(
+    @CurrentUser() user: User,
+    @Param('cartItemId') cartItemId: number,
+  ) {
+    const removed = await this.cartApiService.removeCartItem(
+      user.id,
+      cartItemId,
+    );
+
+    if (!removed) {
+      return ResponseEntity.ERROR_WITH(
+        'Cart item not found',
+        ResponseStatus.NOT_FOUND,
+      );
+    }
+
+    return ResponseEntity.OK();
   }
 }

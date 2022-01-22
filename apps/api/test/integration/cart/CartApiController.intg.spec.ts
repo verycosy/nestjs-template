@@ -124,4 +124,31 @@ describe('CartApiController', () => {
       expect(data.quantity).toBe(1);
     });
   });
+
+  describe('removeCartItem', () => {
+    it('삭제할 장바구니 상품이 없으면 not found error response 반환', async () => {
+      const result = await sut.removeCartItem(user, 1);
+
+      expect(result.message).toBe('Cart item not found');
+      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+    });
+
+    it('다른 사람의 장바구니 상품이면 not found error response 반환', async () => {
+      await cartItemRepository.save(CartItem.create(user.cart, product, 3));
+      user.id = 2;
+
+      const result = await sut.removeCartItem(user, 1);
+
+      expect(result.message).toBe('Cart item not found');
+      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+    });
+
+    it('삭제되면 ok response 반환', async () => {
+      await cartItemRepository.save(CartItem.create(user.cart, product, 3));
+
+      const result = await sut.removeCartItem(user, 1);
+
+      expect(result.message).toBe('');
+    });
+  });
 });
