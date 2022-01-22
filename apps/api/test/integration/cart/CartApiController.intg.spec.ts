@@ -151,4 +151,26 @@ describe('CartApiController', () => {
       expect(result.message).toBe('');
     });
   });
+
+  describe('getCartItems', () => {
+    it('장바구니 상품 목록 최신순으로 반환', async () => {
+      await cartItemRepository.save(CartItem.create(user.cart, product, 1));
+      await cartItemRepository.save(CartItem.create(user.cart, product, 3));
+
+      const result = await sut.getCartItems(user);
+
+      const data = result.data as CartItemDto[];
+      expect(data.length).toBe(2);
+      expect(data[0]).toEqual({
+        id: 2,
+        product: {
+          id: 1,
+          name: 'banana',
+          price: 1000,
+          status: ProductStatus.SELL,
+        },
+        quantity: 3,
+      });
+    });
+  });
 });

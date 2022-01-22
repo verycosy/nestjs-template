@@ -1,5 +1,6 @@
 import { Cart } from '@app/entity/domain/cart/Cart.entity';
 import { CartItem } from '@app/entity/domain/cart/CartItem.entity';
+import { CartQueryRepository } from '@app/entity/domain/cart/CartQueryRepository';
 import { Product } from '@app/entity/domain/product/Product.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +9,8 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class CartApiService {
   constructor(
+    @InjectRepository(CartQueryRepository)
+    private readonly cartQueryRepository: CartQueryRepository,
     @InjectRepository(CartItem)
     private readonly cartItemRepository: Repository<CartItem>,
     @InjectRepository(Product)
@@ -64,5 +67,9 @@ export class CartApiService {
 
     await this.cartItemRepository.remove(cartItem);
     return true;
+  }
+
+  async getCartItems(cartId: number): Promise<CartItem[]> {
+    return await this.cartQueryRepository.getCartItems(cartId);
   }
 }

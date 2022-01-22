@@ -1,7 +1,15 @@
 import { AccessTokenGuard, CurrentUser } from '@app/auth';
 import { ResponseEntity, ResponseStatus } from '@app/config/response';
 import { User } from '@app/entity/domain/user/User.entity';
-import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { CartApiService } from '../CartApiService';
 import { AddCartItemRequest, CartItemDto } from '../dto';
 import { UpdateCartItemQuantityRequest } from '../dto/UpdateCartItemQuantityRequest';
@@ -10,6 +18,17 @@ import { UpdateCartItemQuantityRequest } from '../dto/UpdateCartItemQuantityRequ
 @Controller('/cart')
 export class CartApiController {
   constructor(private readonly cartApiService: CartApiService) {}
+
+  @Get()
+  async getCartItems(
+    @CurrentUser() user: User,
+  ): Promise<ResponseEntity<CartItemDto[]>> {
+    const cartItems = await this.cartApiService.getCartItems(user.cart.id);
+
+    return ResponseEntity.OK_WITH(
+      cartItems.map((cartItem) => new CartItemDto(cartItem)),
+    );
+  }
 
   @Post()
   async addCartItem(
