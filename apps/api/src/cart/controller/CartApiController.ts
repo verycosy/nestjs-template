@@ -1,9 +1,10 @@
 import { AccessTokenGuard, CurrentUser } from '@app/auth';
 import { ResponseEntity, ResponseStatus } from '@app/config/response';
 import { User } from '@app/entity/domain/user/User.entity';
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
 import { CartApiService } from '../CartApiService';
 import { AddCartItemRequest, CartItemDto } from '../dto';
+import { UpdateCartItemQuantityRequest } from '../dto/UpdateCartItemQuantityRequest';
 
 @AccessTokenGuard()
 @Controller('/cart')
@@ -26,6 +27,28 @@ export class CartApiController {
     if (cartItem === null) {
       return ResponseEntity.ERROR_WITH(
         'Product not found',
+        ResponseStatus.NOT_FOUND,
+      );
+    }
+
+    return ResponseEntity.OK_WITH(new CartItemDto(cartItem));
+  }
+
+  @Patch('/:cartItemId')
+  async updateCartItemQuantity(
+    @CurrentUser() user: User,
+    @Param('cartItemId') cartItemId: number,
+    @Body() body: UpdateCartItemQuantityRequest,
+  ) {
+    const cartItem = await this.cartApiService.updateCartItemQuantity(
+      user.id,
+      cartItemId,
+      body.quantity,
+    );
+
+    if (cartItem === null) {
+      return ResponseEntity.ERROR_WITH(
+        'Cart item not found',
         ResponseStatus.NOT_FOUND,
       );
     }

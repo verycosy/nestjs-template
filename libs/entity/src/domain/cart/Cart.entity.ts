@@ -26,4 +26,8 @@ export class Cart {
 
     return cart;
   }
+
+  isBelongsTo(userId: number): boolean {
+    return this.user.id === userId;
+  }
 }

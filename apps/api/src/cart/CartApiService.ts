@@ -14,7 +14,11 @@ export class CartApiService {
     private readonly productRepository: Repository<Product>,
   ) {}
 
-  async addCartItem(cart: Cart, productId: number, count: number) {
+  async addCartItem(
+    cart: Cart,
+    productId: number,
+    count: number,
+  ): Promise<CartItem> {
     const product = await this.productRepository.findOne({ id: productId });
 
     if (!product) {
@@ -22,6 +26,28 @@ export class CartApiService {
     }
 
     const cartItem = CartItem.create(cart, product, count);
+    return await this.cartItemRepository.save(cartItem);
+  }
+
+  async updateCartItemQuantity(
+    userId: number,
+    cartItemId: number,
+    quantity: number,
+  ): Promise<CartItem> {
+    const cartItem = await this.cartItemRepository
+      .createQueryBuilder('cart_item')
+      .where({ id: cartItemId })
+      .leftJoin('cart_item.product', 'product')
+      .leftJoin('cart_item.cart', 'cart')
+      .leftJoin('cart.user', 'user')
+      .select(['cart_item', 'product', 'cart.id', 'user.id'])
+      .getOne();
+
+    if (!cartItem || !cartItem.cart.isBelongsTo(userId)) {
+      return null;
+    }
+
+    cartItem.updateQuantity(quantity);
     return await this.cartItemRepository.save(cartItem);
   }
 }

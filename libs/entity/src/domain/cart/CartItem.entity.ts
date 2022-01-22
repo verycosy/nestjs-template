@@ -24,4 +24,8 @@ export class CartItem {
 
     return cartItem;
   }
+
+  updateQuantity(quantity: number): void {
+    this.quantity = quantity;
+  }
 }
