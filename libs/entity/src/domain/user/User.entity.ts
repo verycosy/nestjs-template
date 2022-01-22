@@ -41,7 +41,9 @@ export class User {
   @Column({ nullable: true })
   profileImageUrl: string | null;
 
-  @OneToOne(() => Cart, (cart) => cart.user)
+  @OneToOne(() => Cart, (cart) => cart.user, {
+    cascade: ['insert'],
+  })
   cart: Cart;
 
   setName(name: string): void {
@@ -63,6 +65,8 @@ export class User {
     await signUpUser.update(name, phoneNumber, password);
     signUpUser.role = role;
     signUpUser.email = email;
+
+    Cart.create(signUpUser);
 
     return signUpUser;
   }

@@ -19,4 +19,11 @@ export class Cart {
 
   @OneToMany(() => CartItem, (cartItem) => cartItem.cart)
   items: CartItem[];
+
+  static create(user: User): Cart {
+    const cart = new Cart();
+    user.cart = cart;
+
+    return cart;
+  }
 }
