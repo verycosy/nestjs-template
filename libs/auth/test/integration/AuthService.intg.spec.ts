@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import { getConfigModule } from '@app/config';
 import { Role } from '@app/entity/domain/user/type/Role';
 import { UserAlreadyExistsError } from '@app/auth/error';
+import { ProductModule } from '@app/entity/domain/product/ProductModule';
 
 describe('AuthService', () => {
   let sut: AuthService;
@@ -15,12 +16,13 @@ describe('AuthService', () => {
   let userRepository: Repository<User>;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         getConfigModule(),
         getTypeOrmTestModule(),
         JwtModule.register({}),
         UserModule,
+        ProductModule,
       ],
       providers: [AuthService],
     }).compile();
@@ -48,7 +50,11 @@ describe('AuthService', () => {
     it('이미 같은 이메일과 role로 가입된 user가 있으면 UserAlreadyExistsError를 던진다', async () => {
       await sut.signUp(signUpUser);
 
-      expect(sut.signUp(signUpUser)).rejects.toThrow(UserAlreadyExistsError);
+      try {
+        await sut.signUp(signUpUser);
+      } catch (err) {
+        expect(err).toBeInstanceOf(UserAlreadyExistsError);
+      }
     });
 
     it('회원가입이 성공하면 가입된 user 객체 반환', async () => {
@@ -72,14 +78,19 @@ describe('AuthService', () => {
     });
 
     it('이미 가입 됐으면 true 반환', async () => {
-      expect(sut.checkEmailExists(email, Role.Customer)).resolves.toEqual(true);
+      const result = await sut.checkEmailExists(email, Role.Customer);
+      expect(result).toEqual(true);
     });
 
     it('가입되지 않았으면 false 반환', async () => {
-      expect(
-        sut.checkEmailExists('other@test.com', Role.Customer),
-      ).resolves.toEqual(false);
-      expect(sut.checkEmailExists(email, Role.Creator)).resolves.toEqual(false);
+      const result1 = await sut.checkEmailExists(
+        'other@test.com',
+        Role.Customer,
+      );
+      const result2 = await sut.checkEmailExists(email, Role.Creator);
+
+      expect(result1).toEqual(false);
+      expect(result2).toEqual(false);
     });
   });
 });
