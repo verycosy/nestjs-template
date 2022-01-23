@@ -1,5 +1,9 @@
 import { getConfigModule } from '@app/config';
-import { Category, CategoryModule } from '@app/entity/domain/category';
+import {
+  Category,
+  CategoryModule,
+  SubCategory,
+} from '@app/entity/domain/category';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CategoryApiController } from '../../../src/category/controller/CategoryApiController';
 import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
@@ -9,7 +13,7 @@ import { ProductModule } from '@app/entity/domain/product/ProductModule';
 describe('CategoryApiController', () => {
   let module: TestingModule;
   let sut: CategoryApiController;
-  let categoryRepository: Repository<Category>;
+  let subCategoryRepository: Repository<SubCategory>;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -23,7 +27,7 @@ describe('CategoryApiController', () => {
     }).compile();
 
     sut = module.get(CategoryApiController);
-    categoryRepository = module.get('CategoryRepository');
+    subCategoryRepository = module.get('SubCategoryRepository');
   });
 
   afterEach(async () => {
@@ -32,15 +36,36 @@ describe('CategoryApiController', () => {
 
   it('findCategories', async () => {
     const category1 = new Category('fruit');
-    category1.addSubCategory('apple');
-
     const category2 = new Category('vehicle');
-    category2.addSubCategory('car');
 
-    await categoryRepository.save([category1, category2]);
+    await subCategoryRepository.save([
+      SubCategory.create(category1, 'apple'),
+      SubCategory.create(category2, 'car'),
+    ]);
 
     const result = await sut.findCategories();
 
-    expect(result.data).toEqual([category1, category2]);
+    expect(result.data).toEqual([
+      {
+        id: 1,
+        name: 'fruit',
+        subCategories: [
+          {
+            id: 1,
+            name: 'apple',
+          },
+        ],
+      },
+      {
+        id: 2,
+        name: 'vehicle',
+        subCategories: [
+          {
+            id: 2,
+            name: 'car',
+          },
+        ],
+      },
+    ]);
   });
 });

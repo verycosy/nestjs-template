@@ -21,10 +21,19 @@ export class SubCategory {
   @Column()
   name: string;
 
-  @ManyToOne(() => Category)
+  @ManyToOne(() => Category, {
+    cascade: ['insert'],
+  })
   @JoinColumn({ name: 'category_id', referencedColumnName: 'id' })
   category: Category;
 
   @OneToMany(() => Product, (product) => product.subCategory)
   products: Product[];
+
+  static create(category: Category, name: string): SubCategory {
+    const subCategory = new SubCategory(name);
+    subCategory.category = category;
+
+    return subCategory;
+  }
 }

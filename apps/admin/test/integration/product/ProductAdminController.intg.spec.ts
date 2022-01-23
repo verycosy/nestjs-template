@@ -11,7 +11,11 @@ import { ProductAdminService } from '../../../../admin/src/product/ProductAdminS
 import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
 import { Product } from '@app/entity/domain/product/Product.entity';
 import { ResponseStatus } from '@app/config/response';
-import { Category, CategoryModule } from '@app/entity/domain/category';
+import {
+  Category,
+  CategoryModule,
+  SubCategory,
+} from '@app/entity/domain/category';
 import { ProductModule } from '@app/entity/domain/product/ProductModule';
 import { Repository } from 'typeorm';
 import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
@@ -20,7 +24,7 @@ describe('ProductAdminController', () => {
   let module: TestingModule;
   let sut: ProductAdminController;
   let productAdminService: ProductAdminService;
-  let categoryRepository: Repository<Category>;
+  let subCategoryRepository: Repository<SubCategory>;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -36,11 +40,10 @@ describe('ProductAdminController', () => {
 
     sut = module.get(ProductAdminController);
     productAdminService = module.get(ProductAdminService);
-    categoryRepository = module.get('CategoryRepository');
+    subCategoryRepository = module.get('SubCategoryRepository');
 
     const category = new Category('fruit');
-    category.addSubCategory('tropics');
-    await categoryRepository.save(category);
+    await subCategoryRepository.save(SubCategory.create(category, 'tropics'));
   });
 
   afterEach(async () => {

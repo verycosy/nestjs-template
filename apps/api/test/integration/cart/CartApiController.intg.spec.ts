@@ -15,7 +15,11 @@ import { Repository } from 'typeorm';
 import { Product } from '@app/entity/domain/product/Product.entity';
 import { User } from '@app/entity/domain/user/User.entity';
 import { ResponseStatus } from '@app/config/response';
-import { Category, CategoryModule } from '@app/entity/domain/category';
+import {
+  Category,
+  CategoryModule,
+  SubCategory,
+} from '@app/entity/domain/category';
 import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
 import { CartItem } from '@app/entity/domain/cart/CartItem.entity';
 
@@ -24,7 +28,7 @@ describe('CartApiController', () => {
   let module: TestingModule;
   let userRepository: Repository<User>;
   let productRepository: Repository<Product>;
-  let categoryRepository: Repository<Category>;
+  let subCategoryRepository: Repository<SubCategory>;
   let cartItemRepository: Repository<CartItem>;
   let user: User, product: Product;
 
@@ -45,7 +49,7 @@ describe('CartApiController', () => {
     sut = module.get(CartApiController);
     userRepository = module.get('UserRepository');
     productRepository = module.get('ProductRepository');
-    categoryRepository = module.get('CategoryRepository');
+    subCategoryRepository = module.get('SubCategoryRepository');
     cartItemRepository = module.get('CartItemRepository');
 
     user = await User.signUp({
@@ -57,8 +61,8 @@ describe('CartApiController', () => {
     await userRepository.save(user);
 
     const category = new Category('fruit');
-    const subCategory = category.addSubCategory('tropics');
-    await categoryRepository.save(category);
+    const subCategory = SubCategory.create(category, 'tropics');
+    await subCategoryRepository.save(subCategory);
     product = await productRepository.save(
       Product.create(subCategory, 'banana', 1000, 'yummy'),
     );

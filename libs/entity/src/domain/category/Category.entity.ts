@@ -15,19 +15,6 @@ export class Category {
 
   @OneToMany(() => SubCategory, (subCategory) => subCategory.category, {
     eager: true,
-    cascade: ['insert'],
   })
   subCategories: SubCategory[];
-
-  addSubCategory(subCategoryName: string): SubCategory {
-    const subCategory = new SubCategory(subCategoryName);
-
-    if (!Array.isArray(this.subCategories)) {
-      this.subCategories = [];
-    }
-
-    this.subCategories.push(subCategory);
-
-    return subCategory;
-  }
 }

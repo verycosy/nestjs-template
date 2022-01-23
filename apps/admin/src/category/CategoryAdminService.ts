@@ -8,6 +8,8 @@ export class CategoryAdminService {
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
+    @InjectRepository(SubCategory)
+    private readonly subCategoryRepository: Repository<SubCategory>,
   ) {}
 
   async createCategory(categoryName: string): Promise<Category> {
@@ -27,9 +29,8 @@ export class CategoryAdminService {
       return null;
     }
 
-    const subCategory = category.addSubCategory(subCategoryName);
-    await this.categoryRepository.save(category);
-
-    return subCategory;
+    return await this.subCategoryRepository.save(
+      SubCategory.create(category, subCategoryName),
+    );
   }
 }

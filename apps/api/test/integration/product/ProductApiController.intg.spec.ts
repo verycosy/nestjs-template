@@ -9,7 +9,11 @@ import {
 import { ProductAdminService } from '../../../../admin/src/product/ProductAdminService';
 import { Product } from '@app/entity/domain/product/Product.entity';
 import { ResponseStatus } from '@app/config/response';
-import { Category, CategoryModule } from '@app/entity/domain/category';
+import {
+  Category,
+  CategoryModule,
+  SubCategory,
+} from '@app/entity/domain/category';
 import { ProductModule } from '@app/entity/domain/product/ProductModule';
 import { Repository } from 'typeorm';
 import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
@@ -17,7 +21,7 @@ import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
 describe('ProductApiController', () => {
   let sut: ProductApiController;
   let module: TestingModule;
-  let categoryRepository: Repository<Category>;
+  let subCategoryRepository: Repository<SubCategory>;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -32,7 +36,7 @@ describe('ProductApiController', () => {
     }).compile();
 
     sut = module.get(ProductApiController);
-    categoryRepository = module.get('CategoryRepository');
+    subCategoryRepository = module.get('SubCategoryRepository');
   });
 
   afterEach(async () => {
@@ -48,8 +52,7 @@ describe('ProductApiController', () => {
 
     it('상품 반환', async () => {
       const category = new Category('fruit');
-      category.addSubCategory('tropics');
-      await categoryRepository.save(category);
+      await subCategoryRepository.save(SubCategory.create(category, 'tropics'));
 
       await module
         .get(ProductAdminService)
@@ -65,12 +68,12 @@ describe('ProductApiController', () => {
   describe('getProducts', () => {
     beforeEach(async () => {
       const category1 = new Category('fruit');
-      category1.addSubCategory('tropics');
-
       const category2 = new Category('drink');
-      category2.addSubCategory('soda');
 
-      await categoryRepository.save([category1, category2]);
+      await subCategoryRepository.save([
+        SubCategory.create(category1, 'tropics'),
+        SubCategory.create(category2, 'soda'),
+      ]);
 
       await module
         .get(ProductAdminService)
