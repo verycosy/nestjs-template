@@ -1,11 +1,11 @@
 import { AccessTokenGuard, CurrentUser } from '@app/auth';
 import { ResponseEntity, ResponseStatus } from '@app/config/response';
 import { User } from '@app/entity/domain/user/User.entity';
-import { Body, Controller, Param, Post } from '@nestjs/common';
+import { Body, Controller, Param, Patch, Post, Query } from '@nestjs/common';
 import { ProductInquiryDto, WriteProductInquiryRequest } from '../dto';
 import { ProductInquiryApiService } from '../ProductInquiryApiService';
 
-@Controller('/product/:id/inquiry')
+@Controller('/product-inquiry')
 export class ProductInquiryApiController {
   constructor(
     private readonly productInquiryApiService: ProductInquiryApiService,
@@ -15,12 +15,12 @@ export class ProductInquiryApiController {
   @Post()
   async write(
     @CurrentUser() user: User,
-    @Param('id') id: number,
+    @Query('productId') productId: number,
     @Body() body: WriteProductInquiryRequest,
   ): Promise<ResponseEntity<ProductInquiryDto | string>> {
     const productInquiry = await this.productInquiryApiService.write(
       user,
-      id,
+      productId,
       body.content,
     );
 
@@ -32,5 +32,32 @@ export class ProductInquiryApiController {
     }
 
     return ResponseEntity.OK_WITH(new ProductInquiryDto(productInquiry));
+  }
+
+  @AccessTokenGuard()
+  @Patch('/:productInquiryId')
+  async edit(
+    @CurrentUser() user: User,
+    @Param('productInquiryId') productInquiryId: number,
+    @Body() body: WriteProductInquiryRequest,
+  ): Promise<ResponseEntity<ProductInquiryDto | string>> {
+    try {
+      const productInquiry = await this.productInquiryApiService.edit(
+        user,
+        productInquiryId,
+        body.content,
+      );
+
+      if (productInquiry === null) {
+        return ResponseEntity.ERROR_WITH(
+          'Product inquiry not found',
+          ResponseStatus.NOT_FOUND,
+        );
+      }
+
+      return ResponseEntity.OK_WITH(new ProductInquiryDto(productInquiry));
+    } catch (err) {
+      return ResponseEntity.ERROR_WITH(err.message);
+    }
   }
 }

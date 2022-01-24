@@ -28,4 +28,22 @@ export class ProductInquiryApiService {
     const productInquiry = ProductInquiry.create(user, product, content);
     return await this.productInquiryRepository.save(productInquiry);
   }
+
+  async edit(
+    user: User,
+    productInquiryId: number,
+    content: string,
+  ): Promise<ProductInquiry> {
+    const productInquiry = await this.productInquiryRepository.findOne({
+      where: { id: productInquiryId },
+      relations: ['user'],
+    });
+
+    if (!productInquiry || productInquiry.user.id !== user.id) {
+      return null;
+    }
+
+    productInquiry.updateContent(content);
+    return await this.productInquiryRepository.save(productInquiry);
+  }
 }

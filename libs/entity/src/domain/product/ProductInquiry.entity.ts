@@ -1,5 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../user/User.entity';
+import { ProductInquiryAlreadyCompletedError } from './error/ProductInquiryAlreadyCompletedError';
 import { Product } from './Product.entity';
 import { ProductInquiryStatus } from './type/ProductInquiryStatus';
 
@@ -36,13 +37,24 @@ export class ProductInquiry {
     product: Product,
     content: string,
     visible = true,
+    status = ProductInquiryStatus.Wait,
   ): ProductInquiry {
     const productInquiry = new ProductInquiry();
     productInquiry.user = user;
     productInquiry.product = product;
     productInquiry.content = content;
     productInquiry.visible = visible;
+    productInquiry.status = status;
 
     return productInquiry;
+  }
+
+  updateContent(content: string): void {
+    if (this.status === ProductInquiryStatus.Wait) {
+      this.content = content;
+      return;
+    }
+
+    throw new ProductInquiryAlreadyCompletedError();
   }
 }
