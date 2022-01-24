@@ -9,6 +9,7 @@ import { CategoryApiController } from '../../../src/category/controller/Category
 import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import { Repository } from 'typeorm';
 import { ProductModule } from '@app/entity/domain/product/ProductModule';
+import { UserModule } from '@app/entity/domain/user/UserModule';
 
 describe('CategoryApiController', () => {
   let module: TestingModule;
@@ -22,6 +23,7 @@ describe('CategoryApiController', () => {
         getTypeOrmTestModule(),
         CategoryModule,
         ProductModule,
+        UserModule,
       ],
       controllers: [CategoryApiController],
     }).compile();
