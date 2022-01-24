@@ -17,6 +17,7 @@ import {
 import { ProductModule } from '@app/entity/domain/product/ProductModule';
 import { Repository } from 'typeorm';
 import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
+import { UserModule } from '@app/entity/domain/user/UserModule';
 
 describe('ProductApiController', () => {
   let sut: ProductApiController;
@@ -30,6 +31,7 @@ describe('ProductApiController', () => {
         getTypeOrmTestModule(),
         CategoryModule,
         ProductModule,
+        UserModule,
       ],
       providers: [ProductAdminService, ProductApiService],
       controllers: [ProductApiController],
