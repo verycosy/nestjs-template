@@ -30,4 +30,14 @@ export class Cart {
   isBelongsTo(userId: number): boolean {
     return this.user.id === userId;
   }
+
+  hasCartItems(itemIds: number[]): boolean {
+    const totalItemIds = this.items.map((cartItem) => cartItem.id);
+
+    const result = itemIds.filter((cartOrderItemId) =>
+      totalItemIds.includes(cartOrderItemId),
+    ).length;
+
+    return itemIds.length === result;
+  }
 }
