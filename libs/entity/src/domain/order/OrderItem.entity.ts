@@ -52,7 +52,19 @@ export class OrderItem {
     return orderItem;
   }
 
-  getTotalPrice(): number {
-    return this.optionPrice * this.quantity;
+  getProductName(): string {
+    return this.productName;
+  }
+
+  getQuantity(): number {
+    return this.quantity;
+  }
+
+  getOptionPrice(): number {
+    return this.optionPrice;
+  }
+
+  getOptionDetail(): string {
+    return this.optionDetail;
   }
 }

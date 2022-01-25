@@ -26,4 +26,8 @@ export class Order {
 
     return order;
   }
+
+  getStatus(): OrderStatus {
+    return this.status;
+  }
 }
