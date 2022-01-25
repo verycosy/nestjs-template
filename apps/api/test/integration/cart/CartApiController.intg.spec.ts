@@ -11,26 +11,24 @@ import {
   CartItemDto,
 } from '../../../../api/src/cart';
 import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
-import { Repository } from 'typeorm';
 import { Product } from '@app/entity/domain/product/Product.entity';
 import { User } from '@app/entity/domain/user/User.entity';
 import { ResponseStatus } from '@app/config/response';
-import {
-  Category,
-  CategoryModule,
-  SubCategory,
-} from '@app/entity/domain/category';
+import { CategoryModule } from '@app/entity/domain/category';
 import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
-import { CartItem } from '@app/entity/domain/cart/CartItem.entity';
+import {
+  TestCartItemFactory,
+  TestProductFactory,
+  TestProductOptionFactory,
+  TestSubCategoryFactory,
+  TestUserFactory,
+} from '@app/util/testing';
+import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
 
 describe('CartApiController', () => {
   let sut: CartApiController;
   let module: TestingModule;
-  let userRepository: Repository<User>;
-  let productRepository: Repository<Product>;
-  let subCategoryRepository: Repository<SubCategory>;
-  let cartItemRepository: Repository<CartItem>;
-  let user: User, product: Product;
+  let user: User, product: Product, productOption: ProductOption;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -47,25 +45,12 @@ describe('CartApiController', () => {
     }).compile();
 
     sut = module.get(CartApiController);
-    userRepository = module.get('UserRepository');
-    productRepository = module.get('ProductRepository');
-    subCategoryRepository = module.get('SubCategoryRepository');
-    cartItemRepository = module.get('CartItemRepository');
 
-    user = await User.signUp({
-      name: 'tester',
-      email: 'test@test.com',
-      password: 'password',
-      phoneNumber: '010-1111-2222',
-    });
-    await userRepository.save(user);
+    user = await TestUserFactory.create(module);
 
-    const category = new Category('fruit');
-    const subCategory = SubCategory.create(category, 'tropics');
-    await subCategoryRepository.save(subCategory);
-    product = await productRepository.save(
-      Product.create(subCategory, 'banana', 1000, 'yummy'),
-    );
+    const subCategory = await TestSubCategoryFactory.create(module);
+    product = await TestProductFactory.create(module, subCategory);
+    productOption = await TestProductOptionFactory.create(module, product);
   });
 
   afterEach(async () => {
@@ -74,7 +59,7 @@ describe('CartApiController', () => {
 
   describe('addCartItem', () => {
     it('담을 상품이 없으면 not found error response 반환', async () => {
-      const dto = AddCartItemRequest.create(2, 3);
+      const dto = AddCartItemRequest.create(2, 1, 3);
       const result = await sut.addCartItem(user, dto);
 
       expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
@@ -82,7 +67,7 @@ describe('CartApiController', () => {
     });
 
     it('담긴 장바구니 상품과 수량을 반환', async () => {
-      const dto = AddCartItemRequest.create(1, 3);
+      const dto = AddCartItemRequest.create(1, 1, 3);
       const result = await sut.addCartItem(user, dto);
 
       const data = result.data as CartItemDto;
@@ -93,6 +78,11 @@ describe('CartApiController', () => {
           name: 'banana',
           price: 1000,
           status: ProductStatus.SELL,
+        },
+        option: {
+          id: 1,
+          detail: 'awesome product',
+          price: 3000,
         },
         quantity: 3,
       });
@@ -110,7 +100,12 @@ describe('CartApiController', () => {
     });
 
     it('다른 사람의 장바구니 상품이면 not found error response 반환', async () => {
-      await cartItemRepository.save(CartItem.create(user.cart, product, 3));
+      await TestCartItemFactory.create(
+        module,
+        user.cart,
+        product,
+        productOption,
+      );
       user.id = 2;
 
       const result = await sut.updateCartItemQuantity(user, 1, dto);
@@ -120,7 +115,12 @@ describe('CartApiController', () => {
     });
 
     it('수량이 변경된 장바구니 상품 반환', async () => {
-      await cartItemRepository.save(CartItem.create(user.cart, product, 3));
+      await TestCartItemFactory.create(
+        module,
+        user.cart,
+        product,
+        productOption,
+      );
 
       const result = await sut.updateCartItemQuantity(user, 1, dto);
 
@@ -138,7 +138,12 @@ describe('CartApiController', () => {
     });
 
     it('다른 사람의 장바구니 상품이면 not found error response 반환', async () => {
-      await cartItemRepository.save(CartItem.create(user.cart, product, 3));
+      await TestCartItemFactory.create(
+        module,
+        user.cart,
+        product,
+        productOption,
+      );
       user.id = 2;
 
       const result = await sut.removeCartItem(user, 1);
@@ -148,7 +153,12 @@ describe('CartApiController', () => {
     });
 
     it('삭제되면 ok response 반환', async () => {
-      await cartItemRepository.save(CartItem.create(user.cart, product, 3));
+      await TestCartItemFactory.create(
+        module,
+        user.cart,
+        product,
+        productOption,
+      );
 
       const result = await sut.removeCartItem(user, 1);
 
@@ -158,8 +168,19 @@ describe('CartApiController', () => {
 
   describe('getCartItems', () => {
     it('장바구니 상품 목록 최신순으로 반환', async () => {
-      await cartItemRepository.save(CartItem.create(user.cart, product, 1));
-      await cartItemRepository.save(CartItem.create(user.cart, product, 3));
+      await TestCartItemFactory.create(
+        module,
+        user.cart,
+        product,
+        productOption,
+      );
+      await TestCartItemFactory.create(
+        module,
+        user.cart,
+        product,
+        productOption,
+        3,
+      );
 
       const result = await sut.getCartItems(user);
 

@@ -35,11 +35,12 @@ export class CartApiController {
     @CurrentUser() user: User,
     @Body() body: AddCartItemRequest,
   ): Promise<ResponseEntity<CartItemDto | string>> {
-    const { productId, count } = body;
+    const { productId, productOptionId, count } = body;
 
     const cartItem = await this.cartApiService.addCartItem(
       user.cart,
       productId,
+      productOptionId,
       count,
     );
 

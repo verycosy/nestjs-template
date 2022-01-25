@@ -2,6 +2,7 @@ import { Cart } from '@app/entity/domain/cart/Cart.entity';
 import { CartItem } from '@app/entity/domain/cart/CartItem.entity';
 import { CartQueryRepository } from '@app/entity/domain/cart/CartQueryRepository';
 import { Product } from '@app/entity/domain/product/Product.entity';
+import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -15,6 +16,8 @@ export class CartApiService {
     private readonly cartItemRepository: Repository<CartItem>,
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    @InjectRepository(ProductOption)
+    private readonly productOptionRepository: Repository<ProductOption>,
   ) {}
 
   private async findCartItemWithUserId(cartItemId: number): Promise<CartItem> {
@@ -31,15 +34,19 @@ export class CartApiService {
   async addCartItem(
     cart: Cart,
     productId: number,
+    productOptionId: number,
     count: number,
   ): Promise<CartItem> {
     const product = await this.productRepository.findOne({ id: productId });
+    const productOption = await this.productOptionRepository.findOne({
+      id: productOptionId,
+    });
 
-    if (!product) {
+    if (!product || !productOption) {
       return null;
     }
 
-    const cartItem = CartItem.create(cart, product, count);
+    const cartItem = CartItem.create(cart, product, productOption, count);
     return await this.cartItemRepository.save(cartItem);
   }
 

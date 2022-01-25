@@ -1,9 +1,10 @@
 import { CartItem } from '@app/entity/domain/cart/CartItem.entity';
+import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
 import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
 
 export class CartItemDto {
   constructor(entity: CartItem) {
-    const { id, product, quantity } = entity;
+    const { id, product, quantity, option } = entity;
 
     this.id = id;
     this.product = {
@@ -13,6 +14,7 @@ export class CartItemDto {
       status: product.status,
     };
     this.quantity = quantity;
+    this.option = option;
   }
 
   id: number;
@@ -22,5 +24,6 @@ export class CartItemDto {
     price: number;
     status: ProductStatus;
   };
+  option: ProductOption;
   quantity: number;
 }
