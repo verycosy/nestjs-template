@@ -13,6 +13,7 @@ export class Order {
   items: OrderItem[];
 
   @Column({
+    type: 'enum',
     enum: OrderStatus,
     default: OrderStatus.Accept,
   })
