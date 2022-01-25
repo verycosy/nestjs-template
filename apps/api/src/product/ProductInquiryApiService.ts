@@ -46,4 +46,17 @@ export class ProductInquiryApiService {
     productInquiry.updateContent(content);
     return await this.productInquiryRepository.save(productInquiry);
   }
+
+  async remove(user: User, productInquiryId: number): Promise<boolean> {
+    const productInquiry = await this.productInquiryRepository.findOne({
+      where: { id: productInquiryId, user },
+    });
+
+    if (!productInquiry) {
+      return false;
+    }
+
+    await this.productInquiryRepository.remove(productInquiry);
+    return true;
+  }
 }

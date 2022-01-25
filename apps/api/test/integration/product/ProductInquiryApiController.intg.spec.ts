@@ -135,4 +135,28 @@ describe('ProductInquiryApiController', () => {
       });
     });
   });
+
+  describe('remove', () => {
+    it('삭제할 상품 문의가 없으면 not found error response 반환', async () => {
+      const user = await TestUserFactory.create(module);
+      const subCategory = await TestSubCategoryFactory.create(module);
+      await TestProductFactory.create(module, subCategory);
+
+      const result = await sut.remove(user, 1);
+
+      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+      expect(result.message).toBe('Product inquiry not found');
+    });
+
+    it('삭제되면 ok response 반환', async () => {
+      const user = await TestUserFactory.create(module);
+      const subCategory = await TestSubCategoryFactory.create(module);
+      const product = await TestProductFactory.create(module, subCategory);
+      await TestProductInquiryFactory.create(module, user, product);
+
+      const result = await sut.remove(user, 1);
+
+      expect(result.message).toBe('');
+    });
+  });
 });
