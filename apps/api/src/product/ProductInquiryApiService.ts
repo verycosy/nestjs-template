@@ -35,11 +35,11 @@ export class ProductInquiryApiService {
     content: string,
   ): Promise<ProductInquiry> {
     const productInquiry = await this.productInquiryRepository.findOne({
-      where: { id: productInquiryId },
+      where: { id: productInquiryId, user },
       relations: ['user'],
     });
 
-    if (!productInquiry || productInquiry.user.id !== user.id) {
+    if (!productInquiry) {
       return null;
     }
 
