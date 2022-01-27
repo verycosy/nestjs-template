@@ -3,7 +3,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 export function getTypeOrmTestModule() {
   return TypeOrmModule.forRoot({
-    type: 'mysql',
+    type: 'postgres',
     host: process.env.RDS_HOST,
     port: Number(process.env.RDS_PORT),
     username: process.env.RDS_USERNAME,

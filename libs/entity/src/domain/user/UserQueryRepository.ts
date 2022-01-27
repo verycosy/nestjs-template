@@ -21,6 +21,6 @@ export class UserQueryRepository extends AbstractRepository<User> {
         role: param.role,
       });
 
-    return queryBuilder.disableEscaping().getManyAndCount();
+    return queryBuilder.getManyAndCount();
   }
 }
