@@ -9,7 +9,8 @@ export class CartQueryRepository extends AbstractRepository<Cart> {
       .where({ id: cartId })
       .leftJoin('cart.items', 'items')
       .leftJoin('items.product', 'product')
-      .select(['cart', 'items', 'product'])
+      .leftJoin('items.option', 'option')
+      .select(['cart', 'items', 'product', 'option'])
       .orderBy({
         'items.id': 'DESC',
       })

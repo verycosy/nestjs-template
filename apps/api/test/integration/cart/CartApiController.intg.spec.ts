@@ -194,6 +194,11 @@ describe('CartApiController', () => {
           price: 1000,
           status: ProductStatus.SELL,
         },
+        option: {
+          id: 1,
+          detail: 'awesome product',
+          price: 3000,
+        },
         quantity: 3,
       });
     });

@@ -1,5 +1,5 @@
 import { CartItem } from '@app/entity/domain/cart/CartItem.entity';
-import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
+import { ProductOptionDto } from '@app/entity/domain/product/dto/ProductOptionDto';
 import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
 
 export class CartItemDto {
@@ -14,7 +14,7 @@ export class CartItemDto {
       status: product.status,
     };
     this.quantity = quantity;
-    this.option = option;
+    this.option = new ProductOptionDto(option);
   }
 
   id: number;
@@ -24,6 +24,6 @@ export class CartItemDto {
     price: number;
     status: ProductStatus;
   };
-  option: ProductOption;
+  option: ProductOptionDto;
   quantity: number;
 }

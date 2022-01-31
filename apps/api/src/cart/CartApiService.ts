@@ -26,8 +26,9 @@ export class CartApiService {
       .where({ id: cartItemId })
       .leftJoin('cart_item.product', 'product')
       .leftJoin('cart_item.cart', 'cart')
+      .leftJoin('cart_item.option', 'option')
       .leftJoin('cart.user', 'user')
-      .select(['cart_item', 'product', 'cart.id', 'user.id'])
+      .select(['cart_item', 'product', 'cart.id', 'user.id', 'option'])
       .getOne();
   }
 
