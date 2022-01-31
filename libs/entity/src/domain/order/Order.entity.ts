@@ -1,10 +1,14 @@
 import { BaseTimeEntity } from '@app/entity/BaseTimeEntity';
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { User } from '../user/User.entity';
 import { OrderItem } from './OrderItem.entity';
 import { OrderStatus } from './type/OrderStatus';
 
 @Entity('order')
 export class Order extends BaseTimeEntity {
+  @ManyToOne(() => User)
+  user: User;
+
   @OneToMany(() => OrderItem, (orderItem) => orderItem.order, {
     cascade: ['insert'],
   })
@@ -17,8 +21,9 @@ export class Order extends BaseTimeEntity {
   })
   private status: OrderStatus;
 
-  static create(items: OrderItem[]): Order {
+  static create(user: User, items: OrderItem[]): Order {
     const order = new Order();
+    order.user = user;
     order.status = OrderStatus.Accept;
     order.items = items;
 

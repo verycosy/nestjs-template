@@ -46,7 +46,7 @@ export class OrderApiService {
 
     const cartItems = await this.findCartItemsByIds(cartItemIds);
     const orderItems = await this.orderRepository.save(
-      Order.create(this.createOrderItemsByCartItems(cartItems)),
+      Order.create(user, this.createOrderItemsByCartItems(cartItems)),
     );
 
     await this.cartItemRepository.remove(cartItems);
