@@ -79,6 +79,10 @@ export class User extends BaseTimeEntity {
       await this.changePassword(password);
     }
   }
+
+  isAdmin(): boolean {
+    return this.role === Role.Admin;
+  }
 }
 
 interface SignUpParams {

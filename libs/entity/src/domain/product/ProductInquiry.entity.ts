@@ -1,5 +1,8 @@
+import { CommandForbiddenError } from '@app/auth/error';
 import { BaseTimeEntity } from '@app/entity/BaseTimeEntity';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { LocalDateTimeTransformer } from '@app/entity/transformer';
+import { LocalDateTime } from 'js-joda';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { User } from '../user/User.entity';
 import { ProductInquiryAlreadyCompletedError } from './error/ProductInquiryAlreadyCompletedError';
 import { Product } from './Product.entity';
@@ -30,6 +33,23 @@ export class ProductInquiry extends BaseTimeEntity {
   })
   visible: boolean;
 
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'admin_id', referencedColumnName: 'id' })
+  admin?: User;
+
+  @Column({
+    type: 'text',
+    nullable: true,
+  })
+  answer?: string;
+
+  @Column({
+    transformer: new LocalDateTimeTransformer(),
+    type: 'timestamptz',
+    nullable: true,
+  })
+  answeredAt?: LocalDateTime;
+
   static create(
     user: User,
     product: Product,
@@ -54,5 +74,16 @@ export class ProductInquiry extends BaseTimeEntity {
     }
 
     throw new ProductInquiryAlreadyCompletedError();
+  }
+
+  updateAnswer(admin: User, answer: string): void {
+    if (!admin.isAdmin()) {
+      throw new CommandForbiddenError('Can not update answer');
+    }
+
+    this.admin = admin;
+    this.answer = answer;
+    this.status = ProductInquiryStatus.Complete;
+    this.answeredAt = LocalDateTime.now();
   }
 }
