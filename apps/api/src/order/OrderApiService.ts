@@ -45,8 +45,12 @@ export class OrderApiService {
     }
 
     const cartItems = await this.findCartItemsByIds(cartItemIds);
-    const orderItems = this.createOrderItemsByCartItems(cartItems);
+    const orderItems = await this.orderRepository.save(
+      Order.create(this.createOrderItemsByCartItems(cartItems)),
+    );
 
-    return await this.orderRepository.save(Order.create(orderItems));
+    await this.cartItemRepository.remove(cartItems);
+
+    return orderItems;
   }
 }

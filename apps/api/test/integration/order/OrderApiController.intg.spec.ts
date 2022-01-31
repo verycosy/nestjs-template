@@ -11,21 +11,16 @@ import {
   CartOrderRequest,
   OrderDto,
 } from '../../../../../apps/api/src/order/dto';
-import {
-  TestCartItemFactory,
-  TestProductFactory,
-  TestProductOptionFactory,
-  TestSubCategoryFactory,
-  TestUserFactory,
-} from '@app/util/testing';
+import { TestUserFactory } from '@app/util/testing';
 import { User } from '@app/entity/domain/user/User.entity';
 import { ResponseStatus } from '@app/config/response';
-import { CategoryModule, SubCategory } from '@app/entity/domain/category';
+import { CategoryModule } from '@app/entity/domain/category';
+import { CartItemFixtureFactory } from '@app/util/testing/CartItemFixtureFactory';
 
 describe('OrderApiController', () => {
   let sut: OrderApiController;
   let module: TestingModule;
-  let user: User, subCategory: SubCategory;
+  let user: User;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -45,7 +40,6 @@ describe('OrderApiController', () => {
     sut = module.get(OrderApiController);
 
     user = await TestUserFactory.create(module);
-    subCategory = await TestSubCategoryFactory.create(module);
   });
 
   afterEach(async () => {
@@ -63,49 +57,7 @@ describe('OrderApiController', () => {
     });
 
     it('주문내역 반환', async () => {
-      const product1 = await TestProductFactory.create(module, subCategory);
-      const product2 = await TestProductFactory.create(module, subCategory, {
-        name: 'apple',
-        detail: 'delicious',
-        price: 6000,
-      });
-
-      const productOption1 = await TestProductOptionFactory.create(
-        module,
-        product1,
-        1000,
-        'product option 1',
-      );
-
-      const productOption2 = await TestProductOptionFactory.create(
-        module,
-        product1,
-        2000,
-        'product option 2',
-      );
-
-      const productOption3 = await TestProductOptionFactory.create(
-        module,
-        product2,
-        1000,
-        'product option 3',
-      );
-
-      await TestCartItemFactory.create(
-        module,
-        user.cart,
-        product1,
-        productOption1,
-        3,
-      );
-
-      await TestCartItemFactory.create(
-        module,
-        user.cart,
-        product2,
-        productOption3,
-        1,
-      );
+      await CartItemFixtureFactory.create(module, user);
 
       const dto = CartOrderRequest.create([1, 2]);
 
