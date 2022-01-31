@@ -27,6 +27,7 @@ import { AuthToken } from '@app/auth/interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserNotFoundError } from '@app/auth/error';
+import { ResponseEntity, ResponseStatus } from '@app/config/response';
 
 @ApiTags('Users API')
 @Controller('/users')
@@ -81,7 +82,16 @@ export class UserAuthApiController {
   @Post('/login')
   async login(@Body() request: LoginRequest) {
     const { email, password } = request;
-    return await this.authService.login(email, password);
+    try {
+      const user = await this.authService.login(email, password);
+      return ResponseEntity.OK_WITH(user);
+    } catch (err) {
+      if (err instanceof UserNotFoundError) {
+        return ResponseEntity.ERROR_WITH(err.message, ResponseStatus.NOT_FOUND);
+      }
+
+      return ResponseEntity.ERROR_WITH(err.message);
+    }
   }
 
   @Post('/find-email')

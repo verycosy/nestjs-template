@@ -12,7 +12,7 @@ import {
   getConfigModule,
   getLoggerOptions,
 } from '../../../../../libs/config/src';
-import { AuthModule } from '@app/auth';
+import { AuthModule, LoginDto } from '@app/auth';
 import { LoginRequest } from '../../../../api/src/user/dto/LoginRequest';
 import { WrongPasswordError, UserNotFoundError } from '@app/auth/error';
 import { Role } from '@app/entity/domain/user/type/Role';
@@ -143,13 +143,13 @@ describe('UserAuthApiController', () => {
       const request = LoginRequest.create(Role.Customer, email, password);
 
       const result = await sut.login(request);
-
-      expect(result.user.email).toEqual(email);
-      expect(result.accessToken).toBeDefined();
-      expect(result.refreshToken).toBeDefined();
+      const data = result.data as LoginDto;
+      expect(data.user.email).toEqual(email);
+      expect(data.accessToken).toBeDefined();
+      expect(data.refreshToken).toBeDefined();
 
       const user = await userRepository.findOne({ email });
-      expect(user.refreshToken).toEqual(result.refreshToken);
+      expect(user.refreshToken).toEqual(data.refreshToken);
     });
   });
 
@@ -161,7 +161,8 @@ describe('UserAuthApiController', () => {
 
       const loginRequest = LoginRequest.create(Role.Customer, email, password);
 
-      const { user } = await sut.login(loginRequest);
+      const result = await sut.login(loginRequest);
+      const user = (result.data as LoginDto).user;
 
       await sut.logout(user);
       const { refreshToken } = await userRepository.findOne({ id: user.id });
@@ -177,7 +178,8 @@ describe('UserAuthApiController', () => {
 
       const loginRequest = LoginRequest.create(Role.Customer, email, password);
 
-      const { user } = await sut.login(loginRequest);
+      const loginResult = await sut.login(loginRequest);
+      const user = (loginResult.data as LoginDto).user;
 
       const result = await sut.refresh(user);
       const { refreshToken } = await userRepository.findOne({ id: user.id });

@@ -1,4 +1,8 @@
-import { CACHE_MANAGER, INestApplication } from '@nestjs/common';
+import {
+  CACHE_MANAGER,
+  ClassSerializerInterceptor,
+  INestApplication,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { Cache } from 'cache-manager';
@@ -7,6 +11,7 @@ import { AuthCodeService } from '@app/util/auth-code';
 import { Repository } from 'typeorm';
 import { User } from '@app/entity/domain/user/User.entity';
 import { AuthService } from '@app/auth';
+import { Reflector } from '@nestjs/core';
 
 describe('UserAuthApiController (e2e)', () => {
   let app: INestApplication;
@@ -22,6 +27,10 @@ describe('UserAuthApiController (e2e)', () => {
     }).compile();
 
     app = module.createNestApplication();
+    app.useGlobalInterceptors(
+      new ClassSerializerInterceptor(app.get(Reflector)),
+    );
+
     await app.init();
 
     cacheManager = module.get<Cache>(CACHE_MANAGER);
@@ -132,7 +141,8 @@ describe('UserAuthApiController (e2e)', () => {
         password: 'passwood',
       });
 
-      expect(res.statusCode).toEqual(500);
+      expect(res.body.statusCode).toBe('NOT_FOUND');
+      expect(res.body.message).toBe('User not found');
     });
 
     it('비밀번호가 일치하지 않으면 error', async () => {
@@ -141,7 +151,8 @@ describe('UserAuthApiController (e2e)', () => {
         password: 'passwood',
       });
 
-      expect(res.statusCode).toEqual(500);
+      expect(res.body.statusCode).toBe('SERVER_ERROR');
+      expect(res.body.message).toBe('Wrong password');
     });
 
     it('회원 정보와 jwt 토큰 반환', async () => {
@@ -155,10 +166,11 @@ describe('UserAuthApiController (e2e)', () => {
           password,
         });
 
+      const data = body.data;
       expect(statusCode).toEqual(201);
-      expect(body.user.email).toEqual(email);
-      expect(body.accessToken).toBeDefined();
-      expect(body.refreshToken).toBeDefined();
+      expect(data.user.email).toEqual(email);
+      expect(data.accessToken).toBeDefined();
+      expect(data.refreshToken).toBeDefined();
     });
   });
 

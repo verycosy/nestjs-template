@@ -10,6 +10,7 @@ import {
   UserAlreadyExistsError,
 } from './error';
 import { Role } from '@app/entity/domain/user/type/Role';
+import { LoginDto } from '.';
 
 @Injectable()
 export class AuthService {
@@ -54,7 +55,7 @@ export class AuthService {
     email: string,
     plainTextPassword: string,
     role: Role = Role.Customer,
-  ): Promise<{ user: User } & AuthToken> {
+  ): Promise<LoginDto> {
     const user = await this.userRepository.findOne({ email, role });
 
     if (!user) {
@@ -68,10 +69,7 @@ export class AuthService {
     const jwtTokens = await this.generateJwtTokens({ id: user.id });
     await this.setRefreshToken(user, jwtTokens.refreshToken);
 
-    return {
-      user,
-      ...jwtTokens,
-    };
+    return new LoginDto(user, jwtTokens);
   }
 
   async logout(user: User): Promise<void> {
