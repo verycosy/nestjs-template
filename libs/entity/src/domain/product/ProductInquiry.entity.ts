@@ -19,7 +19,7 @@ export class ProductInquiry extends BaseTimeEntity {
   @Column({
     type: 'text',
   })
-  content: string;
+  inquiry: string;
 
   @Column({
     type: 'enum',
@@ -60,7 +60,7 @@ export class ProductInquiry extends BaseTimeEntity {
     const productInquiry = new ProductInquiry();
     productInquiry.user = user;
     productInquiry.product = product;
-    productInquiry.content = content;
+    productInquiry.inquiry = content;
     productInquiry.visible = visible;
     productInquiry.status = status;
 
@@ -69,7 +69,7 @@ export class ProductInquiry extends BaseTimeEntity {
 
   updateContent(content: string): void {
     if (this.status === ProductInquiryStatus.Wait) {
-      this.content = content;
+      this.inquiry = content;
       return;
     }
 

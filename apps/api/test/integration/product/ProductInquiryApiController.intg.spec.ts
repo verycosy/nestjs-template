@@ -65,7 +65,7 @@ describe('ProductInquiryApiController', () => {
       const data = result.data as ProductInquiryDto;
       expect(data).toEqual({
         id: 1,
-        content: 'inquiry content',
+        inquiry: 'inquiry content',
         visible: true,
         status: 'wait',
       });
@@ -131,7 +131,7 @@ describe('ProductInquiryApiController', () => {
       const data = result.data as ProductInquiryDto;
       expect(data).toEqual({
         id: 1,
-        content: 'updated content',
+        inquiry: 'updated content',
         visible: true,
         status: 'wait',
       });

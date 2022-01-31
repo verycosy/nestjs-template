@@ -4,13 +4,13 @@ import { ProductInquiryStatus } from '@app/entity/domain/product/type/ProductInq
 export class ProductInquiryDto {
   constructor(entity: ProductInquiry) {
     this.id = entity.id;
-    this.content = entity.content;
+    this.inquiry = entity.inquiry;
     this.status = entity.status;
     this.visible = entity.visible;
   }
 
   id: number;
-  content: string;
+  inquiry: string;
   status: ProductInquiryStatus;
   visible: boolean;
 }
