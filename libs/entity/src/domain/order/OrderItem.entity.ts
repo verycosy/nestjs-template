@@ -3,6 +3,7 @@ import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Product } from '../product/Product.entity';
 import { ProductOption } from '../product/ProductOption.entity';
 import { Order } from './Order.entity';
+import { OrderItemStatus } from './type/OrderItemStatus';
 
 @Entity('order_item')
 export class OrderItem extends BaseTimeEntity {
@@ -28,6 +29,13 @@ export class OrderItem extends BaseTimeEntity {
   @Column()
   private quantity: number;
 
+  @Column({
+    type: 'enum',
+    enum: OrderItemStatus,
+    default: OrderItemStatus.Accept,
+  })
+  private status: OrderItemStatus;
+
   static create(
     product: Product,
     option: ProductOption,
@@ -40,8 +48,13 @@ export class OrderItem extends BaseTimeEntity {
     orderItem.optionDetail = option.detail;
     orderItem.optionPrice = option.price;
     orderItem.quantity = quantity;
+    orderItem.status = OrderItemStatus.Accept;
 
     return orderItem;
+  }
+
+  getStatus(): OrderItemStatus {
+    return this.status;
   }
 
   getProductName(): string {

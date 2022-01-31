@@ -66,7 +66,6 @@ describe('OrderApiController', () => {
       const data = result.data as OrderDto;
       expect(data).toEqual({
         id: 1,
-        status: 'accept',
         items: [
           {
             id: 1,
@@ -74,6 +73,7 @@ describe('OrderApiController', () => {
             optionPrice: 1000,
             optionDetail: 'product option 1',
             productName: 'banana',
+            status: 'accept',
           },
           {
             id: 2,
@@ -81,6 +81,7 @@ describe('OrderApiController', () => {
             optionPrice: 1000,
             optionDetail: 'product option 3',
             productName: 'apple',
+            status: 'accept',
           },
         ],
       });

@@ -46,7 +46,6 @@ describe('OrderApiService', () => {
     const result = await sut.orderFromCart(user, [1, 2]);
 
     expect(result.id).toBe(1);
-    expect(result.getStatus()).toBe('accept');
     expect(result.items.length).toBe(2);
     const cart = await cartRepository.findOne({
       where: { user },

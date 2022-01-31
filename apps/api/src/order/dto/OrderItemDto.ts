@@ -1,4 +1,5 @@
 import { OrderItem } from '@app/entity/domain/order/OrderItem.entity';
+import { OrderItemStatus } from '@app/entity/domain/order/type/OrderItemStatus';
 
 export class OrderItemDto {
   constructor(entity: OrderItem) {
@@ -7,6 +8,7 @@ export class OrderItemDto {
     this.optionDetail = entity.getOptionDetail();
     this.optionPrice = entity.getOptionPrice();
     this.productName = entity.getProductName();
+    this.status = entity.getStatus();
   }
 
   id: number;
@@ -14,4 +16,5 @@ export class OrderItemDto {
   optionPrice: number;
   optionDetail: string;
   productName: string;
+  status: OrderItemStatus;
 }

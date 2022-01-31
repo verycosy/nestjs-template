@@ -1,4 +1,4 @@
-export enum OrderStatus {
+export enum OrderItemStatus {
   Accept = 'accept',
   Cancel = 'cancel',
 }
