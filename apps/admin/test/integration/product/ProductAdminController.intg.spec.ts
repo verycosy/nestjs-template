@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
   AddProductOptionRequest,
   AddProductRequest,
+  ProductDto,
   UpdateProductRequest,
 } from '../../../../admin/src/product/dto';
 import { ProductAdminController } from '../../../../../apps/admin/src/product/controller/ProductAdminController';
@@ -18,7 +19,7 @@ import {
 } from '@app/entity/domain/category';
 import { ProductModule } from '@app/entity/domain/product/ProductModule';
 import { Repository } from 'typeorm';
-import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
+import { ProductOptionDto } from '@app/entity/domain/product/dto/ProductOptionDto';
 
 describe('ProductAdminController', () => {
   let module: TestingModule;
@@ -88,7 +89,7 @@ describe('ProductAdminController', () => {
 
       const result = await sut.updateProduct(1, request);
 
-      const data = result.data as Product;
+      const data = result.data as ProductDto;
       expect(data).toEqual({
         id: 1,
         name: 'brilliant banana',
@@ -118,7 +119,7 @@ describe('ProductAdminController', () => {
 
       const result = await sut.addProductOption(1, dto);
 
-      const data = result.data as ProductOption;
+      const data = result.data as ProductOptionDto;
       expect(data).toEqual({
         id: 1,
         detail: '100g',
@@ -143,7 +144,7 @@ describe('ProductAdminController', () => {
 
       const result = await sut.updateProductOption(1, dto);
 
-      const data = result.data as ProductOption;
+      const data = result.data as ProductOptionDto;
       expect(data).toEqual({
         id: 1,
         detail: '200g',
