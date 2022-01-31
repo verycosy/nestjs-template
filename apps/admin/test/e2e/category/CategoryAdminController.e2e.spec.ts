@@ -1,9 +1,9 @@
 import { AuthService } from '@app/auth';
 import { ResponseEntity } from '@app/config/response';
+import { setResponse } from '@app/config/setNestApp';
 import { Category, SubCategory } from '@app/entity/domain/category';
 import { getAdminAccessToken } from '@app/util/testing/getAdminAccessToken';
-import { ClassSerializerInterceptor, INestApplication } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { Repository } from 'typeorm';
@@ -20,9 +20,7 @@ describe('CategoryAdminController (e2e)', () => {
     }).compile();
 
     app = module.createNestApplication();
-    app.useGlobalInterceptors(
-      new ClassSerializerInterceptor(app.get(Reflector)),
-    );
+    setResponse(app);
 
     await app.init();
 

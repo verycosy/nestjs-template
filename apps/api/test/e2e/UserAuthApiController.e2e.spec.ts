@@ -1,8 +1,4 @@
-import {
-  CACHE_MANAGER,
-  ClassSerializerInterceptor,
-  INestApplication,
-} from '@nestjs/common';
+import { CACHE_MANAGER, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { Cache } from 'cache-manager';
@@ -11,7 +7,7 @@ import { AuthCodeService } from '@app/util/auth-code';
 import { Repository } from 'typeorm';
 import { User } from '@app/entity/domain/user/User.entity';
 import { AuthService } from '@app/auth';
-import { Reflector } from '@nestjs/core';
+import { setResponse } from '@app/config/setNestApp';
 
 describe('UserAuthApiController (e2e)', () => {
   let app: INestApplication;
@@ -27,9 +23,7 @@ describe('UserAuthApiController (e2e)', () => {
     }).compile();
 
     app = module.createNestApplication();
-    app.useGlobalInterceptors(
-      new ClassSerializerInterceptor(app.get(Reflector)),
-    );
+    setResponse(app);
 
     await app.init();
 
