@@ -60,7 +60,7 @@ describe('CategoryAdminController', () => {
     });
 
     it('생성된 서브 카테고리 반환', async () => {
-      await categoryRepository.save({ name: 'fruit' });
+      await categoryRepository.save(new Category('fruit'));
       const request = CreateSubCategoryRequest.create('apple');
 
       const result = await sut.createSubCategory(1, request);
