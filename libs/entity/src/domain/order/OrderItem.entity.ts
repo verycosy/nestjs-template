@@ -1,19 +1,11 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { BaseTimeEntity } from '@app/entity/BaseTimeEntity';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Product } from '../product/Product.entity';
 import { ProductOption } from '../product/ProductOption.entity';
 import { Order } from './Order.entity';
 
 @Entity('order_item')
-export class OrderItem {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class OrderItem extends BaseTimeEntity {
   @ManyToOne(() => Order)
   @JoinColumn({ name: 'order_id', referencedColumnName: 'id' })
   order: Order;

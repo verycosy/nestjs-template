@@ -1,21 +1,14 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { BaseTimeEntity } from '@app/entity/BaseTimeEntity';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { SubCategory } from '../category';
 import { ProductOption } from './ProductOption.entity';
 import { ProductStatus } from './type/ProductStatus';
 
 @Entity('product')
-export class Product {
-  private constructor() {}
-
-  @PrimaryGeneratedColumn()
-  id: number;
+export class Product extends BaseTimeEntity {
+  private constructor() {
+    super();
+  }
 
   @Column()
   name: string;

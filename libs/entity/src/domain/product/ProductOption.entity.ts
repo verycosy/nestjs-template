@@ -1,17 +1,9 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { BaseTimeEntity } from '@app/entity/BaseTimeEntity';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Product } from './Product.entity';
 
 @Entity('product_option')
-export class ProductOption {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class ProductOption extends BaseTimeEntity {
   @Column()
   detail: string;
 

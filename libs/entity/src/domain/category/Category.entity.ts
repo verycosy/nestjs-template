@@ -1,14 +1,14 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseTimeEntity } from '@app/entity/BaseTimeEntity';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { SubCategory } from './SubCategory.entity';
 
 @Entity('category')
-export class Category {
+export class Category extends BaseTimeEntity {
   constructor(name: string) {
+    super();
+
     this.name = name;
   }
-
-  @PrimaryGeneratedColumn()
-  id: number;
 
   @Column()
   name: string;

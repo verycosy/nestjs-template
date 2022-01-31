@@ -1,20 +1,12 @@
-import {
-  Column,
-  Entity,
-  Index,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, Index, OneToOne } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Role } from './type/Role';
 import { Cart } from '../cart/Cart.entity';
+import { BaseTimeEntity } from '@app/entity/BaseTimeEntity';
 
 @Entity('user')
 @Index(['role', 'email'], { unique: true })
-export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class User extends BaseTimeEntity {
   @Column({ type: 'enum', enum: Role, default: Role.Customer })
   role: Role;
 

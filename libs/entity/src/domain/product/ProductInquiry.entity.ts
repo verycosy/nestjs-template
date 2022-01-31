@@ -1,14 +1,12 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseTimeEntity } from '@app/entity/BaseTimeEntity';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { User } from '../user/User.entity';
 import { ProductInquiryAlreadyCompletedError } from './error/ProductInquiryAlreadyCompletedError';
 import { Product } from './Product.entity';
 import { ProductInquiryStatus } from './type/ProductInquiryStatus';
 
 @Entity('product_inquiry')
-export class ProductInquiry {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class ProductInquiry extends BaseTimeEntity {
   @ManyToOne(() => User)
   user: User;
 

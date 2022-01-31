@@ -1,12 +1,10 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseTimeEntity } from '@app/entity/BaseTimeEntity';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { OrderItem } from './OrderItem.entity';
 import { OrderStatus } from './type/OrderStatus';
 
 @Entity('order')
-export class Order {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Order extends BaseTimeEntity {
   @OneToMany(() => OrderItem, (orderItem) => orderItem.order, {
     cascade: ['insert'],
   })

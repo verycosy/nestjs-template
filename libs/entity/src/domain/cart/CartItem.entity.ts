@@ -1,13 +1,11 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseTimeEntity } from '@app/entity/BaseTimeEntity';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { Product } from '../product/Product.entity';
 import { ProductOption } from '../product/ProductOption.entity';
 import { Cart } from './Cart.entity';
 
 @Entity('cart_item')
-export class CartItem {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class CartItem extends BaseTimeEntity {
   @ManyToOne(() => Cart)
   cart: Cart;
 

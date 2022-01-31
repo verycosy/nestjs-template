@@ -1,22 +1,15 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { BaseTimeEntity } from '@app/entity/BaseTimeEntity';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Product } from '../product/Product.entity';
 import { Category } from './Category.entity';
 
 @Entity('sub_category')
-export class SubCategory {
+export class SubCategory extends BaseTimeEntity {
   constructor(name: string) {
+    super();
+
     this.name = name;
   }
-
-  @PrimaryGeneratedColumn()
-  id: number;
 
   @Column()
   name: string;
