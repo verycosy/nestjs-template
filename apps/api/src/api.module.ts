@@ -5,6 +5,9 @@ import { getTypeOrmTestModule } from '../../../libs/entity/test/typeorm.test.mod
 import { getApiModuleProvider } from './getApiModuleProvider';
 import { UserApiModule } from './user/UserApiModule';
 import { ProductApiModule } from './product/ProductApiModule';
+import { OrderApiModule } from './order/OrderApiModule';
+import { CartApiModule } from './cart/CartApiModule';
+import { CategoryApiModule } from './category/CategoryApiModule';
 
 @Module({
   imports: [
@@ -13,6 +16,9 @@ import { ProductApiModule } from './product/ProductApiModule';
     getTypeOrmTestModule(),
     ProductApiModule,
     UserApiModule,
+    OrderApiModule,
+    CartApiModule,
+    CategoryApiModule,
   ],
   controllers: [],
   providers: [...getApiModuleProvider()],

@@ -38,7 +38,6 @@ const diskStorageOption = diskStorage({
     UserModule,
     AuthCodeModule,
     AuthModule,
-    CartModule,
     MulterModule.register({
       storage: diskStorageOption,
     }),
