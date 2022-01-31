@@ -88,7 +88,9 @@ describe('ProductInquiryApiController', () => {
 
     it('내가 남긴 상품 문의가 아니면 not found error response 반환', async () => {
       const user = await TestUserFactory.create(module);
-      const user2 = await TestUserFactory.create(module, 'tester2@test.com');
+      const user2 = await TestUserFactory.create(module, {
+        email: 'tester2@test.com',
+      });
       const subCategory = await TestSubCategoryFactory.create(module);
       const product = await TestProductFactory.create(module, subCategory);
       await TestProductInquiryFactory.create(module, user2, product);
