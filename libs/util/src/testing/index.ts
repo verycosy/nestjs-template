@@ -5,3 +5,4 @@ export * from './TestProductInquiryFactory';
 export * from './TestSubCategoryFactory';
 export * from './TestProductOptionFactory';
 export * from './TestCartItemFactory';
+export * from './TestOrderFactory';

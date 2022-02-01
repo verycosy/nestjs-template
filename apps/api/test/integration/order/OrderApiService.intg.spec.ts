@@ -11,6 +11,7 @@ import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.te
 import { OrderApiService } from '../../../../../apps/api/src/order/OrderApiService';
 import { Repository } from 'typeorm';
 import { Cart } from '@app/entity/domain/cart/Cart.entity';
+import { ReviewModule } from '@app/entity/domain/review/ReviewModule';
 
 describe('OrderApiService', () => {
   let sut: OrderApiService;
@@ -27,6 +28,7 @@ describe('OrderApiService', () => {
         ProductModule,
         OrderModule,
         CategoryModule,
+        ReviewModule,
       ],
       providers: [OrderApiService],
     }).compile();

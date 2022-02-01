@@ -16,6 +16,7 @@ import { User } from '@app/entity/domain/user/User.entity';
 import { ResponseStatus } from '@app/config/response';
 import { CategoryModule } from '@app/entity/domain/category';
 import { CartItemFixtureFactory } from '@app/util/testing/CartItemFixtureFactory';
+import { ReviewModule } from '@app/entity/domain/review/ReviewModule';
 
 describe('OrderApiController', () => {
   let sut: OrderApiController;
@@ -32,6 +33,7 @@ describe('OrderApiController', () => {
         ProductModule,
         OrderModule,
         CategoryModule,
+        ReviewModule,
       ],
       providers: [OrderApiService],
       controllers: [OrderApiController],

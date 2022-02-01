@@ -38,6 +38,9 @@ export class OrderItem extends BaseTimeEntity {
   })
   private status: OrderItemStatus;
 
+  @OneToOne(() => Review)
+  review: Review;
+
   static create(
     product: Product,
     option: ProductOption,
@@ -81,5 +84,9 @@ export class OrderItem extends BaseTimeEntity {
 
   getOptionDetail(): string {
     return this.optionDetail;
+  }
+
+  isReviewable(): boolean {
+    return true;
   }
 }
