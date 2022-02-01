@@ -2,25 +2,10 @@ import { BaseTimeEntity } from '@app/entity/BaseTimeEntity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 import { OrderItem } from '../order/OrderItem.entity';
 import { User } from '../user/User.entity';
+import { NotReviewableError } from './error/NotReviewableError';
 
 @Entity('review')
 export class Review extends BaseTimeEntity {
-  constructor(
-    user: User,
-    orderItem: OrderItem,
-    rating: number,
-    detail: string,
-    imagePath: string | null,
-  ) {
-    super();
-
-    this.user = user;
-    this.orderItem = orderItem;
-    this.rating = rating;
-    this.detail = detail;
-    this.imagePath = imagePath;
-  }
-
   @ManyToOne(() => User)
   user: User;
 
@@ -40,4 +25,29 @@ export class Review extends BaseTimeEntity {
     nullable: true,
   })
   imagePath?: string | null;
+
+  static create(
+    user: User,
+    orderItem: OrderItem,
+    rating: number,
+    detail: string,
+    imagePath?: string,
+  ): Review {
+    const review = new Review();
+    review.user = user;
+    review.orderItem = orderItem;
+    review.update(rating, detail, imagePath);
+
+    return review;
+  }
+
+  update(rating: number, detail: string, imagePath?: string): void {
+    if (!this.orderItem.isReviewable()) {
+      throw new NotReviewableError(this.orderItem);
+    }
+
+    this.rating = rating;
+    this.detail = detail;
+    this.imagePath = imagePath;
+  }
 }

@@ -6,9 +6,14 @@ import { ProductModule } from '@app/entity/domain/product/ProductModule';
 import { ReviewModule } from '@app/entity/domain/review/ReviewModule';
 import { UserModule } from '@app/entity/domain/user/UserModule';
 import { OrderItem } from '@app/entity/domain/order/OrderItem.entity';
-import { TestOrderFactory, TestUserFactory } from '@app/util/testing';
+import {
+  TestOrderFactory,
+  TestReviewFactory,
+  TestUserFactory,
+} from '@app/util/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
+  EditReviewRequest,
   ReviewApiController,
   ReviewApiService,
   WriteReviewRequest,
@@ -41,8 +46,6 @@ describe('ReviewApiController', () => {
     await module.close();
   });
 
-  //   테스트 먼저 작성하기 !!!!
-  // 상황에 맞는 코드가 아니라, 코드에 맞게 상황을 구성하게 된다
   describe('write', () => {
     it('리뷰를 작성할 주문 항목이 없으면 not found error response 반환', async () => {
       const dto = new WriteReviewRequest(1, 5, 'this is review');
@@ -82,6 +85,51 @@ describe('ReviewApiController', () => {
         orderItemId: 1,
         rating: 5,
         detail: 'this is review',
+        imagePath: null,
+      });
+    });
+  });
+
+  describe('edit', () => {
+    it('수정할 리뷰가 없으면 not found error response 반환', async () => {
+      const dto = new EditReviewRequest(3, 'this is edited review');
+      const user = await TestUserFactory.create(module);
+
+      const result = await sut.edit(user, 1, dto);
+
+      expect(result.message).toBe('Review not found');
+      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+    });
+
+    it('수정할 수 없는 리뷰이면 server error response 반환', async () => {
+      const dto = new EditReviewRequest(3, 'this is edited review');
+      const user = await TestUserFactory.create(module);
+      await TestReviewFactory.create(module, user);
+      jest
+        .spyOn(OrderItem.prototype, 'isReviewable')
+        .mockImplementation(() => false);
+
+      const result = await sut.edit(user, 1, dto);
+
+      expect(result.message).toBe('Order item #1(accept) not reviewable');
+      expect(result.statusCode).toBe(ResponseStatus.SERVER_ERROR);
+
+      jest.restoreAllMocks();
+    });
+
+    it('수정된 리뷰 반환', async () => {
+      const dto = new EditReviewRequest(3, 'this is edited review');
+      const user = await TestUserFactory.create(module);
+      await TestReviewFactory.create(module, user);
+      await TestOrderFactory.create(module, user);
+
+      const result = await sut.edit(user, 1, dto);
+
+      expect(result.data).toEqual({
+        id: 1,
+        orderItemId: 1,
+        rating: 3,
+        detail: 'this is edited review',
         imagePath: null,
       });
     });

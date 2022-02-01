@@ -1,5 +1,4 @@
 import { OrderItem } from '@app/entity/domain/order/OrderItem.entity';
-import { NotReviewableError } from '@app/entity/domain/review/error/NotReviewableError';
 import { Review } from '@app/entity/domain/review/Review.entity';
 import { User } from '@app/entity/domain/user/User.entity';
 import { Injectable } from '@nestjs/common';
@@ -30,12 +29,27 @@ export class ReviewApiService {
       return null;
     }
 
-    if (!orderItem.isReviewable()) {
-      throw new NotReviewableError(orderItem);
+    const review = Review.create(user, orderItem, rating, detail, imagePath);
+    return await this.reviewRepository.save(review);
+  }
+
+  async edit(
+    user: User,
+    reviewId: number,
+    rating: number,
+    detail: string,
+    imagePath?: string,
+  ): Promise<Review> {
+    const review = await this.reviewRepository.findOne({
+      where: { id: reviewId, user },
+      relations: ['orderItem'],
+    });
+
+    if (!review) {
+      return null;
     }
 
-    return await this.reviewRepository.save(
-      new Review(user, orderItem, rating, detail, imagePath),
-    );
+    review.update(rating, detail, imagePath);
+    return await this.reviewRepository.save(review);
   }
 }
