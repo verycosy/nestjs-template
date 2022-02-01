@@ -1,9 +1,12 @@
+import { Page } from '@app/config/Page';
 import { OrderItem } from '@app/entity/domain/order/OrderItem.entity';
 import { Review } from '@app/entity/domain/review/Review.entity';
+import { ReviewQueryRepository } from '@app/entity/domain/review/ReviewQueryRepository';
 import { User } from '@app/entity/domain/user/User.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { GetReviewsItem, GetReviewsRequest } from '.';
 
 @Injectable()
 export class ReviewApiService {
@@ -12,7 +15,22 @@ export class ReviewApiService {
     private readonly orderItemRepository: Repository<OrderItem>,
     @InjectRepository(Review)
     private readonly reviewRepository: Repository<Review>,
+    @InjectRepository(ReviewQueryRepository)
+    private readonly reviewQueryRepository: ReviewQueryRepository,
   ) {}
+
+  async getReviews(productId: number, dto: GetReviewsRequest) {
+    const [items, totalCount] = await this.reviewQueryRepository.paging(
+      productId,
+      dto,
+    );
+
+    return new Page<GetReviewsItem>(
+      totalCount,
+      dto.pageSize,
+      items.map((item) => new GetReviewsItem(item)),
+    );
+  }
 
   async write(
     user: User,

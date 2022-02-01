@@ -1,4 +1,6 @@
 import { Order } from '@app/entity/domain/order/Order.entity';
+import { Product } from '@app/entity/domain/product/Product.entity';
+import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
 import { User } from '@app/entity/domain/user/User.entity';
 import { TestingModule } from '@nestjs/testing';
 import { Repository } from 'typeorm';
@@ -10,20 +12,25 @@ import {
 } from '.';
 
 export class TestOrderFactory {
-  static async create(module: TestingModule, user: User) {
+  static async create(
+    module: TestingModule,
+    user: User,
+    product?: Product,
+    productOption?: ProductOption,
+  ) {
     const orderRepository = module.get<Repository<Order>>('OrderRepository');
 
     const subCategory = await TestSubCategoryFactory.create(module);
-    const product = await TestProductFactory.create(module, subCategory);
-    const productOption = await TestProductOptionFactory.create(
-      module,
-      product,
-    );
+
+    if (!product) {
+      product = await TestProductFactory.create(module, subCategory);
+    }
+
     const cartItem = await TestCartItemFactory.create(
       module,
       user.cart,
       product,
-      productOption,
+      productOption ?? (await TestProductOptionFactory.create(module, product)),
     );
 
     return await orderRepository.save(Order.create(user, [cartItem]));

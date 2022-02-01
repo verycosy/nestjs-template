@@ -1,13 +1,35 @@
 import { AccessTokenGuard, CurrentUser } from '@app/auth';
 import { ResponseEntity, ResponseStatus } from '@app/config/response';
 import { User } from '@app/entity/domain/user/User.entity';
-import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
-import { EditReviewRequest, ReviewDto, WriteReviewRequest } from '../dto';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import {
+  EditReviewRequest,
+  GetReviewsRequest,
+  ReviewDto,
+  WriteReviewRequest,
+} from '../dto';
 import { ReviewApiService } from '../ReviewApiService';
 
 @Controller('/review')
 export class ReviewApiController {
   constructor(private readonly reviewApiService: ReviewApiService) {}
+
+  @Get()
+  async getReviews(
+    @Query('productId') productId: number,
+    @Body() body: GetReviewsRequest,
+  ) {
+    return await this.reviewApiService.getReviews(productId, body);
+  }
 
   @AccessTokenGuard()
   @Post()

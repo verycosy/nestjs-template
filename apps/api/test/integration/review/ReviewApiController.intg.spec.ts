@@ -8,12 +8,16 @@ import { UserModule } from '@app/entity/domain/user/UserModule';
 import { OrderItem } from '@app/entity/domain/order/OrderItem.entity';
 import {
   TestOrderFactory,
+  TestProductFactory,
+  TestProductOptionFactory,
   TestReviewFactory,
+  TestSubCategoryFactory,
   TestUserFactory,
 } from '@app/util/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   EditReviewRequest,
+  GetReviewsRequest,
   ReviewApiController,
   ReviewApiService,
   WriteReviewRequest,
@@ -152,6 +156,52 @@ describe('ReviewApiController', () => {
 
       expect(result.message).toBe('');
       expect(result.statusCode).toBe(ResponseStatus.OK);
+    });
+  });
+
+  it('getReviews', async () => {
+    const dto = GetReviewsRequest.create(1, 10);
+    const user = await TestUserFactory.create(module);
+    const subCategory = await TestSubCategoryFactory.create(module);
+    const product = await TestProductFactory.create(module, subCategory);
+    const productOption = await TestProductOptionFactory.create(
+      module,
+      product,
+    );
+
+    await TestReviewFactory.create(module, user, product, productOption);
+    await TestReviewFactory.create(module, user, product, productOption);
+    await TestReviewFactory.create(module, user, product, productOption);
+
+    const result = await sut.getReviews(1, dto);
+
+    expect(result).toEqual({
+      pageSize: 10,
+      totalCount: 3,
+      totalPage: 1,
+      items: [
+        {
+          id: 3,
+          rating: 5,
+          detail: 'this is review',
+          imagePath: null,
+          selectedOption: 'awesome product',
+        },
+        {
+          id: 2,
+          rating: 5,
+          detail: 'this is review',
+          imagePath: null,
+          selectedOption: 'awesome product',
+        },
+        {
+          id: 1,
+          rating: 5,
+          detail: 'this is review',
+          imagePath: null,
+          selectedOption: 'awesome product',
+        },
+      ],
     });
   });
 });
