@@ -26,12 +26,6 @@ export class OrderApiService {
     });
   }
 
-  private createOrderItemsByCartItems(cartItems: CartItem[]): OrderItem[] {
-    return cartItems.map((cartItem) =>
-      OrderItem.create(cartItem.product, cartItem.option, cartItem.quantity),
-    );
-  }
-
   async orderFromCart(user: User, cartItemIds: number[]): Promise<Order> {
     const cart = await this.cartRepository.findOne({
       where: {
@@ -45,12 +39,12 @@ export class OrderApiService {
     }
 
     const cartItems = await this.findCartItemsByIds(cartItemIds);
-    const orderItems = await this.orderRepository.save(
-      Order.create(user, this.createOrderItemsByCartItems(cartItems)),
+    const order = await this.orderRepository.save(
+      Order.create(user, cartItems),
     );
 
     await this.cartItemRepository.remove(cartItems);
 
-    return orderItems;
+    return order;
   }
 }

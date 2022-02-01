@@ -1,7 +1,9 @@
 import { BaseTimeEntity } from '@app/entity/BaseTimeEntity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
+import { CartItem } from '../cart/CartItem.entity';
 import { Product } from '../product/Product.entity';
 import { ProductOption } from '../product/ProductOption.entity';
+import { Review } from '../review/Review.entity';
 import { Order } from './Order.entity';
 import { OrderItemStatus } from './type/OrderItemStatus';
 
@@ -51,6 +53,14 @@ export class OrderItem extends BaseTimeEntity {
     orderItem.status = OrderItemStatus.Accept;
 
     return orderItem;
+  }
+
+  static createByCartItem(cartItem: CartItem): OrderItem {
+    return OrderItem.create(
+      cartItem.product,
+      cartItem.option,
+      cartItem.quantity,
+    );
   }
 
   getStatus(): OrderItemStatus {

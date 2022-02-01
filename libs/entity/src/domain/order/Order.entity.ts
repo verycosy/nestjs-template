@@ -1,5 +1,6 @@
 import { BaseTimeEntity } from '@app/entity/BaseTimeEntity';
 import { Entity, ManyToOne, OneToMany } from 'typeorm';
+import { CartItem } from '../cart/CartItem.entity';
 import { User } from '../user/User.entity';
 import { OrderItem } from './OrderItem.entity';
 
@@ -13,10 +14,12 @@ export class Order extends BaseTimeEntity {
   })
   items: OrderItem[];
 
-  static create(user: User, items: OrderItem[]): Order {
+  static create(user: User, cartItems: CartItem[]): Order {
     const order = new Order();
     order.user = user;
-    order.items = items;
+    order.items = cartItems.map((cartItem) =>
+      OrderItem.createByCartItem(cartItem),
+    );
 
     return order;
   }
