@@ -1,6 +1,7 @@
 import { BaseTimeEntity } from '@app/entity/BaseTimeEntity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 import { OrderItem } from '../order/OrderItem.entity';
+import { Product } from '../product/Product.entity';
 import { User } from '../user/User.entity';
 import { NotReviewableError } from './error/NotReviewableError';
 
@@ -12,6 +13,10 @@ export class Review extends BaseTimeEntity {
   @OneToOne(() => OrderItem)
   @JoinColumn()
   orderItem: OrderItem;
+
+  @ManyToOne(() => Product)
+  @JoinColumn({ name: 'product_id', referencedColumnName: 'id' })
+  product: Product;
 
   @Column()
   rating: number;
@@ -36,6 +41,7 @@ export class Review extends BaseTimeEntity {
     const review = new Review();
     review.user = user;
     review.orderItem = orderItem;
+    review.product = orderItem.getProduct();
     review.update(rating, detail, imagePath);
 
     return review;

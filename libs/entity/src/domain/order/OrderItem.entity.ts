@@ -70,6 +70,10 @@ export class OrderItem extends BaseTimeEntity {
     return this.status;
   }
 
+  getProduct(): Product {
+    return this.product;
+  }
+
   getProductName(): string {
     return this.productName;
   }

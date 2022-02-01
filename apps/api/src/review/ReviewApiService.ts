@@ -22,7 +22,8 @@ export class ReviewApiService {
     imagePath?: string,
   ): Promise<Review> {
     const orderItem = await this.orderItemRepository.findOne({
-      id: orderItemId,
+      where: { id: orderItemId },
+      relations: ['product'],
     });
 
     if (!orderItem) {
