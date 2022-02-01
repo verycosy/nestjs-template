@@ -52,4 +52,15 @@ export class ReviewApiService {
     review.update(rating, detail, imagePath);
     return await this.reviewRepository.save(review);
   }
+
+  async remove(user: User, reviewId: number): Promise<boolean> {
+    const review = await this.reviewRepository.findOne({ id: reviewId, user });
+
+    if (!review) {
+      return false;
+    }
+
+    await this.reviewRepository.remove(review);
+    return true;
+  }
 }

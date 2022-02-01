@@ -121,7 +121,6 @@ describe('ReviewApiController', () => {
       const dto = new EditReviewRequest(3, 'this is edited review');
       const user = await TestUserFactory.create(module);
       await TestReviewFactory.create(module, user);
-      await TestOrderFactory.create(module, user);
 
       const result = await sut.edit(user, 1, dto);
 
@@ -132,6 +131,27 @@ describe('ReviewApiController', () => {
         detail: 'this is edited review',
         imagePath: null,
       });
+    });
+  });
+
+  describe('remove', () => {
+    it('삭제할 리뷰가 없으면 not found error response 반환', async () => {
+      const user = await TestUserFactory.create(module);
+
+      const result = await sut.remove(user, 1);
+
+      expect(result.message).toBe('Review not found');
+      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+    });
+
+    it('삭제되면 ok response 반환', async () => {
+      const user = await TestUserFactory.create(module);
+      await TestReviewFactory.create(module, user);
+
+      const result = await sut.remove(user, 1);
+
+      expect(result.message).toBe('');
+      expect(result.statusCode).toBe(ResponseStatus.OK);
     });
   });
 });

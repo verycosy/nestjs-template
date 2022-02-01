@@ -1,7 +1,7 @@
 import { AccessTokenGuard, CurrentUser } from '@app/auth';
 import { ResponseEntity, ResponseStatus } from '@app/config/response';
 import { User } from '@app/entity/domain/user/User.entity';
-import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
 import { EditReviewRequest, ReviewDto, WriteReviewRequest } from '../dto';
 import { ReviewApiService } from '../ReviewApiService';
 
@@ -68,5 +68,20 @@ export class ReviewApiController {
     } catch (err) {
       return ResponseEntity.ERROR_WITH(err.message);
     }
+  }
+
+  @AccessTokenGuard()
+  @Delete('/:id')
+  async remove(@CurrentUser() user: User, @Param('id') id: number) {
+    const removed = await this.reviewApiService.remove(user, id);
+
+    if (!removed) {
+      return ResponseEntity.ERROR_WITH(
+        'Review not found',
+        ResponseStatus.NOT_FOUND,
+      );
+    }
+
+    return ResponseEntity.OK();
   }
 }
