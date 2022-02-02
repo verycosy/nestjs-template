@@ -7,3 +7,4 @@ export * from './TestProductOptionFactory';
 export * from './TestCartItemFactory';
 export * from './TestOrderFactory';
 export * from './TestReviewFactory';
+export * from './TestNoticeFactory';

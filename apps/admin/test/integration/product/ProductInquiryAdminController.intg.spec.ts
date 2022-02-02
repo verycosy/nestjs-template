@@ -61,7 +61,7 @@ describe('ProductInquiryAdminController', () => {
 
       const result = await sut.answer(user, 1, dto);
 
-      expect(result.message).toBe('Can not update answer');
+      expect(result.message).toBe('user#1 tried update answer');
       expect(result.statusCode).toBe(ResponseStatus.FORBIDDEN);
     });
 

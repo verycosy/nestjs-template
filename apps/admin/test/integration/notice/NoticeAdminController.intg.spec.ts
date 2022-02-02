@@ -1,12 +1,11 @@
 import { getConfigModule } from '@app/config';
 import { ResponseStatus } from '@app/config/response';
-import { CategoryModule } from '@app/entity/domain/category';
 import { Notice } from '@app/entity/domain/notice/Notice.entity';
 import { NoticeModule } from '@app/entity/domain/notice/NoticeModule';
 import { ProductModule } from '@app/entity/domain/product/ProductModule';
 import { Role } from '@app/entity/domain/user/type/Role';
 import { UserModule } from '@app/entity/domain/user/UserModule';
-import { TestUserFactory } from '@app/util/testing';
+import { TestNoticeFactory, TestUserFactory } from '@app/util/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   NoticeAdminController,
@@ -46,7 +45,7 @@ describe('NoticeAdminController', () => {
 
       const result = await sut.write(user, dto);
 
-      expect(result.message).toBe('user#1 tried write notice');
+      expect(result.message).toBe('user#1 tried update notice');
       expect(result.statusCode).toBe(ResponseStatus.SERVER_ERROR);
     });
 
@@ -61,6 +60,47 @@ describe('NoticeAdminController', () => {
       const data = result.data as Notice;
       expect(data.title).toBe('notice title');
       expect(data.content).toBe('blablah');
+      expect(data.hit).toBe(0);
+    });
+  });
+
+  describe('edit', () => {
+    it('수정할 공지사항이 없으면 not found error response 반환', async () => {
+      const dto = new WriteNoticeRequest('edited notice title', 'blablah2');
+      const user = await TestUserFactory.create(module);
+
+      const result = await sut.edit(1, user, dto);
+
+      expect(result.message).toBe('Notice not found');
+      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+    });
+
+    it('관리자가 아닌 회원이 수정하면 server error response 반환', async () => {
+      const dto = new WriteNoticeRequest('edited notice title', 'blablah2');
+      const user = await TestUserFactory.create(module);
+      const admin = await TestUserFactory.create(module, {
+        role: Role.Admin,
+      });
+      await TestNoticeFactory.create(module, admin);
+
+      const result = await sut.edit(1, user, dto);
+
+      expect(result.message).toBe('user#1 tried update notice');
+      expect(result.statusCode).toBe(ResponseStatus.SERVER_ERROR);
+    });
+
+    it('수정된 공지사항 반환', async () => {
+      const dto = new WriteNoticeRequest('edited notice title', 'blablah2');
+      const admin = await TestUserFactory.create(module, {
+        role: Role.Admin,
+      });
+      await TestNoticeFactory.create(module, admin);
+
+      const result = await sut.edit(1, admin, dto);
+
+      const data = result.data as Notice;
+      expect(data.title).toBe('edited notice title');
+      expect(data.content).toBe('blablah2');
       expect(data.hit).toBe(0);
     });
   });

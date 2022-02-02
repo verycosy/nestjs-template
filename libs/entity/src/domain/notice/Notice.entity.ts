@@ -24,14 +24,18 @@ export class Notice extends BaseTimeEntity {
   static create(writer: User, title: string, content: string): Notice {
     const notice = new Notice();
 
-    if (!writer.isAdmin()) {
-      throw new CommandForbiddenError(writer, 'write notice');
-    }
-
     notice.writer = writer;
-    notice.title = title;
-    notice.content = content;
+    notice.update(writer, title, content);
 
     return notice;
+  }
+
+  update(writer: User, title: string, content: string): void {
+    if (!writer.isAdmin()) {
+      throw new CommandForbiddenError(writer, 'update notice');
+    }
+
+    this.title = title;
+    this.content = content;
   }
 }

@@ -15,4 +15,20 @@ export class NoticeAdminService {
     const notice = Notice.create(user, title, content);
     return await this.noticeRepository.save(notice);
   }
+
+  async edit(
+    id: number,
+    user: User,
+    title: string,
+    content: string,
+  ): Promise<Notice> {
+    const notice = await this.noticeRepository.findOne({ id });
+
+    if (!notice) {
+      return null;
+    }
+
+    notice.update(user, title, content);
+    return await this.noticeRepository.save(notice);
+  }
 }
