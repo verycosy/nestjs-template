@@ -104,4 +104,29 @@ describe('NoticeAdminController', () => {
       expect(data.hit).toBe(0);
     });
   });
+
+  describe('remove', () => {
+    it('삭제할 공지사항이 없으면 not found error response 반환', async () => {
+      const admin = await TestUserFactory.create(module, {
+        role: Role.Admin,
+      });
+
+      const result = await sut.remove(1, admin);
+
+      expect(result.message).toBe('Notice not found');
+      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+    });
+
+    it('삭제되면 ok response 반환', async () => {
+      const admin = await TestUserFactory.create(module, {
+        role: Role.Admin,
+      });
+      await TestNoticeFactory.create(module, admin);
+
+      const result = await sut.remove(1, admin);
+
+      expect(result.data).toBe('');
+      expect(result.statusCode).toBe(ResponseStatus.OK);
+    });
+  });
 });

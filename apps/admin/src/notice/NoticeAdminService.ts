@@ -31,4 +31,15 @@ export class NoticeAdminService {
     notice.update(user, title, content);
     return await this.noticeRepository.save(notice);
   }
+
+  async remove(id: number): Promise<boolean> {
+    const notice = await this.noticeRepository.findOne({ id });
+
+    if (!notice) {
+      return false;
+    }
+
+    await this.noticeRepository.remove(notice);
+    return true;
+  }
 }
