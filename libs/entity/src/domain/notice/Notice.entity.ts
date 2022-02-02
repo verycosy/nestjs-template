@@ -9,7 +9,7 @@ export class Notice extends BaseTimeEntity {
     super();
 
     if (!writer.isAdmin()) {
-      throw new CommandForbiddenError(`Can not write notice`);
+      throw new CommandForbiddenError(writer, 'write notice');
     }
 
     this.writer = writer;

@@ -78,7 +78,7 @@ export class ProductInquiry extends BaseTimeEntity {
 
   updateAnswer(admin: User, answer: string): void {
     if (!admin.isAdmin()) {
-      throw new CommandForbiddenError('Can not update answer');
+      throw new CommandForbiddenError(admin, 'update answer');
     }
 
     this.admin = admin;
