@@ -5,18 +5,6 @@ import { User } from '../user/User.entity';
 
 @Entity('notice')
 export class Notice extends BaseTimeEntity {
-  constructor(writer: User, title: string, content: string) {
-    super();
-
-    if (!writer.isAdmin()) {
-      throw new CommandForbiddenError(writer, 'write notice');
-    }
-
-    this.writer = writer;
-    this.title = title;
-    this.content = content;
-  }
-
   @ManyToOne(() => User)
   writer: User;
 
@@ -28,6 +16,22 @@ export class Notice extends BaseTimeEntity {
   })
   content: string;
 
-  @Column()
+  @Column({
+    default: 0,
+  })
   hit: number;
+
+  static create(writer: User, title: string, content: string): Notice {
+    const notice = new Notice();
+
+    if (!writer.isAdmin()) {
+      throw new CommandForbiddenError(writer, 'write notice');
+    }
+
+    notice.writer = writer;
+    notice.title = title;
+    notice.content = content;
+
+    return notice;
+  }
 }
