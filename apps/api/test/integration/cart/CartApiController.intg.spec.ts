@@ -83,6 +83,7 @@ describe('CartApiController', () => {
           id: 1,
           detail: 'awesome product',
           price: 3000,
+          discount: 0,
         },
         quantity: 3,
       });
@@ -198,6 +199,7 @@ describe('CartApiController', () => {
           id: 1,
           detail: 'awesome product',
           price: 3000,
+          discount: 0,
         },
         quantity: 3,
       });

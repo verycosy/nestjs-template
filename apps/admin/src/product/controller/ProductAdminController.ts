@@ -66,12 +66,13 @@ export class ProductAdminController {
     @Param('id') id: number,
     @Body() body: AddProductOptionRequest,
   ): Promise<ResponseEntity<ProductOptionDto | string>> {
-    const { detail, price } = body;
+    const { detail, price, discount } = body;
 
     const productOption = await this.productAdminService.addProductOption(
       id,
       detail,
       price,
+      discount,
     );
 
     if (productOption === null) {
@@ -89,12 +90,13 @@ export class ProductAdminController {
     @Param('productOptionId') id: number,
     @Body() body: AddProductOptionRequest,
   ): Promise<ResponseEntity<ProductOptionDto | string>> {
-    const { detail, price } = body;
+    const { detail, price, discount } = body;
 
     const productOption = await this.productAdminService.updateProductOption(
       id,
       detail,
       price,
+      discount,
     );
 
     if (productOption === null) {

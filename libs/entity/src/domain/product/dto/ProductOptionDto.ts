@@ -5,9 +5,11 @@ export class ProductOptionDto {
     this.id = entity.id;
     this.price = entity.price;
     this.detail = entity.detail;
+    this.discount = entity.discount;
   }
 
-  private readonly id: number;
-  private readonly price: number;
-  private readonly detail: string;
+  readonly id: number;
+  readonly price: number;
+  readonly detail: string;
+  readonly discount: number;
 }

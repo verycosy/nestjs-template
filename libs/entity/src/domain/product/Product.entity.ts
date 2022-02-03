@@ -63,8 +63,8 @@ export class Product extends BaseTimeEntity {
     this.subCategory = subCategory;
   }
 
-  addOption(detail: string, price: number): ProductOption {
-    const productOption = ProductOption.create(detail, price);
+  addOption(detail: string, price: number, discount: number): ProductOption {
+    const productOption = ProductOption.create(detail, price, discount);
 
     if (!Array.isArray(this.options)) {
       this.options = [];

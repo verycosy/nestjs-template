@@ -65,6 +65,7 @@ export class ProductAdminService {
     id: number,
     detail: string,
     price: number,
+    discount: number,
   ): Promise<ProductOption> {
     const product = await this.productRepository.findOne({ id });
 
@@ -72,7 +73,7 @@ export class ProductAdminService {
       return null;
     }
 
-    const productOption = product.addOption(detail, price);
+    const productOption = product.addOption(detail, price, discount);
     await this.productRepository.save(product);
 
     return productOption;
@@ -82,6 +83,7 @@ export class ProductAdminService {
     productOptionId: number,
     detail: string,
     price: number,
+    discount: number,
   ): Promise<ProductOption> {
     const productOption = await this.productOptionRepository.findOne({
       id: productOptionId,
@@ -91,7 +93,7 @@ export class ProductAdminService {
       return null;
     }
 
-    productOption.update(detail, price);
+    productOption.update(detail, price, discount);
     return await this.productOptionRepository.save(productOption);
   }
 }

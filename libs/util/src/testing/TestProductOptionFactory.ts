@@ -8,8 +8,9 @@ export class TestProductOptionFactory {
     product: Product,
     price = 3000,
     detail = 'awesome product',
+    discount = 0,
   ): Promise<ProductOption> {
-    const productOption = product.addOption(detail, price);
+    const productOption = product.addOption(detail, price, discount);
     await module.get('ProductRepository').save(product);
 
     return productOption;

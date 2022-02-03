@@ -7,10 +7,18 @@ export class AddProductOptionRequest {
   @IsNumber()
   price: number;
 
-  static create(detail: string, price: number): AddProductOptionRequest {
+  @IsNumber()
+  discount: number;
+
+  static create(
+    detail: string,
+    price: number,
+    discount: number,
+  ): AddProductOptionRequest {
     const dto = new AddProductOptionRequest();
     dto.detail = detail;
     dto.price = price;
+    dto.discount = discount;
 
     return dto;
   }

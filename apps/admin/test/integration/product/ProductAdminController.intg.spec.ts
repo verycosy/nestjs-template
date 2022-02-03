@@ -105,7 +105,7 @@ describe('ProductAdminController', () => {
   });
 
   describe('addProductOption', () => {
-    const dto = AddProductOptionRequest.create('100g', 4000);
+    const dto = AddProductOptionRequest.create('100g', 4000, 0);
 
     it('옵션을 추가할 상품이 없으면 not found error response 반환', async () => {
       const result = await sut.addProductOption(1, dto);
@@ -124,12 +124,13 @@ describe('ProductAdminController', () => {
         id: 1,
         detail: '100g',
         price: 4000,
+        discount: 0,
       });
     });
   });
 
   describe('updateProductOption', () => {
-    const dto = AddProductOptionRequest.create('200g', 6000);
+    const dto = AddProductOptionRequest.create('200g', 6000, 0);
 
     it('수정할 상품 옵션이 없으면 not found error response 반환', async () => {
       const result = await sut.updateProductOption(1, dto);
@@ -140,7 +141,7 @@ describe('ProductAdminController', () => {
 
     it('수정된 상품 옵션 반환', async () => {
       await productAdminService.addProduct(1, 'banana', 5000, 'yeah');
-      await productAdminService.addProductOption(1, '400g', 4000);
+      await productAdminService.addProductOption(1, '400g', 4000, 0);
 
       const result = await sut.updateProductOption(1, dto);
 
@@ -149,6 +150,7 @@ describe('ProductAdminController', () => {
         id: 1,
         detail: '200g',
         price: 6000,
+        discount: 0,
       });
     });
   });
