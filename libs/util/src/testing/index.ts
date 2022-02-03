@@ -8,3 +8,4 @@ export * from './TestCartItemFactory';
 export * from './TestOrderFactory';
 export * from './TestReviewFactory';
 export * from './TestNoticeFactory';
+export * from './TestLikeFactory';

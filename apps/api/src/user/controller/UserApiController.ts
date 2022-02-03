@@ -11,8 +11,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ChangePasswordRequest, UpdatePhoneNumberRequest } from '../dto';
-import { UserApiService } from '../UserApiService';
+import {
+  UserApiService,
+  ChangePasswordRequest,
+  UpdatePhoneNumberRequest,
+  LikedProductItem,
+} from '../';
 
 @AccessTokenGuard()
 @Controller('/users')
@@ -63,5 +67,11 @@ export class UserApiController {
     } catch (err) {
       throw new BadRequestException(err.message);
     }
+  }
+
+  @Get('/me/liked')
+  async getLikedProducts(@CurrentUser() user: User) {
+    const likedProducts = await user.liked;
+    return likedProducts.map((product) => new LikedProductItem(product));
   }
 }
