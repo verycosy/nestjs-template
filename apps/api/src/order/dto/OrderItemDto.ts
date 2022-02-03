@@ -9,12 +9,14 @@ export class OrderItemDto {
     this.optionPrice = entity.getOptionPrice();
     this.productName = entity.getProductName();
     this.status = entity.getStatus();
+    this.optionDiscount = entity.getOptionDiscount();
   }
 
   id: number;
   quantity: number;
   optionPrice: number;
   optionDetail: string;
+  optionDiscount: number;
   productName: string;
   status: OrderItemStatus;
 }

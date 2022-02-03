@@ -29,6 +29,9 @@ export class OrderItem extends BaseTimeEntity {
   private optionPrice: number;
 
   @Column()
+  private optionDiscount: number;
+
+  @Column()
   private quantity: number;
 
   @Column({
@@ -52,6 +55,7 @@ export class OrderItem extends BaseTimeEntity {
     orderItem.productName = product.name;
     orderItem.optionDetail = option.detail;
     orderItem.optionPrice = option.price;
+    orderItem.optionDiscount = option.discount;
     orderItem.quantity = quantity;
     orderItem.status = OrderItemStatus.Accept;
 
@@ -88,6 +92,10 @@ export class OrderItem extends BaseTimeEntity {
 
   getOptionDetail(): string {
     return this.optionDetail;
+  }
+
+  getOptionDiscount(): number {
+    return this.optionDiscount;
   }
 
   isReviewable(): boolean {
