@@ -11,6 +11,7 @@ import { ProductApiService } from '../ProductApiService';
 export class ProductApiController {
   constructor(private readonly productApiService: ProductApiService) {}
 
+  @Get()
   async getProducts(
     @Query() query: GetProductsRequest,
   ): Promise<Page<GetProductsItem>> {
