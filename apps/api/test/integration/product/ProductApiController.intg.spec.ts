@@ -18,6 +18,11 @@ import { ProductModule } from '@app/entity/domain/product/ProductModule';
 import { Repository } from 'typeorm';
 import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
 import { UserModule } from '@app/entity/domain/user/UserModule';
+import {
+  TestProductFactory,
+  TestSubCategoryFactory,
+  TestUserFactory,
+} from '@app/util/testing';
 
 describe('ProductApiController', () => {
   let sut: ProductApiController;
@@ -128,6 +133,33 @@ describe('ProductApiController', () => {
         },
       ]);
       expect(result.totalCount).toBe(2);
+    });
+  });
+
+  describe('like', () => {
+    it('찜할 상품이 없으면 not found error response 반환', async () => {
+      const user = await TestUserFactory.create(module);
+
+      const result = await sut.like(1, user);
+
+      expect(result.message).toBe('Product not found');
+      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+    });
+
+    it('찜한 상품 반환 ', async () => {
+      const user = await TestUserFactory.create(module);
+      const subCategory = await TestSubCategoryFactory.create(module);
+      await TestProductFactory.create(module, subCategory);
+
+      const result = await sut.like(1, user);
+
+      expect(result.data).toMatchObject({
+        id: 1,
+        name: 'banana',
+        price: 1000,
+        detail: 'yummy',
+        status: 'Sell',
+      });
     });
   });
 });

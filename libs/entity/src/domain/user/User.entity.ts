@@ -1,8 +1,16 @@
-import { Column, Entity, Index, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinTable,
+  ManyToMany,
+  OneToOne,
+} from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Role } from './type/Role';
 import { Cart } from '../cart/Cart.entity';
 import { BaseTimeEntity } from '@app/entity/BaseTimeEntity';
+import { Product } from '../product/Product.entity';
 
 @Entity('user')
 @Index(['role', 'email'], { unique: true })
@@ -37,6 +45,10 @@ export class User extends BaseTimeEntity {
     cascade: ['insert'],
   })
   cart: Cart;
+
+  @ManyToMany(() => Product)
+  @JoinTable()
+  liked: Promise<Product[]>;
 
   setName(name: string): void {
     this.name = name;
