@@ -50,4 +50,14 @@ export class ProductApiService {
 
     return product;
   }
+
+  async cancelLike(productId: number, user: User): Promise<void> {
+    const liked = await user.liked;
+
+    user.liked = Promise.resolve(
+      liked.filter((product) => product.id !== productId),
+    );
+
+    await this.userRepository.save(user);
+  }
 }

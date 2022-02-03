@@ -71,4 +71,15 @@ describe('ProductApiService', () => {
       expect((await result.liked).length).toBe(1);
     });
   });
+
+  it('cancelLike', async () => {
+    const user = await TestUserFactory.create(module);
+    const subCategory = await TestSubCategoryFactory.create(module);
+    await TestProductFactory.create(module, subCategory);
+    await sut.like(1, user);
+
+    await sut.cancelLike(1, user);
+
+    expect((await user.liked).length).toBe(0);
+  });
 });

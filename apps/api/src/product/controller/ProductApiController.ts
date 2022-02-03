@@ -3,7 +3,7 @@ import { Page } from '@app/config/Page';
 import { ResponseEntity, ResponseStatus } from '@app/config/response';
 import { Product } from '@app/entity/domain/product/Product.entity';
 import { User } from '@app/entity/domain/user/User.entity';
-import { Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { GetProductsItem, GetProductsRequest } from '../dto';
 import { ProductApiService } from '../ProductApiService';
 
@@ -47,5 +47,12 @@ export class ProductApiController {
     }
 
     return ResponseEntity.OK_WITH(likedProduct);
+  }
+
+  @AccessTokenGuard()
+  @Delete('/:id/like')
+  async cancelLike(@Param('id') id: number, @CurrentUser() user: User) {
+    await this.productApiService.cancelLike(id, user);
+    return ResponseEntity.OK();
   }
 }
