@@ -9,6 +9,7 @@ import { OrderApiModule } from './order/OrderApiModule';
 import { CartApiModule } from './cart/CartApiModule';
 import { CategoryApiModule } from './category/CategoryApiModule';
 import { ReviewApiModule } from './review/ReviewApiModule';
+import { NoticeApiModule } from './notice';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ReviewApiModule } from './review/ReviewApiModule';
     CartApiModule,
     CategoryApiModule,
     ReviewApiModule,
+    NoticeApiModule,
   ],
   controllers: [],
   providers: [...getApiModuleProvider()],
