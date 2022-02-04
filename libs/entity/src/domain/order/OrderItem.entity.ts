@@ -98,6 +98,10 @@ export class OrderItem extends BaseTimeEntity {
     return this.optionDiscount;
   }
 
+  getAmount(): number {
+    return this.optionPrice - this.optionDiscount;
+  }
+
   isReviewable(): boolean {
     return true;
   }

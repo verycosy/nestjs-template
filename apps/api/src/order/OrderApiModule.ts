@@ -1,11 +1,12 @@
 import { CartModule } from '@app/entity/domain/cart/CartModule';
 import { OrderModule } from '@app/entity/domain/order/OrderModule';
+import { PaymentModule } from '@app/entity/domain/payment/PaymentModule';
 import { Module } from '@nestjs/common';
 import { OrderApiController } from './controller/OrderApiController';
 import { OrderApiService } from './OrderApiService';
 
 @Module({
-  imports: [OrderModule, CartModule],
+  imports: [OrderModule, CartModule, PaymentModule],
   controllers: [OrderApiController],
   providers: [OrderApiService],
 })

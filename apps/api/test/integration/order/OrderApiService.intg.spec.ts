@@ -45,7 +45,12 @@ describe('OrderApiService', () => {
     const user = await TestUserFactory.create(module);
     await CartItemFixtureFactory.create(module, user);
 
-    const result = await sut.orderFromCart(user, [1, 2]);
+    const result = await sut.orderFromCart(
+      user,
+      [1, 2],
+      'impUid',
+      'merchantUid',
+    );
 
     expect(result.id).toBe(1);
     expect(result.items.length).toBe(2);
