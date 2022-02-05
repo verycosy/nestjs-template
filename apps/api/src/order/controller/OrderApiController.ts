@@ -13,6 +13,7 @@ export class OrderApiController {
 
   @Post('/cart/ready')
   async orderReady() {
+    // TODO: 주문번호 생성할 때 결제할 금액도 미리 저장 (webhook)
     return ResponseEntity.OK_WITH(Order.generateMerchantUid());
   }
 

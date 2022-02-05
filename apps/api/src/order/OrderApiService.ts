@@ -1,16 +1,10 @@
 import { Cart } from '@app/entity/domain/cart/Cart.entity';
 import { CartItem } from '@app/entity/domain/cart/CartItem.entity';
 import { Order } from '@app/entity/domain/order/Order.entity';
-import {
-  Payment,
-  PaymentDocument,
-} from '@app/entity/domain/payment/Payment.schema';
 import { PaymentService } from '@app/entity/domain/payment/PaymentService';
 import { User } from '@app/entity/domain/user/User.entity';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Model } from 'mongoose';
 import { In, Repository } from 'typeorm';
 
 @Injectable()
@@ -21,8 +15,6 @@ export class OrderApiService {
     private readonly cartItemRepository: Repository<CartItem>,
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
-    @InjectModel(Payment.name)
-    private readonly paymentModel: Model<PaymentDocument>,
     private readonly paymentService: PaymentService,
   ) {}
 
@@ -56,20 +48,17 @@ export class OrderApiService {
         return null;
       }
 
-      const { code, message, response } = await this.paymentService.complete(
-        impUid,
-      );
+      const paymentData = await this.paymentService.complete(impUid);
 
       const cartItems = await this.findCartItemsByIds(cartItemIds); // lazy ?
       const order = Order.create(merchantUid, user, cartItems);
-      if (response.amount !== order.getTotalAmount()) {
-        throw new Error();
+      if (paymentData.amount !== order.getTotalAmount()) {
+        throw { status: 'forgery', message: '위조된 결제시도' };
       }
 
-      switch (response.status) {
+      switch (paymentData.status) {
         case 'paid': {
-          const payment = new this.paymentModel(response);
-          await payment.save();
+          await this.paymentService.save(paymentData);
 
           // tx start ?
           await this.orderRepository.save(order);
