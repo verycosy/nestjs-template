@@ -6,10 +6,10 @@ export type PaymentDocument = Payment & Document;
 @Schema()
 export class Payment {
   @Prop({ required: true, index: true, unique: true })
-  imp_uid: string;
+  merchant_uid: string;
 
   @Prop({ required: true, unique: true })
-  merchant_uid: string;
+  imp_uid: string;
 
   @Prop()
   apply_num: string;
