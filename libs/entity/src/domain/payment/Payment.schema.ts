@@ -69,13 +69,13 @@ export class Payment {
   pg_id: string;
 
   @Prop()
-  customer_uid: string;
+  customer_uid: string | null;
 
   @Prop()
-  customer_uid_usage: string;
+  customer_uid_usage: string | null;
 
   @Prop()
-  custom_data: string;
+  custom_data: string | null;
 
   @Prop()
   card_code: string;
@@ -99,7 +99,7 @@ export class Payment {
   bank_name: string;
 
   @Prop()
-  fail_reason: string;
+  fail_reason: string | null;
 
   @Prop()
   cancelled_at: number;
@@ -119,7 +119,7 @@ export class Payment {
   cancel_history: Record<string, any>[];
 
   @Prop()
-  cancel_reason: string;
+  cancel_reason: string | null;
 
   @Prop([String])
   cancel_receipt_urls: string[];
@@ -129,9 +129,6 @@ export class Payment {
 
   @Prop()
   cash_receipt_issued: boolean;
-
-  @Prop()
-  quantity: number;
 }
 
 export const PaymentSchema = SchemaFactory.createForClass(Payment);
