@@ -5,6 +5,8 @@ import { CartItem } from '../cart/CartItem.entity';
 import { User } from '../user/User.entity';
 import { OrderItem } from './OrderItem.entity';
 
+// TODO: pending | settled ?
+
 @Entity('order')
 export class Order extends BaseTimeEntity {
   @Index({ unique: true })
@@ -19,13 +21,13 @@ export class Order extends BaseTimeEntity {
   })
   items: OrderItem[];
 
-  static generateMerchantUid(): string {
+  private generateMerchantUid(): string {
     return uuidv4();
   }
 
-  static create(merchantUid: string, user: User, cartItems: CartItem[]): Order {
+  static create(user: User, cartItems: CartItem[]): Order {
     const order = new Order();
-    order.merchantUid = merchantUid;
+    order.merchantUid = order.generateMerchantUid();
     order.user = user;
     order.items = cartItems.map((cartItem) =>
       OrderItem.createByCartItem(cartItem),

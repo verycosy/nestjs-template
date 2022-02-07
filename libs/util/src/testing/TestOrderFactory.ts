@@ -1,3 +1,4 @@
+import { CartItem } from '@app/entity/domain/cart/CartItem.entity';
 import { Order } from '@app/entity/domain/order/Order.entity';
 import { Product } from '@app/entity/domain/product/Product.entity';
 import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
@@ -34,5 +35,16 @@ export class TestOrderFactory {
     );
 
     return await orderRepository.save(Order.create(user, [cartItem]));
+  }
+
+  static async createFromCartItems(
+    module: TestingModule,
+    user: User,
+    cartItems: CartItem[],
+  ) {
+    const orderRepository = module.get<Repository<Order>>('OrderRepository');
+    const order = Order.create(user, cartItems);
+
+    return await orderRepository.save(order);
   }
 }

@@ -37,20 +37,21 @@ export class CartItemFixtureFactory {
       'product option 3',
     );
 
-    await TestCartItemFactory.create(
-      module,
-      user.cart,
-      product1,
-      productOption1,
-      3,
-    );
-
-    await TestCartItemFactory.create(
-      module,
-      user.cart,
-      product2,
-      productOption3,
-      1,
-    );
+    return Promise.all([
+      TestCartItemFactory.create(
+        module,
+        user.cart,
+        product1,
+        productOption1,
+        3,
+      ),
+      TestCartItemFactory.create(
+        module,
+        user.cart,
+        product2,
+        productOption3,
+        1,
+      ),
+    ]);
   }
 }

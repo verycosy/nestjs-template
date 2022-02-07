@@ -1,21 +1,23 @@
 import { IsNumber, IsString } from 'class-validator';
 
-export class CartOrderRequest {
+export class Ready {
   @IsNumber({}, { each: true })
   cartItemIds: number[];
 
+  constructor(cartItemIds: number[]) {
+    this.cartItemIds = cartItemIds;
+  }
+}
+
+export class Complete {
   @IsString()
   impUid: string;
 
   @IsString()
   merchantUid: string;
 
-  static create(cartItemIds: number[], impUid: string, merchantUid: string) {
-    const dto = new CartOrderRequest();
-    dto.cartItemIds = cartItemIds;
-    dto.impUid = impUid;
-    dto.merchantUid = merchantUid;
-
-    return dto;
+  constructor(impUid: string, merchantUid: string) {
+    this.impUid = impUid;
+    this.merchantUid = merchantUid;
   }
 }

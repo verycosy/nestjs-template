@@ -11,7 +11,7 @@ import {
   CartOrderRequest,
   OrderDto,
 } from '../../../../../apps/api/src/order/dto';
-import { TestUserFactory } from '@app/util/testing';
+import { TestOrderFactory, TestUserFactory } from '@app/util/testing';
 import { User } from '@app/entity/domain/user/User.entity';
 import { ResponseStatus } from '@app/config/response';
 import { CategoryModule } from '@app/entity/domain/category';
@@ -26,6 +26,7 @@ import { Model } from 'mongoose';
 import { getModelToken } from '@nestjs/mongoose';
 import { PaymentService } from '@app/entity/domain/payment/PaymentService';
 import { iamportPaymentMockData } from '../../../../../libs/entity/test/integration/domain/payment/mockData';
+import { CustomCacheModule } from '@app/util/cache';
 
 describe('OrderApiController', () => {
   let sut: OrderApiController;
@@ -45,6 +46,7 @@ describe('OrderApiController', () => {
         CategoryModule,
         ReviewModule,
         PaymentModule,
+        CustomCacheModule,
       ],
       providers: [OrderApiService],
       controllers: [OrderApiController],
@@ -65,20 +67,47 @@ describe('OrderApiController', () => {
     await module.close();
   });
 
-  describe('orderFromCartComplete', () => {
+  describe('orderFromCartReady', () => {
     it('장바구니에 담기지 않은 상품을 주문할 경우 not found error response 반환', async () => {
-      const dto = CartOrderRequest.create([1, 2], 'impUid', 'merchantUid');
-      const result = await sut.orderFromCartComplete(user, dto);
+      const dto = new CartOrderRequest.Ready([1, 2]);
+
+      const result = await sut.orderFromCartReady(user, dto);
 
       expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
       expect(result.message).toBe('Cart item not found');
     });
 
-    it('주문내역 반환', async () => {
+    it('결제준비된 주문번호 반환', async () => {
       await CartItemFixtureFactory.create(module, user);
+      const dto = new CartOrderRequest.Ready([1, 2]);
 
-      const dto = CartOrderRequest.create([1, 2], 'impUid', 'merchantUid');
-      const result = await sut.orderFromCartComplete(user, dto);
+      const result = await sut.orderFromCartReady(user, dto);
+
+      expect(result.data.length).toBe(36);
+    });
+  });
+
+  describe('orderFromCartComplete', () => {
+    it('결제준비된 주문이 없으면 server error response 반환', async () => {
+      const dto = new CartOrderRequest.Complete('impUid', 'merchantUid');
+
+      const result = await sut.orderFromCartComplete(dto);
+
+      expect(result.message).toBe('Can not complete payment');
+      expect(result.statusCode).toBe(ResponseStatus.SERVER_ERROR);
+    });
+
+    it('결제 완료된 주문 반환', async () => {
+      const cartItems = await CartItemFixtureFactory.create(module, user);
+      const order = await TestOrderFactory.createFromCartItems(
+        module,
+        user,
+        cartItems,
+      );
+
+      const dto = new CartOrderRequest.Complete('impUid', order.merchantUid);
+
+      const result = await sut.orderFromCartComplete(dto);
 
       const data = result.data as OrderDto;
       expect(data).toEqual({
