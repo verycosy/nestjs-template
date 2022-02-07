@@ -60,9 +60,13 @@ describe('OrderApiController', () => {
     jest
       .spyOn(module.get(PaymentService), 'complete')
       .mockResolvedValue(iamportPaymentMockData);
+    jest
+      .spyOn(module.get(PaymentService), 'cancel')
+      .mockResolvedValue(iamportPaymentMockData);
   });
 
   afterEach(async () => {
+    jest.clearAllMocks();
     await paymentRepository.deleteMany({});
     await module.close();
   });
@@ -93,7 +97,22 @@ describe('OrderApiController', () => {
 
       const result = await sut.orderFromCartComplete(dto);
 
-      expect(result.message).toBe('Can not complete payment');
+      expect(result.message).toBe('Order not found');
+      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+    });
+
+    it('위조된 결제일 경우 ', async () => {
+      const cartItems = await CartItemFixtureFactory.create(module, user);
+      const order = await TestOrderFactory.createFromCartItems(module, user, [
+        cartItems[0],
+      ]);
+
+      const dto = new CartOrderRequest.Complete('impUid', order.merchantUid);
+
+      const result = await sut.orderFromCartComplete(dto);
+      expect(result.message).toBe(
+        `Accept order failed. order amount:3000, paid amount:4000`,
+      );
       expect(result.statusCode).toBe(ResponseStatus.SERVER_ERROR);
     });
 

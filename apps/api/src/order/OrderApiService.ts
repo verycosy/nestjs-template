@@ -8,6 +8,7 @@ import { CACHE_SERVICE, CacheService } from '@app/util/cache';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
+import { AcceptOrderFailedError, ForgeryOrderError } from './error';
 
 @Injectable()
 export class OrderApiService {
@@ -102,18 +103,26 @@ export class OrderApiService {
 
     try {
       const paymentData = await this.paymentService.complete(impUid);
-      if (paymentData.amount !== order.getTotalAmount()) {
-        throw { status: 'forgery', message: '위조된 결제시도' };
+
+      if (order.isForgery(paymentData)) {
+        await this.orderRepository.remove(order);
+        throw new ForgeryOrderError(order.getTotalAmount(), paymentData.amount);
       }
 
       switch (paymentData.status) {
         case 'paid':
           return await this.acceptOrder(order, paymentData);
         default:
-          throw new Error(); // 결제 취소? payment  삭제?
+          throw new AcceptOrderFailedError();
       }
     } catch (err) {
-      // 결제 완료 에러
+      if (
+        err instanceof ForgeryOrderError ||
+        err instanceof AcceptOrderFailedError
+      ) {
+        await this.paymentService.cancel(impUid);
+      }
+      throw err;
     }
   }
 }

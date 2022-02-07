@@ -27,6 +27,7 @@ import {
   CustomCacheModule,
 } from '@app/util/cache';
 import { User } from '@app/entity/domain/user/User.entity';
+import { ForgeryOrderError } from '../../../../../apps/api/src/order/error';
 
 describe('OrderApiService', () => {
   let sut: OrderApiService;
@@ -61,9 +62,13 @@ describe('OrderApiService', () => {
     jest
       .spyOn(module.get(PaymentService), 'complete')
       .mockResolvedValue(iamportPaymentMockData);
+    jest
+      .spyOn(module.get(PaymentService), 'cancel')
+      .mockResolvedValue(iamportPaymentMockData);
   });
 
   afterEach(async () => {
+    jest.clearAllMocks();
     await paymentRepository.deleteMany({});
     await module.close();
   });
@@ -111,6 +116,24 @@ describe('OrderApiService', () => {
       const result = await sut.complete('impUid', 'merchantUid');
 
       expect(result).toBeNull();
+    });
+
+    it('위조된 결제일 경우 주문 삭제 및 결제 취소 후 ForgeryOrderError를 던진다', async () => {
+      const cartItems = await CartItemFixtureFactory.create(module, user);
+      const order = await TestOrderFactory.createFromCartItems(module, user, [
+        cartItems[0],
+      ]);
+      const cancelSpy = jest.spyOn(module.get(PaymentService), 'cancel');
+
+      try {
+        await sut.complete('impUid', order.merchantUid);
+      } catch (err) {
+        expect(err).toBeInstanceOf(ForgeryOrderError);
+        expect(cancelSpy).toBeCalledWith('impUid');
+        expect(err.message).toBe(
+          `Accept order failed. order amount:3000, paid amount:4000`,
+        );
+      }
     });
 
     it('결제 완료된 주문 객체 반환', async () => {

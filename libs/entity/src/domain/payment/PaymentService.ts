@@ -43,8 +43,16 @@ export class PaymentService {
     return data.response;
   }
 
+  private async cancelIamportPayment(impUid: string) {
+    return this.getIamportPaymentData(impUid);
+  }
+
   async complete(impUid: string): Promise<IamportPaymentData> {
     return await this.getIamportPaymentData(impUid);
+  }
+
+  async cancel(impUid: string): Promise<IamportPaymentData> {
+    return await this.cancelIamportPayment(impUid);
   }
 
   async save(iamportPaymentData: IamportPaymentData): Promise<PaymentDocument> {

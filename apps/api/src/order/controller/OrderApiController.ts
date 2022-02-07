@@ -33,12 +33,19 @@ export class OrderApiController {
   ): Promise<ResponseEntity<OrderDto | string>> {
     const { impUid, merchantUid } = body;
 
-    const order = await this.orderApiService.complete(impUid, merchantUid);
+    try {
+      const order = await this.orderApiService.complete(impUid, merchantUid);
 
-    if (order === null) {
-      return ResponseEntity.ERROR_WITH('Can not complete payment');
+      if (order === null) {
+        return ResponseEntity.ERROR_WITH(
+          'Order not found',
+          ResponseStatus.NOT_FOUND,
+        );
+      }
+
+      return ResponseEntity.OK_WITH(new OrderDto(order));
+    } catch (err) {
+      return ResponseEntity.ERROR_WITH(err.message);
     }
-
-    return ResponseEntity.OK_WITH(new OrderDto(order));
   }
 }
