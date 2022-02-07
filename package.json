@@ -21,6 +21,7 @@
     "test:e2e": "jest --config ./apps/nestjs-template/test/jest-e2e.json"
   },
   "dependencies": {
+    "@js-joda/core": "^5.2.0",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^1.1.5",
     "@nestjs/core": "^8.0.0",
@@ -38,7 +39,6 @@
     "class-validator": "^0.13.2",
     "ioredis": "^4.28.2",
     "joi": "^17.5.0",
-    "js-joda": "^1.11.0",
     "mongoose": "^6.2.0",
     "nest-winston": "^1.6.2",
     "passport": "^0.5.2",

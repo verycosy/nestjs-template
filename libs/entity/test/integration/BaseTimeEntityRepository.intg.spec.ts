@@ -2,7 +2,7 @@ import { getConfigModule } from '@app/config';
 import { BaseTimeEntity } from '@app/entity/BaseTimeEntity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { LocalDateTime } from 'js-joda';
+import { LocalDateTime } from '@js-joda/core';
 import { Entity, Repository } from 'typeorm';
 import { getTypeOrmTestModule } from '../typeorm.test.module';
 

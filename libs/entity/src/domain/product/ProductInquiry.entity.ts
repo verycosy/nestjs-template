@@ -1,7 +1,7 @@
 import { CommandForbiddenError } from '@app/auth/error';
 import { BaseTimeEntity } from '@app/entity/BaseTimeEntity';
 import { LocalDateTimeTransformer } from '@app/entity/transformer';
-import { LocalDateTime } from 'js-joda';
+import { LocalDateTime } from '@js-joda/core';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { User } from '../user/User.entity';
 import { ProductInquiryAlreadyCompletedError } from './error/ProductInquiryAlreadyCompletedError';

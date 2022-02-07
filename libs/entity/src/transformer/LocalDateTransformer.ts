@@ -1,5 +1,5 @@
 import { DateTimeUtil } from '@app/util/DateTimeUtil';
-import { LocalDate } from 'js-joda';
+import { LocalDate } from '@js-joda/core';
 import { ValueTransformer } from 'typeorm';
 
 export class LocalDateTransformer implements ValueTransformer {

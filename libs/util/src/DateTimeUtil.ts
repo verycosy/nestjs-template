@@ -4,7 +4,7 @@ import {
   LocalDate,
   LocalDateTime,
   nativeJs,
-} from 'js-joda';
+} from '@js-joda/core';
 
 export class DateTimeUtil {
   private static DATE_FORMATTER = DateTimeFormatter.ofPattern('yyyy-MM-dd');
