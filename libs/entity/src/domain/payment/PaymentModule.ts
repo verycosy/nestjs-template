@@ -18,6 +18,6 @@ import { PaymentService } from './PaymentService';
     ]),
   ],
   providers: [PaymentService],
-  exports: [PaymentService],
+  exports: [PaymentService, MongooseModule],
 })
 export class PaymentModule {}

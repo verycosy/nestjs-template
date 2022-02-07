@@ -17,11 +17,21 @@ import { ResponseStatus } from '@app/config/response';
 import { CategoryModule } from '@app/entity/domain/category';
 import { CartItemFixtureFactory } from '@app/util/testing/CartItemFixtureFactory';
 import { ReviewModule } from '@app/entity/domain/review/ReviewModule';
+import { PaymentModule } from '@app/entity/domain/payment/PaymentModule';
+import {
+  Payment,
+  PaymentDocument,
+} from '@app/entity/domain/payment/Payment.schema';
+import { Model } from 'mongoose';
+import { getModelToken } from '@nestjs/mongoose';
+import { PaymentService } from '@app/entity/domain/payment/PaymentService';
+import { iamportPaymentMockData } from '../../../../../libs/entity/test/integration/domain/payment/mockData';
 
 describe('OrderApiController', () => {
   let sut: OrderApiController;
   let module: TestingModule;
   let user: User;
+  let paymentRepository: Model<PaymentDocument>;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -34,6 +44,7 @@ describe('OrderApiController', () => {
         OrderModule,
         CategoryModule,
         ReviewModule,
+        PaymentModule,
       ],
       providers: [OrderApiService],
       controllers: [OrderApiController],
@@ -42,17 +53,22 @@ describe('OrderApiController', () => {
     sut = module.get(OrderApiController);
 
     user = await TestUserFactory.create(module);
+    paymentRepository = module.get(getModelToken(Payment.name));
+
+    jest
+      .spyOn(module.get(PaymentService), 'complete')
+      .mockResolvedValue(iamportPaymentMockData);
   });
 
   afterEach(async () => {
+    await paymentRepository.deleteMany({});
     await module.close();
   });
 
-  describe('orderFromCart', () => {
+  describe('orderFromCartComplete', () => {
     it('장바구니에 담기지 않은 상품을 주문할 경우 not found error response 반환', async () => {
-      const dto = CartOrderRequest.create([1, 2, 3, 4]);
-
-      const result = await sut.orderFromCart(user, dto);
+      const dto = CartOrderRequest.create([1, 2], 'impUid', 'merchantUid');
+      const result = await sut.orderFromCartComplete(user, dto);
 
       expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
       expect(result.message).toBe('Cart item not found');
@@ -61,9 +77,8 @@ describe('OrderApiController', () => {
     it('주문내역 반환', async () => {
       await CartItemFixtureFactory.create(module, user);
 
-      const dto = CartOrderRequest.create([1, 2]);
-
-      const result = await sut.orderFromCart(user, dto);
+      const dto = CartOrderRequest.create([1, 2], 'impUid', 'merchantUid');
+      const result = await sut.orderFromCartComplete(user, dto);
 
       const data = result.data as OrderDto;
       expect(data).toEqual({

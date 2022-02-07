@@ -3,7 +3,7 @@ import { IamportPaymentData } from '@app/entity/domain/payment/iamport/types';
 const pgTid = 'pgtid';
 
 export const iamportPaymentMockData: IamportPaymentData = {
-  amount: 100,
+  amount: 2000,
   apply_num: '30036147',
   bank_code: null,
   bank_name: null,
