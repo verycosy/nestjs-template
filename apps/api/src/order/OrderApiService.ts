@@ -1,6 +1,7 @@
 import { Cart } from '@app/entity/domain/cart/Cart.entity';
 import { CartItem } from '@app/entity/domain/cart/CartItem.entity';
 import { Order } from '@app/entity/domain/order/Order.entity';
+import { IamportPaymentData } from '@app/entity/domain/payment/iamport/types';
 import { PaymentService } from '@app/entity/domain/payment/PaymentService';
 import { User } from '@app/entity/domain/user/User.entity';
 import { CACHE_SERVICE, CacheService } from '@app/util/cache';
@@ -56,12 +57,7 @@ export class OrderApiService {
     await this.cartItemRepository.remove(cartItems);
   }
 
-  async ready(user: User, cartItemIds: number[]): Promise<Order> {
-    const cart = await this.findCartWithItemsByUser(user);
-    if (!cart.hasCartItems(cartItemIds)) {
-      return null;
-    }
-
+  private async waitOrder(user: User, cartItemIds: number[]): Promise<Order> {
     const cartItems = await this.findCartItemsByIds(cartItemIds); // lazy ?
 
     const order = Order.create(user, cartItems);
@@ -69,6 +65,27 @@ export class OrderApiService {
     await this.cacheService.set(order.merchantUid, cartItemIds.join(), {
       ttl: 60 * 15, // 15min
     });
+
+    return order;
+  }
+
+  async ready(user: User, cartItemIds: number[]): Promise<Order> {
+    const cart = await this.findCartWithItemsByUser(user);
+    if (!cart.hasCartItems(cartItemIds)) {
+      return null;
+    }
+
+    return this.waitOrder(user, cartItemIds);
+  }
+
+  private async acceptOrder(
+    order: Order,
+    paymentData: IamportPaymentData,
+  ): Promise<Order> {
+    // tx ?
+    await this.paymentService.save(paymentData);
+    await this.orderRepository.save(order);
+    await this.removeOrderedCartItems(order.merchantUid);
 
     return order;
   }
@@ -85,24 +102,15 @@ export class OrderApiService {
 
     try {
       const paymentData = await this.paymentService.complete(impUid);
-
       if (paymentData.amount !== order.getTotalAmount()) {
         throw { status: 'forgery', message: '위조된 결제시도' };
       }
 
       switch (paymentData.status) {
-        case 'paid': {
-          await this.paymentService.save(paymentData);
-
-          // tx start ?
-          await this.orderRepository.save(order);
-          await this.removeOrderedCartItems(order.merchantUid);
-          // tx end
-          return order;
-        }
+        case 'paid':
+          return await this.acceptOrder(order, paymentData);
         default:
-          // 결제 취소? payment  삭제?
-          throw new Error();
+          throw new Error(); // 결제 취소? payment  삭제?
       }
     } catch (err) {
       // 결제 완료 에러
