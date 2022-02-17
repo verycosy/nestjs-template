@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { IamportService } from '../pg';
 import { Payment, PaymentSchema } from './Payment.schema';
 import { PaymentService } from './PaymentService';
 
@@ -17,7 +18,7 @@ import { PaymentService } from './PaymentService';
       },
     ]),
   ],
-  providers: [PaymentService],
+  providers: [PaymentService, IamportService],
   exports: [PaymentService, MongooseModule],
 })
 export class PaymentModule {}

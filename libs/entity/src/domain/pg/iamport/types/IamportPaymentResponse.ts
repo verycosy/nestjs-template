@@ -1,6 +1,6 @@
 import { IamportResponse } from './IamportResponse';
 
-export interface IamportPaymentData {
+export interface IamportPayment {
   imp_uid: string;
   merchant_uid: string;
   apply_num: string;
@@ -48,4 +48,4 @@ export interface IamportPaymentData {
   cash_receipt_issued: boolean;
 }
 
-export type IamportPaymentDataResponse = IamportResponse<IamportPaymentData>;
+export type IamportPaymentResponse = IamportResponse<IamportPayment>;

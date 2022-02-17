@@ -3,7 +3,7 @@ import { CartItem } from '@app/entity/domain/cart/CartItem.entity';
 import { Order } from '@app/entity/domain/order/Order.entity';
 import { OrderItem } from '@app/entity/domain/order/OrderItem.entity';
 import { OrderStatus } from '@app/entity/domain/order/type/OrderStatus';
-import { IamportPaymentData } from '@app/entity/domain/payment/iamport/types';
+import { IamportPayment } from '@app/entity/domain/pg/iamport/types';
 import { PaymentService } from '@app/entity/domain/payment/PaymentService';
 import { User } from '@app/entity/domain/user/User.entity';
 import { CACHE_SERVICE, CacheService } from '@app/util/cache';
@@ -85,7 +85,7 @@ export class OrderApiService {
 
   private async acceptOrder(
     order: Order,
-    paymentData: IamportPaymentData,
+    paymentData: IamportPayment,
   ): Promise<Order> {
     // tx ?
     order.complete();

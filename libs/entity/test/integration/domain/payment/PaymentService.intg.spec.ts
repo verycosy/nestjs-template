@@ -5,6 +5,7 @@ import {
   PaymentSchema,
 } from '@app/entity/domain/payment/Payment.schema';
 import { PaymentService } from '@app/entity/domain/payment/PaymentService';
+import { IamportService } from '@app/entity/domain/pg';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Model, Types } from 'mongoose';
@@ -30,7 +31,7 @@ describe('PaymentService', () => {
           },
         ]),
       ],
-      providers: [PaymentService],
+      providers: [PaymentService, IamportService],
     }).compile();
 
     sut = module.get(PaymentService);
