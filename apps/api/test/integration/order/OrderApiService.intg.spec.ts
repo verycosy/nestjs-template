@@ -28,6 +28,7 @@ import {
 } from '@app/util/cache';
 import { User } from '@app/entity/domain/user/User.entity';
 import { ForgeryOrderError } from '../../../../../apps/api/src/order/error';
+import { OrderStatus } from '@app/entity/domain/order/type/OrderStatus';
 
 describe('OrderApiService', () => {
   let sut: OrderApiService;
@@ -87,6 +88,7 @@ describe('OrderApiService', () => {
 
       expect(result).toMatchObject({
         id: 1,
+        status: OrderStatus.Ready,
         items: [
           {
             id: 1,
@@ -151,6 +153,7 @@ describe('OrderApiService', () => {
 
       expect(result.id).toBe(1);
       expect(result.items.length).toBe(2);
+      expect(result.status).toBe(OrderStatus.Complete);
       const cart = await cartRepository.findOne({
         where: { user },
         relations: ['items'],

@@ -1,6 +1,7 @@
 import { Cart } from '@app/entity/domain/cart/Cart.entity';
 import { CartItem } from '@app/entity/domain/cart/CartItem.entity';
 import { Order } from '@app/entity/domain/order/Order.entity';
+import { OrderStatus } from '@app/entity/domain/order/type/OrderStatus';
 import { IamportPaymentData } from '@app/entity/domain/payment/iamport/types';
 import { PaymentService } from '@app/entity/domain/payment/PaymentService';
 import { User } from '@app/entity/domain/user/User.entity';
@@ -84,6 +85,8 @@ export class OrderApiService {
     paymentData: IamportPaymentData,
   ): Promise<Order> {
     // tx ?
+    order.complete();
+
     await this.paymentService.save(paymentData);
     await this.orderRepository.save(order);
     await this.removeOrderedCartItems(order.merchantUid);
@@ -93,7 +96,7 @@ export class OrderApiService {
 
   async complete(impUid: string, merchantUid: string): Promise<Order> {
     const order = await this.orderRepository.findOne({
-      where: { merchantUid },
+      where: { merchantUid, status: OrderStatus.Ready },
       relations: ['items'],
     });
 

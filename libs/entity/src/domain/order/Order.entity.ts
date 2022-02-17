@@ -5,8 +5,7 @@ import { CartItem } from '../cart/CartItem.entity';
 import { IamportPaymentData } from '../payment/iamport/types';
 import { User } from '../user/User.entity';
 import { OrderItem } from './OrderItem.entity';
-
-// TODO: pending | settled ?
+import { OrderStatus } from './type/OrderStatus';
 
 @Entity('order')
 export class Order extends BaseTimeEntity {
@@ -21,6 +20,12 @@ export class Order extends BaseTimeEntity {
     cascade: ['insert'],
   })
   items: OrderItem[];
+
+  @Column({
+    type: 'enum',
+    enum: OrderStatus,
+  })
+  status = OrderStatus.Ready;
 
   private generateMerchantUid(): string {
     return uuidv4();
@@ -43,5 +48,9 @@ export class Order extends BaseTimeEntity {
 
   isForgery(paymentData: IamportPaymentData): boolean {
     return paymentData.amount !== this.getTotalAmount();
+  }
+
+  complete(): void {
+    this.status = OrderStatus.Complete;
   }
 }
