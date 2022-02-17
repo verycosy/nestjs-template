@@ -1,2 +1,2 @@
 export * from './ForgeryOrderError';
-export * from './AcceptOrderFailedError';
+export * from './OrderCompleteFailedError';

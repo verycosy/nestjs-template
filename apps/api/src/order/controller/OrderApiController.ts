@@ -2,7 +2,7 @@ import { AccessTokenGuard, CurrentUser } from '@app/auth';
 import { ResponseEntity, ResponseStatus } from '@app/config/response';
 import { User } from '@app/entity/domain/user/User.entity';
 import { Body, Controller, Post } from '@nestjs/common';
-import { CartOrderRequest, OrderDto } from '../dto';
+import { CancelOrderRequest, CartOrderRequest, OrderDto } from '../dto';
 import { OrderApiService } from '../OrderApiService';
 
 @AccessTokenGuard()
@@ -54,5 +54,11 @@ export class OrderApiController {
     @Body() body: CartOrderRequest.Complete,
   ): Promise<ResponseEntity<OrderDto | string>> {
     return await this.orderFromCartComplete(body);
+  }
+
+  @Post('/cancel')
+  async cancelOrder(@Body() body: CancelOrderRequest) {
+    const { merchantUid, reason, orderItemId } = body;
+    await this.orderApiService.cancel(merchantUid, orderItemId, reason);
   }
 }

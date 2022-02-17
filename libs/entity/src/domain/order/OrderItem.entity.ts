@@ -87,4 +87,8 @@ export class OrderItem extends BaseTimeEntity {
   isReviewable(): boolean {
     return true;
   }
+
+  cancel(): void {
+    this.status = OrderItemStatus.Cancel;
+  }
 }

@@ -1,6 +1,7 @@
 import { Cart } from '@app/entity/domain/cart/Cart.entity';
 import { CartItem } from '@app/entity/domain/cart/CartItem.entity';
 import { Order } from '@app/entity/domain/order/Order.entity';
+import { OrderItem } from '@app/entity/domain/order/OrderItem.entity';
 import { OrderStatus } from '@app/entity/domain/order/type/OrderStatus';
 import { IamportPaymentData } from '@app/entity/domain/payment/iamport/types';
 import { PaymentService } from '@app/entity/domain/payment/PaymentService';
@@ -9,7 +10,7 @@ import { CACHE_SERVICE, CacheService } from '@app/util/cache';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { AcceptOrderFailedError, ForgeryOrderError } from './error';
+import { OrderCompleteFailedError, ForgeryOrderError } from './error';
 
 @Injectable()
 export class OrderApiService {
@@ -19,6 +20,8 @@ export class OrderApiService {
     private readonly cartItemRepository: Repository<CartItem>,
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
+    @InjectRepository(OrderItem)
+    private readonly orderItemRepository: Repository<OrderItem>,
     private readonly paymentService: PaymentService,
     @Inject(CACHE_SERVICE) private readonly cacheService: CacheService,
   ) {}
@@ -116,16 +119,40 @@ export class OrderApiService {
         case 'paid':
           return await this.acceptOrder(order, paymentData);
         default:
-          throw new AcceptOrderFailedError();
+          throw new OrderCompleteFailedError();
       }
     } catch (err) {
       if (
         err instanceof ForgeryOrderError ||
-        err instanceof AcceptOrderFailedError
+        err instanceof OrderCompleteFailedError
       ) {
-        await this.paymentService.cancel(impUid);
+        await this.paymentService.cancel(impUid, err.message);
       }
       throw err;
     }
+  }
+
+  async cancel(merchantUid: string, orderItemId: number, reason: string) {
+    // TODO: try, tx
+    const orderItem = await this.orderItemRepository.findOne({
+      id: orderItemId,
+    });
+
+    if (!orderItem) {
+      return null;
+    }
+
+    const canceledPayment = await this.paymentService.cancel(
+      merchantUid,
+      reason,
+      orderItem.getAmount(),
+    );
+
+    if (!canceledPayment) {
+      return null;
+    }
+
+    orderItem.cancel();
+    await this.orderItemRepository.save(orderItem);
   }
 }

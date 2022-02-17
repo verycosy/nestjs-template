@@ -1,5 +1,6 @@
 import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { AlreadyTotalAmountCanceledError } from './error/AlreadyTotalAmountCanceledError';
 
 export type PaymentDocument = Payment & Document;
 
@@ -129,6 +130,16 @@ export class Payment {
 
   @Prop()
   cash_receipt_issued: boolean;
+
+  getCancelableAmount(): number {
+    const cancelableAmount = this.amount - this.cancel_amount;
+
+    if (cancelableAmount <= 0) {
+      throw new AlreadyTotalAmountCanceledError();
+    }
+
+    return cancelableAmount;
+  }
 }
 
 export const PaymentSchema = SchemaFactory.createForClass(Payment);

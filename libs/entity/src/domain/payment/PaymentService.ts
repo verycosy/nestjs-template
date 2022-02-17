@@ -43,16 +43,56 @@ export class PaymentService {
     return data.response;
   }
 
-  private async cancelIamportPayment(impUid: string) {
-    return this.getIamportPaymentData(impUid);
+  private async cancelIamportPayment(
+    impUid: string,
+    reason: string,
+    checksum: number,
+    cancelRequestAmount?: number,
+  ): Promise<IamportPaymentData> {
+    const { data } = await axios.post<IamportPaymentDataResponse>(
+      `${PaymentService.IAMPORT_API_URL}/payments/cancel`,
+      {
+        reason,
+        impUid,
+        amount: cancelRequestAmount, // NOTE: undefined이면 전액취소
+        checksum,
+      },
+      {
+        headers: {
+          Authorization: await this.getIamportAccessToken(),
+        },
+      },
+    );
+
+    return data.response;
   }
 
   async complete(impUid: string): Promise<IamportPaymentData> {
     return await this.getIamportPaymentData(impUid);
   }
 
-  async cancel(impUid: string): Promise<IamportPaymentData> {
-    return await this.cancelIamportPayment(impUid);
+  async cancel(
+    merchantUid: string,
+    reason: string,
+    cancelRequestAmount?: number,
+  ): Promise<IamportPaymentData> {
+    const payment = await this.paymentModel.findOne({
+      merchant_uid: merchantUid,
+    });
+
+    if (!payment) {
+      return null;
+    }
+
+    const response = await this.cancelIamportPayment(
+      payment.imp_uid,
+      reason,
+      payment.getCancelableAmount(),
+      cancelRequestAmount,
+    );
+
+    await payment.update(response, { new: true });
+    return response;
   }
 
   async save(iamportPaymentData: IamportPaymentData): Promise<PaymentDocument> {

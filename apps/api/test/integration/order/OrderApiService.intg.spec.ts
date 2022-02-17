@@ -131,7 +131,10 @@ describe('OrderApiService', () => {
         await sut.complete('impUid', order.merchantUid);
       } catch (err) {
         expect(err).toBeInstanceOf(ForgeryOrderError);
-        expect(cancelSpy).toBeCalledWith('impUid');
+        expect(cancelSpy).toBeCalledWith(
+          'impUid',
+          `Accept order failed. order amount:3000, paid amount:4000`,
+        );
         expect(err.message).toBe(
           `Accept order failed. order amount:3000, paid amount:4000`,
         );
@@ -160,5 +163,21 @@ describe('OrderApiService', () => {
       });
       expect(cart.items.length).toBe(0);
     });
+  });
+
+  describe('cancel', () => {
+    it('존재하지 않는 주문항목인 경우', async () => {});
+
+    it('저장된 결제내역이 없는 경우', async () => {});
+
+    it('이미 취소(전액환불)된 주문항목인 경우', async () => {});
+
+    describe('iamport 결제 취소 에러', () => {
+      it('취소불가(checksum)', async () => {});
+
+      it('통신 오류', async () => {});
+    });
+
+    it('취소된 주문항목 반환', async () => {});
   });
 });
