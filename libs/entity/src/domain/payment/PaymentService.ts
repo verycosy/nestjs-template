@@ -1,29 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { IamportService, IamportPayment } from '../pg';
-import { Payment, PaymentDocument } from './Payment.schema';
+import { IamportService } from '../pg';
+import { PaymentDocument } from './Payment.schema';
+import { PaymentRepository } from './PaymentRepository';
 
 @Injectable()
 export class PaymentService {
   constructor(
-    @InjectModel(Payment.name)
-    private readonly paymentModel: Model<PaymentDocument>,
+    private readonly paymentRepository: PaymentRepository,
     private readonly iamportService: IamportService,
   ) {}
 
-  async complete(impUid: string): Promise<IamportPayment> {
-    return await this.iamportService.getPayment(impUid);
+  async complete(impUid: string): Promise<PaymentDocument> {
+    const payment = await this.iamportService.getPayment(impUid);
+    return await this.paymentRepository.save(payment);
   }
 
   async cancel(
     merchantUid: string,
     reason: string,
     cancelRequestAmount?: number,
-  ): Promise<IamportPayment> {
-    const payment = await this.paymentModel.findOne({
-      merchant_uid: merchantUid,
-    });
+  ): Promise<PaymentDocument> {
+    const payment = await this.paymentRepository.findOneByMerchantUid(
+      merchantUid,
+    );
 
     if (!payment) {
       return null;
@@ -37,10 +36,6 @@ export class PaymentService {
     );
 
     await payment.update(response, { new: true });
-    return response;
-  }
-
-  async save(iamportPaymentData: IamportPayment): Promise<PaymentDocument> {
-    return await this.paymentModel.create(iamportPaymentData);
+    return payment;
   }
 }

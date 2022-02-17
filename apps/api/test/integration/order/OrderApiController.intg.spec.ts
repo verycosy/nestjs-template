@@ -59,10 +59,10 @@ describe('OrderApiController', () => {
 
     jest
       .spyOn(module.get(PaymentService), 'complete')
-      .mockResolvedValue(iamportPaymentMockData);
+      .mockResolvedValue(iamportPaymentMockData as any);
     jest
       .spyOn(module.get(PaymentService), 'cancel')
-      .mockResolvedValue(iamportPaymentMockData);
+      .mockResolvedValue(iamportPaymentMockData as any);
   });
 
   afterEach(async () => {

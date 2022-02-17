@@ -3,7 +3,6 @@ import { CartItem } from '@app/entity/domain/cart/CartItem.entity';
 import { Order } from '@app/entity/domain/order/Order.entity';
 import { OrderItem } from '@app/entity/domain/order/OrderItem.entity';
 import { OrderStatus } from '@app/entity/domain/order/type/OrderStatus';
-import { IamportPayment } from '@app/entity/domain/pg/iamport/types';
 import { PaymentService } from '@app/entity/domain/payment/PaymentService';
 import { User } from '@app/entity/domain/user/User.entity';
 import { CACHE_SERVICE, CacheService } from '@app/util/cache';
@@ -83,14 +82,10 @@ export class OrderApiService {
     return this.waitOrder(user, cartItemIds);
   }
 
-  private async acceptOrder(
-    order: Order,
-    paymentData: IamportPayment,
-  ): Promise<Order> {
+  private async acceptOrder(order: Order): Promise<Order> {
     // tx ?
     order.complete();
 
-    await this.paymentService.save(paymentData);
     await this.orderRepository.save(order);
     await this.removeOrderedCartItems(order.merchantUid);
 
@@ -117,7 +112,7 @@ export class OrderApiService {
 
       switch (paymentData.status) {
         case 'paid':
-          return await this.acceptOrder(order, paymentData);
+          return await this.acceptOrder(order);
         default:
           throw new OrderCompleteFailedError();
       }

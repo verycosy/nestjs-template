@@ -2,7 +2,7 @@ import { BaseTimeEntity } from '@app/entity/BaseTimeEntity';
 import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { CartItem } from '../cart/CartItem.entity';
-import { IamportPayment } from '../pg/iamport/types';
+import { PaymentDocument } from '../payment/Payment.schema';
 import { User } from '../user/User.entity';
 import { OrderItem } from './OrderItem.entity';
 import { OrderStatus } from './type/OrderStatus';
@@ -46,8 +46,8 @@ export class Order extends BaseTimeEntity {
     return this.items.reduce((acc, cur) => (acc += cur.getAmount()), 0);
   }
 
-  isForgery(paymentData: IamportPayment): boolean {
-    return paymentData.amount !== this.getTotalAmount();
+  isForgery(paymentDocument: PaymentDocument): boolean {
+    return paymentDocument.amount !== this.getTotalAmount();
   }
 
   complete(): void {

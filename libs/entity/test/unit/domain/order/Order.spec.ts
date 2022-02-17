@@ -1,6 +1,6 @@
 import { Order } from '@app/entity/domain/order/Order.entity';
 import { OrderItem } from '@app/entity/domain/order/OrderItem.entity';
-import { IamportPayment } from '@app/entity/domain/pg/iamport/types';
+import { PaymentDocument } from '@app/entity/domain/payment/Payment.schema';
 import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
 
 describe('Order', () => {
@@ -37,12 +37,12 @@ describe('Order', () => {
       expect(
         order.isForgery({
           amount: 3000,
-        } as IamportPayment),
+        } as PaymentDocument),
       ).toBe(true);
       expect(
         order.isForgery({
           amount: 11300,
-        } as IamportPayment),
+        } as PaymentDocument),
       ).toBe(false);
     });
   });

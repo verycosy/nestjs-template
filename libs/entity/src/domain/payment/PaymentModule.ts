@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { IamportService } from '../pg';
 import { Payment, PaymentSchema } from './Payment.schema';
+import { PaymentRepository } from './PaymentRepository';
 import { PaymentService } from './PaymentService';
 
 @Module({
@@ -18,7 +19,7 @@ import { PaymentService } from './PaymentService';
       },
     ]),
   ],
-  providers: [PaymentService, IamportService],
+  providers: [PaymentService, IamportService, PaymentRepository],
   exports: [PaymentService, MongooseModule],
 })
 export class PaymentModule {}
