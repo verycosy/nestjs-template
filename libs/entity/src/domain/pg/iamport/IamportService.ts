@@ -1,11 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
+import { plainToClass } from 'class-transformer';
+import { Payment } from '../../payment/Payment.schema';
 import { PgService } from '../PgService';
-import {
-  IamportPayment,
-  IamportPaymentResponse,
-  IamportTokenResponse,
-} from './types';
+import { IamportPaymentResponse, IamportTokenResponse } from './types';
 
 @Injectable()
 export class IamportService implements PgService {
@@ -23,7 +21,7 @@ export class IamportService implements PgService {
     return data.response.access_token;
   }
 
-  async getPayment(impUid: string): Promise<IamportPayment> {
+  async getPayment(impUid: string): Promise<Payment> {
     const { data } = await axios.get<IamportPaymentResponse>(
       `${IamportService.API_URL}/payments/${impUid}`,
       {
@@ -33,7 +31,7 @@ export class IamportService implements PgService {
       },
     );
 
-    return data.response;
+    return plainToClass(Payment, data.response);
   }
 
   async cancelPayment(
@@ -41,7 +39,7 @@ export class IamportService implements PgService {
     reason: string,
     checksum: number,
     cancelRequestAmount?: number,
-  ): Promise<IamportPayment> {
+  ): Promise<Payment> {
     const { data } = await axios.post<IamportPaymentResponse>(
       `${IamportService.API_URL}/payments/cancel`,
       {
@@ -57,6 +55,6 @@ export class IamportService implements PgService {
       },
     );
 
-    return data.response;
+    return plainToClass(Payment, data.response);
   }
 }

@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { IamportPayment } from '../pg';
 import { Payment, PaymentDocument } from './Payment.schema';
 
 @Injectable()
@@ -17,10 +16,10 @@ export class PaymentRepository {
     });
   }
 
-  async save(iamportPayment: IamportPayment): Promise<PaymentDocument> {
+  async save(payment: Payment): Promise<PaymentDocument> {
     return await this.paymentModel.findOneAndUpdate(
-      { merchant_uid: iamportPayment.merchant_uid },
-      iamportPayment,
+      { merchant_uid: payment.merchant_uid },
+      payment,
       { new: true, upsert: true },
     );
   }
