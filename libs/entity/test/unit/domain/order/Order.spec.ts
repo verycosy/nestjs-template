@@ -8,11 +8,11 @@ describe('Order', () => {
     it('총 주문액을 반환', () => {
       const orderItem1 = new OrderItem();
       orderItem1.setOption(ProductOption.create('detail', 1000, 500));
-      orderItem1.setQuantity(3);
+      orderItem1.quantity = 3;
 
       const orderItem2 = new OrderItem();
       orderItem2.setOption(ProductOption.create('detail', 5000, 100));
-      orderItem2.setQuantity(2);
+      orderItem2.quantity = 2;
 
       const order = new Order();
       order.items = [orderItem1, orderItem2];
@@ -25,11 +25,11 @@ describe('Order', () => {
     it('결제 금액의 위조 여부를 반환', () => {
       const orderItem1 = new OrderItem();
       orderItem1.setOption(ProductOption.create('detail', 1000, 500));
-      orderItem1.setQuantity(3);
+      orderItem1.quantity = 3;
 
       const orderItem2 = new OrderItem();
       orderItem2.setOption(ProductOption.create('detail', 5000, 100));
-      orderItem2.setQuantity(2);
+      orderItem2.quantity = 2;
 
       const order = new Order();
       order.items = [orderItem1, orderItem2];

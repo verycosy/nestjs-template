@@ -41,7 +41,7 @@ export class Review extends BaseTimeEntity {
     const review = new Review();
     review.user = user;
     review.orderItem = orderItem;
-    review.product = orderItem.getProduct();
+    review.product = orderItem.product;
     review.update(rating, detail, imagePath);
 
     return review;

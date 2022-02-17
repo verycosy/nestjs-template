@@ -75,7 +75,7 @@ describe('ProductInquiryAdminController', () => {
       const result = await sut.answer(admin, 1, dto);
 
       const data = result.data as ProductInquiryAnswerDto;
-      expect(data.adminName).toBe(admin.getName());
+      expect(data.adminName).toBe(admin.name);
       expect(data.answer).toBe('this is answer');
     });
   });

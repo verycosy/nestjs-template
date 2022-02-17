@@ -77,7 +77,7 @@ describe('UserAdminService', () => {
       UpdateUserRequest.create('new', '010-3333-4444', 'new password'),
     );
 
-    expect(result.getName()).toBe('new');
+    expect(result.name).toBe('new');
     expect(result.phoneNumber).toBe('010-3333-4444');
     expect(result.validatePassword('new password')).resolves.toBe(true);
   });

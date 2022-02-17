@@ -19,13 +19,13 @@ export class User extends BaseTimeEntity {
   role: Role;
 
   @Column()
-  private name: string;
+  name: string;
 
   @Column()
   email: string;
 
   @Column()
-  private password: string;
+  password: string;
 
   @Column({
     length: 13,
@@ -49,14 +49,6 @@ export class User extends BaseTimeEntity {
   @ManyToMany(() => Product)
   @JoinTable()
   liked: Promise<Product[]>;
-
-  setName(name: string): void {
-    this.name = name;
-  }
-
-  getName(): string {
-    return this.name;
-  }
 
   async changePassword(newPassword: string): Promise<void> {
     this.password = await bcrypt.hash(newPassword, 10);
@@ -84,7 +76,7 @@ export class User extends BaseTimeEntity {
     phoneNumber: string,
     password?: string,
   ): Promise<void> {
-    this.setName(name);
+    this.name = name;
     this.phoneNumber = phoneNumber;
 
     if (password !== undefined) {

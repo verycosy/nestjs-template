@@ -4,7 +4,7 @@ import { ProductInquiry } from '../ProductInquiry.entity';
 export class ProductInquiryAnswerDto {
   constructor(entity: ProductInquiry) {
     this.id = entity.id;
-    this.adminName = entity.admin.getName();
+    this.adminName = entity.admin.name;
     this.answer = entity.answer;
     this.answeredAt = DateTimeUtil.toString(entity.answeredAt);
   }

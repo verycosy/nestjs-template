@@ -6,7 +6,7 @@ export class GetReviewsItem {
     this.rating = entity.rating;
     this.detail = entity.detail;
     this.imagePath = entity.imagePath;
-    this.selectedOption = entity.orderItem.getOptionDetail();
+    this.selectedOption = entity.orderItem.optionDetail;
   }
 
   id: number;

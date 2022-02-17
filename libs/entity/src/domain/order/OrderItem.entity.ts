@@ -16,32 +16,32 @@ export class OrderItem extends BaseTimeEntity {
   order: Order;
 
   @ManyToOne(() => Product)
-  private product: Product;
+  product: Product;
 
   @ManyToOne(() => ProductOption)
-  private option: ProductOption;
+  option: ProductOption;
 
   @Column()
-  private productName: string;
+  productName: string;
 
   @Column()
-  private optionDetail: string;
+  optionDetail: string;
 
   @Column()
-  private optionPrice: number;
+  optionPrice: number;
 
   @Column()
-  private optionDiscount: number;
+  optionDiscount: number;
 
   @Column()
-  private quantity: number;
+  quantity: number;
 
   @Column({
     type: 'enum',
     enum: OrderItemStatus,
     default: OrderItemStatus.Accept,
   })
-  private status: OrderItemStatus;
+  status: OrderItemStatus;
 
   @OneToOne(() => Review)
   review: Review;
@@ -54,7 +54,7 @@ export class OrderItem extends BaseTimeEntity {
     const orderItem = new OrderItem();
     orderItem.setProduct(product);
     orderItem.setOption(option);
-    orderItem.setQuantity(quantity);
+    orderItem.quantity = quantity;
     orderItem.status = OrderItemStatus.Accept;
 
     return orderItem;
@@ -68,27 +68,7 @@ export class OrderItem extends BaseTimeEntity {
     );
   }
 
-  getStatus(): OrderItemStatus {
-    return this.status;
-  }
-
-  getProduct(): Product {
-    return this.product;
-  }
-
-  getProductName(): string {
-    return this.productName;
-  }
-
-  setQuantity(quantity: number): void {
-    this.quantity = quantity;
-  }
-
-  getQuantity(): number {
-    return this.quantity;
-  }
-
-  setProduct(product: Product): void {
+  private setProduct(product: Product): void {
     this.product = product;
     this.productName = product.name;
   }
@@ -98,18 +78,6 @@ export class OrderItem extends BaseTimeEntity {
     this.optionPrice = option.price;
     this.optionDetail = option.detail;
     this.optionDiscount = option.discount;
-  }
-
-  getOptionPrice(): number {
-    return this.optionPrice;
-  }
-
-  getOptionDetail(): string {
-    return this.optionDetail;
-  }
-
-  getOptionDiscount(): number {
-    return this.optionDiscount;
   }
 
   getAmount(): number {
