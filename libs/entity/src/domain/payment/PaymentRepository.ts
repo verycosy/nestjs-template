@@ -17,7 +17,11 @@ export class PaymentRepository {
     });
   }
 
-  async save(payment: IamportPayment): Promise<PaymentDocument> {
-    return await this.paymentModel.create(payment);
+  async save(iamportPayment: IamportPayment): Promise<PaymentDocument> {
+    return await this.paymentModel.findOneAndUpdate(
+      { merchant_uid: iamportPayment.merchant_uid },
+      iamportPayment,
+      { new: true, upsert: true },
+    );
   }
 }

@@ -28,14 +28,13 @@ export class PaymentService {
       return null;
     }
 
-    const response = await this.iamportService.cancelPayment(
+    const canceledPayment = await this.iamportService.cancelPayment(
       payment.imp_uid,
       reason,
       payment.getCancelableAmount(),
       cancelRequestAmount,
     );
 
-    await payment.update(response, { new: true });
-    return payment;
+    return await this.paymentRepository.save(canceledPayment);
   }
 }
