@@ -48,4 +48,11 @@ export class OrderApiController {
       return ResponseEntity.ERROR_WITH(err.message);
     }
   }
+
+  @Post('/iamport-webhook')
+  async iamportWebhook(
+    @Body() body: CartOrderRequest.Complete,
+  ): Promise<ResponseEntity<OrderDto | string>> {
+    return await this.orderFromCartComplete(body);
+  }
 }
