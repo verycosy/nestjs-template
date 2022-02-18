@@ -21,13 +21,9 @@ export class CategoryAdminService {
     categoryId: number,
     subCategoryName: string,
   ): Promise<SubCategory> {
-    const category = await this.categoryRepository.findOne({
+    const category = await this.categoryRepository.findOneOrFail({
       id: categoryId,
     });
-
-    if (!category) {
-      return null;
-    }
 
     return await this.subCategoryRepository.save(
       SubCategory.create(category, subCategoryName),

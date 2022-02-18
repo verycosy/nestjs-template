@@ -1,5 +1,5 @@
 import { AdminGuard } from '@app/auth';
-import { ResponseEntity, ResponseStatus } from '@app/config/response';
+import { ResponseEntity } from '@app/config/response';
 import { Category, SubCategory } from '@app/entity/domain/category';
 import { Body, Controller, Param, Post } from '@nestjs/common';
 import { CategoryAdminService } from '../CategoryAdminService';
@@ -27,13 +27,6 @@ export class CategoryAdminController {
       categoryId,
       request.name,
     );
-
-    if (result === null) {
-      return ResponseEntity.ERROR_WITH(
-        'Category not Found',
-        ResponseStatus.NOT_FOUND,
-      );
-    }
 
     return ResponseEntity.OK_WITH(result);
   }

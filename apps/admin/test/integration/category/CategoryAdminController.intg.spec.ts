@@ -7,9 +7,9 @@ import {
   CreateCategoryRequest,
   CreateSubCategoryRequest,
 } from '../../../src/category/dto';
-import { Repository } from 'typeorm';
+import { EntityNotFoundError, Repository } from 'typeorm';
 import { Category, SubCategory } from '@app/entity/domain/category';
-import { ResponseEntity, ResponseStatus } from '@app/config/response';
+import { ResponseEntity } from '@app/config/response';
 import { CategoryAdminService } from '../../../src/category/CategoryAdminService';
 import { ProductModule } from '@app/entity/domain/product/ProductModule';
 
@@ -46,17 +46,15 @@ describe('CategoryAdminController', () => {
   });
 
   describe('createSubCategory', () => {
-    it('부모 카테고리가 없으면 Error Response Entity 반환', async () => {
+    it('부모 카테고리가 없으면 EntityNotFoundError를 던진다', async () => {
+      // given
       const request = CreateSubCategoryRequest.create('apple');
 
-      const result = await sut.createSubCategory(1, request);
+      // when
+      const actual = () => sut.createSubCategory(1, request);
 
-      expect(result).toEqual(
-        ResponseEntity.ERROR_WITH(
-          'Category not Found',
-          ResponseStatus.NOT_FOUND,
-        ),
-      );
+      // then
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('생성된 서브 카테고리 반환', async () => {

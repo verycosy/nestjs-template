@@ -46,19 +46,35 @@ describe('CategoryAdminController (e2e)', () => {
     expect(body.data.name).toBe('fruit');
   });
 
-  it('/category/:id (POST)', async () => {
-    await categoryRepository.save(new Category('fruit'));
+  describe('/category/:id (POST)', () => {
+    it('상위 카테고리가 없으면 404', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/category/1')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          name: 'tropics',
+        });
 
-    const res = await request(app.getHttpServer())
-      .post('/category/1')
-      .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        name: 'tropics',
+      expect(res.status).toBe(404);
+      expect(res.body).toEqual({
+        message: '데이터를 찾을 수 없습니다 - "Category" 조건: {"id": "1"}',
       });
+    });
 
-    const body: ResponseEntity<SubCategory> = res.body;
-    expect(res.status).toBe(201);
-    expect(body.data.id).toBe(1);
-    expect(body.data.name).toBe('tropics');
+    it('생성된 하위 카테고리 반환', async () => {
+      await categoryRepository.save(new Category('fruit'));
+
+      const res = await request(app.getHttpServer())
+        .post('/category/1')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          name: 'tropics',
+        });
+
+      const body: ResponseEntity<SubCategory> = res.body;
+      expect(res.status).toBe(201);
+      expect(body.data.id).toBe(1);
+      expect(body.data.name).toBe('tropics');
+    });
   });
 });
