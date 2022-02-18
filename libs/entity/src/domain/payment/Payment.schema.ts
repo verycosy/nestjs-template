@@ -1,19 +1,24 @@
 import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { IamportPayment } from '../pg';
 import { AlreadyTotalAmountCanceledError } from './error/AlreadyTotalAmountCanceledError';
 
 export type PaymentDocument = Payment & Document;
 
 @Schema()
 export class Payment {
+  constructor(data: IamportPayment) {
+    Object.assign(this, data);
+  }
+
   @Prop({ required: true, index: true, unique: true })
-  merchant_uid: string;
+  merchantUid: string;
 
   @Prop({ required: true, unique: true })
-  imp_uid: string;
+  impUid: string;
 
   @Prop()
-  apply_num: string;
+  applyNum: string;
 
   @Prop()
   amount: number;
@@ -22,34 +27,34 @@ export class Payment {
   name: string;
 
   @Prop()
-  buyer_email: string;
+  buyerEmail: string;
 
   @Prop()
-  buyer_name: string;
+  buyerName: string;
 
   @Prop()
-  buyer_tel: string;
+  buyerTel: string;
 
   @Prop()
-  receipt_url: string;
+  receiptUrl: string;
 
   @Prop()
-  failed_at: number;
+  failedAt: number;
 
   @Prop()
-  started_at: number;
+  startedAt: number;
 
   @Prop()
-  paid_at: number;
+  paidAt: number;
 
   @Prop()
   status: string;
 
   @Prop()
-  user_agent: string;
+  userAgent: string;
 
   @Prop()
-  pay_method: string;
+  payMethod: string;
 
   @Prop()
   channel: string;
@@ -58,81 +63,81 @@ export class Payment {
   currency: string;
 
   @Prop()
-  pg_provider: string;
+  pgProvider: string;
 
   @Prop()
-  emb_pg_provider: string;
+  embPgProvider: string;
 
   @Prop()
-  pg_tid: string;
+  pgTid: string;
 
   @Prop()
-  pg_id: string;
+  pgId: string;
 
   @Prop()
-  customer_uid: string | null;
+  customerUid: string | null;
 
   @Prop()
-  customer_uid_usage: string | null;
+  customerUidUsage: string | null;
 
   @Prop()
-  custom_data: string | null;
+  customData: string | null;
 
   @Prop()
-  card_code: string;
+  cardCode: string;
 
   @Prop()
-  card_name: string;
+  cardName: string;
 
   @Prop()
-  card_number: string;
+  cardNumber: string;
 
   @Prop()
-  card_quota: number;
+  cardQuota: number;
 
   @Prop()
-  card_type: number;
+  cardType: number;
 
   @Prop()
-  bank_code: string;
+  bankCode: string;
 
   @Prop()
-  bank_name: string;
+  bankName: string;
 
   @Prop()
-  fail_reason: string | null;
+  failReason: string | null;
 
   @Prop()
-  cancelled_at: number;
+  cancelledAt: number;
 
   @Prop()
-  cancel_amount: number;
+  cancelAmount: number;
 
   @Prop([
     raw({
-      pg_tid: { type: String },
+      pgTid: { type: String },
       amount: { type: Number },
-      cancelled_at: { type: Number },
+      cancelledAt: { type: Number },
       reason: { type: String },
-      receipt_url: { type: String },
+      receiptUrl: { type: String },
     }),
   ])
-  cancel_history: Record<string, any>[];
+  cancelHistory: Record<string, any>[];
 
   @Prop()
-  cancel_reason: string | null;
+  cancelReason: string | null;
 
   @Prop([String])
-  cancel_receipt_urls: string[];
+  cancelReceiptUrls: string[];
 
   @Prop()
   escrow: boolean;
 
   @Prop()
-  cash_receipt_issued: boolean;
+  cashReceiptIssued: boolean;
 
   getCancelableAmount(): number {
-    const cancelableAmount = this.amount - this.cancel_amount;
+    const cancelableAmount = this.amount - this.cancelAmount;
 
     if (cancelableAmount <= 0) {
       throw new AlreadyTotalAmountCanceledError();

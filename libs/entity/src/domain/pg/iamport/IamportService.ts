@@ -1,37 +1,49 @@
 import { Injectable } from '@nestjs/common';
-import axios from 'axios';
-import { plainToClass } from 'class-transformer';
+import { plainToClass, plainToClassFromExist } from 'class-transformer';
 import { Payment } from '../../payment/Payment.schema';
 import { PgService } from '../PgService';
-import { IamportPaymentResponse, IamportTokenResponse } from './types';
+import { iamportRequest } from './iamportRequest';
+import { IamportResponse, IamportPayment, IamportToken } from './types';
 
 @Injectable()
 export class IamportService implements PgService {
-  private static readonly API_URL = 'https://api.iamport.kr';
+  private getRequest() {
+    return iamportRequest;
+  }
 
   private async getIamportAccessToken(): Promise<string> {
-    const { data } = await axios.post<IamportTokenResponse>(
-      `${IamportService.API_URL}/users/getToken`,
-      {
-        imp_key: process.env.IMP_KEY,
-        imp_secret: process.env.IMP_SECRET,
-      },
+    const { data } = await this.getRequest().post<
+      IamportResponse<IamportToken>
+    >(`/users/getToken`, {
+      imp_key: process.env.IMP_KEY,
+      imp_secret: process.env.IMP_SECRET,
+    });
+
+    const {
+      response: { accessToken },
+    } = plainToClassFromExist(
+      new IamportResponse<IamportToken>(IamportToken),
+      data,
     );
 
-    return data.response.access_token;
+    return accessToken;
   }
 
   async getPayment(impUid: string): Promise<Payment> {
-    const { data } = await axios.get<IamportPaymentResponse>(
-      `${IamportService.API_URL}/payments/${impUid}`,
-      {
-        headers: {
-          Authorization: await this.getIamportAccessToken(),
-        },
+    const { data } = await this.getRequest().get<
+      IamportResponse<IamportPayment>
+    >(`/payments/${impUid}`, {
+      headers: {
+        Authorization: await this.getIamportAccessToken(),
       },
+    });
+
+    const { response } = plainToClassFromExist(
+      new IamportResponse<IamportPayment>(IamportPayment),
+      data,
     );
 
-    return plainToClass(Payment, data.response);
+    return plainToClass(Payment, response);
   }
 
   async cancelPayment(
@@ -40,8 +52,10 @@ export class IamportService implements PgService {
     checksum: number,
     cancelRequestAmount?: number,
   ): Promise<Payment> {
-    const { data } = await axios.post<IamportPaymentResponse>(
-      `${IamportService.API_URL}/payments/cancel`,
+    const { data } = await this.getRequest().post<
+      IamportResponse<IamportPayment>
+    >(
+      `/payments/cancel`,
       {
         reason,
         merchant_uid: merchantUid,
@@ -55,6 +69,11 @@ export class IamportService implements PgService {
       },
     );
 
-    return plainToClass(Payment, data.response);
+    const { response } = plainToClassFromExist(
+      new IamportResponse<IamportPayment>(IamportPayment),
+      data,
+    );
+
+    return plainToClass(Payment, response);
   }
 }

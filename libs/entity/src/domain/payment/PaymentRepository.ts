@@ -12,13 +12,13 @@ export class PaymentRepository {
 
   async findOneByMerchantUid(merchantUid: string): Promise<PaymentDocument> {
     return await this.paymentModel.findOne({
-      merchant_uid: merchantUid,
+      merchantUid: merchantUid,
     });
   }
 
   async save(payment: Payment): Promise<PaymentDocument> {
     return await this.paymentModel.findOneAndUpdate(
-      { merchant_uid: payment.merchant_uid },
+      { merchantUid: payment.merchantUid },
       payment,
       { new: true, upsert: true },
     );

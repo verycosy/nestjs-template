@@ -29,7 +29,7 @@ export class PaymentService {
     }
 
     const canceledPayment = await this.iamportService.cancelPayment(
-      payment.imp_uid,
+      payment.impUid,
       reason,
       payment.getCancelableAmount(),
       cancelRequestAmount,

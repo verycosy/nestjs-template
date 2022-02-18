@@ -1,8 +1,6 @@
-import { IamportPayment } from '@app/entity/domain/pg/iamport/types';
-
 const pgTid = 'pgtid';
 
-export const iamportPaymentMockData: IamportPayment = {
+export const iamportPaymentMockData = {
   amount: 4000,
   apply_num: '30036147',
   bank_code: null,

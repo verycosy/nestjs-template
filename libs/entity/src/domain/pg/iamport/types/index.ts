@@ -1,2 +1,3 @@
-export * from './IamportTokenResponse';
-export * from './IamportPaymentResponse';
+export * from './IamportResponse';
+export * from './IamportToken';
+export * from './IamportPayment';
