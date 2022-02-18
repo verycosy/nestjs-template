@@ -3,8 +3,11 @@ import { OrderModule } from '@app/entity/domain/order/OrderModule';
 import { ProductModule } from '@app/entity/domain/product/ProductModule';
 import { UserModule } from '@app/entity/domain/user/UserModule';
 import { Test, TestingModule } from '@nestjs/testing';
-import { OrderApiService } from '../../../../../apps/api/src/order/OrderApiService';
-import { OrderApiController } from '../../../../../apps/api/src/order/controller/OrderApiController';
+import {
+  OrderApiController,
+  OrderApiService,
+  OrderCancelApiService,
+} from '../../../../../apps/api/src/order';
 import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import { CartModule } from '@app/entity/domain/cart/CartModule';
 import {
@@ -48,7 +51,7 @@ describe('OrderApiController', () => {
         PaymentModule,
         CustomCacheModule,
       ],
-      providers: [OrderApiService],
+      providers: [OrderApiService, OrderCancelApiService],
       controllers: [OrderApiController],
     }).compile();
 

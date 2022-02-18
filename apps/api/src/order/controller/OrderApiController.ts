@@ -4,11 +4,15 @@ import { User } from '@app/entity/domain/user/User.entity';
 import { Body, Controller, Post } from '@nestjs/common';
 import { CancelOrderRequest, CartOrderRequest, OrderDto } from '../dto';
 import { OrderApiService } from '../OrderApiService';
+import { OrderCancelApiService } from '../OrderCancelApiService';
 
 @AccessTokenGuard()
 @Controller('/order')
 export class OrderApiController {
-  constructor(private readonly orderApiService: OrderApiService) {}
+  constructor(
+    private readonly orderApiService: OrderApiService,
+    private readonly orderCancelApiService: OrderCancelApiService,
+  ) {}
 
   @Post('/cart/ready')
   async orderFromCartReady(
@@ -59,6 +63,6 @@ export class OrderApiController {
   @Post('/cancel')
   async cancelOrder(@Body() body: CancelOrderRequest) {
     const { merchantUid, reason, orderItemId } = body;
-    await this.orderApiService.cancel(merchantUid, orderItemId, reason);
+    await this.orderCancelApiService.cancel(merchantUid, orderItemId, reason);
   }
 }

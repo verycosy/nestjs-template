@@ -5,10 +5,11 @@ import { CustomCacheModule } from '@app/util/cache';
 import { Module } from '@nestjs/common';
 import { OrderApiController } from './controller/OrderApiController';
 import { OrderApiService } from './OrderApiService';
+import { OrderCancelApiService } from './OrderCancelApiService';
 
 @Module({
   imports: [OrderModule, CartModule, PaymentModule, CustomCacheModule],
   controllers: [OrderApiController],
-  providers: [OrderApiService],
+  providers: [OrderApiService, OrderCancelApiService],
 })
 export class OrderApiModule {}

@@ -1,6 +1,5 @@
 import { Cart } from '@app/entity/domain/cart/Cart.entity';
 import { Order } from '@app/entity/domain/order/Order.entity';
-import { OrderItem } from '@app/entity/domain/order/OrderItem.entity';
 import { OrderStatus } from '@app/entity/domain/order/type/OrderStatus';
 import { PaymentService } from '@app/entity/domain/payment/PaymentService';
 import { User } from '@app/entity/domain/user/User.entity';
@@ -16,8 +15,6 @@ export class OrderApiService {
     @InjectRepository(Cart) private readonly cartRepository: Repository<Cart>,
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
-    @InjectRepository(OrderItem)
-    private readonly orderItemRepository: Repository<OrderItem>,
     private readonly paymentService: PaymentService,
     @Inject(CACHE_SERVICE) private readonly cacheService: CacheService,
   ) {}
@@ -118,29 +115,5 @@ export class OrderApiService {
       }
       throw err;
     }
-  }
-
-  async cancel(merchantUid: string, orderItemId: number, reason: string) {
-    // TODO: try, tx
-    const orderItem = await this.orderItemRepository.findOne({
-      id: orderItemId,
-    });
-
-    if (!orderItem) {
-      return null;
-    }
-
-    const canceledPayment = await this.paymentService.cancel(
-      merchantUid,
-      reason,
-      orderItem.getAmount(),
-    );
-
-    if (!canceledPayment) {
-      return null;
-    }
-
-    orderItem.cancel();
-    await this.orderItemRepository.save(orderItem);
   }
 }
