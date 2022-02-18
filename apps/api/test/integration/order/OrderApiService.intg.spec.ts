@@ -21,11 +21,7 @@ import {
 } from '@app/entity/domain/payment/Payment.schema';
 import { getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import {
-  CacheService,
-  CACHE_SERVICE,
-  CustomCacheModule,
-} from '@app/util/cache';
+import { CacheService, CACHE_SERVICE } from '@app/util/cache';
 import { User } from '@app/entity/domain/user/User.entity';
 import { ForgeryOrderError } from '../../../../../apps/api/src/order/error';
 import { OrderStatus } from '@app/entity/domain/order/type/OrderStatus';
@@ -49,7 +45,6 @@ describe('OrderApiService', () => {
         CategoryModule,
         ReviewModule,
         PaymentModule,
-        CustomCacheModule,
       ],
       providers: [OrderApiService],
     }).compile();

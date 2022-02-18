@@ -29,7 +29,6 @@ import { Model } from 'mongoose';
 import { getModelToken } from '@nestjs/mongoose';
 import { PaymentService } from '@app/entity/domain/payment/PaymentService';
 import { iamportPaymentMockData } from '../../../../../libs/entity/test/integration/domain/payment/mockData';
-import { CustomCacheModule } from '@app/util/cache';
 
 describe('OrderApiController', () => {
   let sut: OrderApiController;
@@ -49,7 +48,6 @@ describe('OrderApiController', () => {
         CategoryModule,
         ReviewModule,
         PaymentModule,
-        CustomCacheModule,
       ],
       providers: [OrderApiService, OrderCancelApiService],
       controllers: [OrderApiController],
