@@ -1,5 +1,4 @@
 import { Cart } from '@app/entity/domain/cart/Cart.entity';
-import { CartItem } from '@app/entity/domain/cart/CartItem.entity';
 import { Order } from '@app/entity/domain/order/Order.entity';
 import { OrderItem } from '@app/entity/domain/order/OrderItem.entity';
 import { OrderStatus } from '@app/entity/domain/order/type/OrderStatus';
@@ -8,15 +7,13 @@ import { User } from '@app/entity/domain/user/User.entity';
 import { CACHE_SERVICE, CacheService } from '@app/util/cache';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { OrderCompleteFailedError, ForgeryOrderError } from './error';
 
 @Injectable()
 export class OrderApiService {
   constructor(
     @InjectRepository(Cart) private readonly cartRepository: Repository<Cart>,
-    @InjectRepository(CartItem)
-    private readonly cartItemRepository: Repository<CartItem>,
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
     @InjectRepository(OrderItem)
@@ -25,21 +22,12 @@ export class OrderApiService {
     @Inject(CACHE_SERVICE) private readonly cacheService: CacheService,
   ) {}
 
-  private async findCartItemsByIds(cartItemIds: number[]): Promise<CartItem[]> {
-    return await this.cartItemRepository.find({
-      where: {
-        id: In(cartItemIds),
-      },
-      relations: ['product', 'option'],
-    });
-  }
-
   private async findCartWithItemsByUser(user: User): Promise<Cart> {
     return await this.cartRepository.findOne({
       where: {
         user,
       },
-      relations: ['items'],
+      relations: ['items', 'items.product', 'items.option'],
     });
   }
 
@@ -52,17 +40,22 @@ export class OrderApiService {
     return cartItemIdsString.split(',').map(Number);
   }
 
-  private async removeOrderedCartItems(merchantUid: string): Promise<void> {
+  private async removeOrderedCartItems(order: Order): Promise<void> {
     const cartItemIds = await this.getOrderedCartItemIdsByMerchantUid(
-      merchantUid,
+      order.merchantUid,
     );
 
-    const cartItems = await this.findCartItemsByIds(cartItemIds);
-    await this.cartItemRepository.remove(cartItems);
+    const cart = await this.findCartWithItemsByUser(await order.user);
+    cart.items = cart.items.filter((item) => !cartItemIds.includes(item.id));
+
+    await this.cartRepository.save(cart);
   }
 
   private async waitOrder(user: User, cartItemIds: number[]): Promise<Order> {
-    const cartItems = await this.findCartItemsByIds(cartItemIds); // lazy ?
+    const cart = await this.findCartWithItemsByUser(user);
+    const cartItems = cart.items.filter((item) =>
+      cartItemIds.includes(item.id),
+    );
 
     const order = Order.create(user, cartItems);
     await this.orderRepository.save(order);
@@ -87,7 +80,7 @@ export class OrderApiService {
     order.complete();
 
     await this.orderRepository.save(order);
-    await this.removeOrderedCartItems(order.merchantUid);
+    await this.removeOrderedCartItems(order);
 
     return order;
   }

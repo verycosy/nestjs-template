@@ -14,7 +14,7 @@ export class Order extends BaseTimeEntity {
   merchantUid: string;
 
   @ManyToOne(() => User)
-  user: User;
+  user: Promise<User>;
 
   @OneToMany(() => OrderItem, (orderItem) => orderItem.order, {
     cascade: ['insert'],
@@ -34,7 +34,7 @@ export class Order extends BaseTimeEntity {
   static create(user: User, cartItems: CartItem[]): Order {
     const order = new Order();
     order.merchantUid = order.generateMerchantUid();
-    order.user = user;
+    order.user = Promise.resolve(user);
     order.items = cartItems.map((cartItem) =>
       OrderItem.createByCartItem(cartItem),
     );
