@@ -1,10 +1,13 @@
 import { CartService } from '@app/entity/domain/cart/CartService';
 import { Order } from '@app/entity/domain/order/Order.entity';
 import { OrderService } from '@app/entity/domain/order/OrderService';
-import { PaymentService } from '@app/entity/domain/payment/PaymentService';
+import {
+  PaymentService,
+  PaymentCompleteFailedError,
+} from '@app/entity/domain/payment';
 import { User } from '@app/entity/domain/user/User.entity';
 import { Injectable } from '@nestjs/common';
-import { OrderCompleteFailedError, ForgeryOrderError } from './error';
+import { ForgeryOrderError } from './error';
 
 @Injectable()
 export class OrderApiService {
@@ -56,12 +59,12 @@ export class OrderApiService {
           await this.cartService.removeOrderedCartItems(order);
           return order;
         default:
-          throw new OrderCompleteFailedError();
+          throw new PaymentCompleteFailedError();
       }
     } catch (err) {
       if (
         err instanceof ForgeryOrderError ||
-        err instanceof OrderCompleteFailedError
+        err instanceof PaymentCompleteFailedError
       ) {
         await this.paymentService.cancel(impUid, err.message);
       }
