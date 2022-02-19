@@ -3,7 +3,12 @@ import { ResponseEntity } from '@app/config/response';
 import { User } from '@app/entity/domain/user/User.entity';
 import { Body, Controller, Post } from '@nestjs/common';
 import { EntityNotFoundError } from 'typeorm';
-import { CancelOrderRequest, CartOrderRequest, OrderDto } from '../dto';
+import {
+  CancelOrderRequest,
+  CartOrderReadyRequest,
+  OrderCompleteRequest,
+  OrderDto,
+} from '../dto';
 import { OrderApiService } from '../OrderApiService';
 import { OrderCancelApiService } from '../OrderCancelApiService';
 
@@ -18,7 +23,7 @@ export class OrderApiController {
   @Post('/cart/ready')
   async orderFromCartReady(
     @CurrentUser() user: User,
-    @Body() body: CartOrderRequest.Ready,
+    @Body() body: CartOrderReadyRequest,
   ): Promise<ResponseEntity<string>> {
     const order = await this.orderApiService.ready(user, body.cartItemIds);
     return ResponseEntity.OK_WITH(order.merchantUid);
@@ -26,7 +31,7 @@ export class OrderApiController {
 
   @Post('/cart/complete')
   async orderFromCartComplete(
-    @Body() body: CartOrderRequest.Complete,
+    @Body() body: OrderCompleteRequest,
   ): Promise<ResponseEntity<OrderDto | string>> {
     const { impUid, merchantUid } = body;
 
@@ -44,7 +49,7 @@ export class OrderApiController {
 
   @Post('/iamport-webhook')
   async iamportWebhook(
-    @Body() body: CartOrderRequest.Complete,
+    @Body() body: OrderCompleteRequest,
   ): Promise<ResponseEntity<OrderDto | string>> {
     return await this.orderFromCartComplete(body);
   }

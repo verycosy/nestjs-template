@@ -11,7 +11,8 @@ import {
 import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import { CartModule } from '@app/entity/domain/cart/CartModule';
 import {
-  CartOrderRequest,
+  OrderCompleteRequest,
+  CartOrderReadyRequest,
   OrderDto,
 } from '../../../../../apps/api/src/order/dto';
 import { TestOrderFactory, TestUserFactory } from '@app/util/testing';
@@ -75,7 +76,7 @@ describe('OrderApiController', () => {
 
   describe('orderFromCartReady', () => {
     it('장바구니에 담기지 않은 상품을 주문할 경우 EntityNotFoundError를 던진다', async () => {
-      const dto = new CartOrderRequest.Ready([1, 2]);
+      const dto = new CartOrderReadyRequest([1, 2]);
 
       try {
         await sut.orderFromCartReady(user, dto);
@@ -86,7 +87,7 @@ describe('OrderApiController', () => {
 
     it('결제준비된 주문번호 반환', async () => {
       await CartItemFixtureFactory.create(module, user);
-      const dto = new CartOrderRequest.Ready([1, 2]);
+      const dto = new CartOrderReadyRequest([1, 2]);
 
       const result = await sut.orderFromCartReady(user, dto);
 
@@ -96,7 +97,7 @@ describe('OrderApiController', () => {
 
   describe('orderFromCartComplete', () => {
     it('결제준비된 주문이 없으면 EntityNotFoundError를 던진다', async () => {
-      const dto = new CartOrderRequest.Complete('impUid', 'merchantUid');
+      const dto = new OrderCompleteRequest('impUid', 'merchantUid');
 
       const actual = () => sut.orderFromCartComplete(dto);
 
@@ -109,7 +110,7 @@ describe('OrderApiController', () => {
         cartItems[0],
       ]);
 
-      const dto = new CartOrderRequest.Complete('impUid', order.merchantUid);
+      const dto = new OrderCompleteRequest('impUid', order.merchantUid);
 
       const result = await sut.orderFromCartComplete(dto);
       expect(result.message).toBe(
@@ -126,7 +127,7 @@ describe('OrderApiController', () => {
         cartItems,
       );
 
-      const dto = new CartOrderRequest.Complete('impUid', order.merchantUid);
+      const dto = new OrderCompleteRequest('impUid', order.merchantUid);
 
       const result = await sut.orderFromCartComplete(dto);
 
