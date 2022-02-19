@@ -5,7 +5,6 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtPayload } from '../interface/JwtPayload';
-import { UserNotFoundError } from '../error/UserNotFoundError';
 
 export const REFRESH_TOKEN_STRATEGY_NAME = 'refresh-token-jwt';
 
@@ -28,12 +27,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
   async validate(req: Request, payload: JwtPayload): Promise<User> {
     const { id } = payload;
 
-    const user = await this.userRepository.findOne({ id });
-
-    if (!user) {
-      throw new UserNotFoundError();
-    }
-
+    const user = await this.userRepository.findOneOrFail({ id });
     const refreshToken = req.headers['authorization'].split(' ')[1];
     if (user.refreshToken !== refreshToken) {
       throw new UnauthorizedException();

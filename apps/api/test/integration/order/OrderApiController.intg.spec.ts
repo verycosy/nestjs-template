@@ -29,6 +29,7 @@ import { Model } from 'mongoose';
 import { getModelToken } from '@nestjs/mongoose';
 import { PaymentService } from '@app/entity/domain/payment/PaymentService';
 import { iamportPaymentMockData } from '../../../../../libs/entity/test/integration/domain/payment/mockData';
+import { EntityNotFoundError } from 'typeorm';
 
 describe('OrderApiController', () => {
   let sut: OrderApiController;
@@ -73,13 +74,14 @@ describe('OrderApiController', () => {
   });
 
   describe('orderFromCartReady', () => {
-    it('장바구니에 담기지 않은 상품을 주문할 경우 not found error response 반환', async () => {
+    it('장바구니에 담기지 않은 상품을 주문할 경우 EntityNotFoundError를 던진다', async () => {
       const dto = new CartOrderRequest.Ready([1, 2]);
 
-      const result = await sut.orderFromCartReady(user, dto);
-
-      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
-      expect(result.message).toBe('Cart item not found');
+      try {
+        await sut.orderFromCartReady(user, dto);
+      } catch (err) {
+        expect(err).toBeInstanceOf(EntityNotFoundError);
+      }
     });
 
     it('결제준비된 주문번호 반환', async () => {
@@ -93,13 +95,12 @@ describe('OrderApiController', () => {
   });
 
   describe('orderFromCartComplete', () => {
-    it('결제준비된 주문이 없으면 server error response 반환', async () => {
+    it('결제준비된 주문이 없으면 EntityNotFoundError를 던진다', async () => {
       const dto = new CartOrderRequest.Complete('impUid', 'merchantUid');
 
-      const result = await sut.orderFromCartComplete(dto);
+      const actual = () => sut.orderFromCartComplete(dto);
 
-      expect(result.message).toBe('Order not found');
-      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('위조된 결제일 경우 ', async () => {

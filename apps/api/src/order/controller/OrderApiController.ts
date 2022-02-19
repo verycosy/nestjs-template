@@ -1,7 +1,8 @@
 import { AccessTokenGuard, CurrentUser } from '@app/auth';
-import { ResponseEntity, ResponseStatus } from '@app/config/response';
+import { ResponseEntity } from '@app/config/response';
 import { User } from '@app/entity/domain/user/User.entity';
 import { Body, Controller, Post } from '@nestjs/common';
+import { EntityNotFoundError } from 'typeorm';
 import { CancelOrderRequest, CartOrderRequest, OrderDto } from '../dto';
 import { OrderApiService } from '../OrderApiService';
 import { OrderCancelApiService } from '../OrderCancelApiService';
@@ -18,16 +19,8 @@ export class OrderApiController {
   async orderFromCartReady(
     @CurrentUser() user: User,
     @Body() body: CartOrderRequest.Ready,
-  ) {
+  ): Promise<ResponseEntity<string>> {
     const order = await this.orderApiService.ready(user, body.cartItemIds);
-
-    if (order === null) {
-      return ResponseEntity.ERROR_WITH(
-        'Cart item not found',
-        ResponseStatus.NOT_FOUND,
-      );
-    }
-
     return ResponseEntity.OK_WITH(order.merchantUid);
   }
 
@@ -39,16 +32,12 @@ export class OrderApiController {
 
     try {
       const order = await this.orderApiService.complete(impUid, merchantUid);
-
-      if (order === null) {
-        return ResponseEntity.ERROR_WITH(
-          'Order not found',
-          ResponseStatus.NOT_FOUND,
-        );
-      }
-
       return ResponseEntity.OK_WITH(new OrderDto(order));
     } catch (err) {
+      if (err instanceof EntityNotFoundError) {
+        throw err;
+      }
+
       return ResponseEntity.ERROR_WITH(err.message);
     }
   }

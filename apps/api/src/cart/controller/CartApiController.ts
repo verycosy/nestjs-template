@@ -34,7 +34,7 @@ export class CartApiController {
   async addCartItem(
     @CurrentUser() user: User,
     @Body() body: AddCartItemRequest,
-  ): Promise<ResponseEntity<CartItemDto | string>> {
+  ): Promise<ResponseEntity<CartItemDto>> {
     const { productId, productOptionId, count } = body;
 
     const cartItem = await this.cartApiService.addCartItem(
@@ -44,13 +44,6 @@ export class CartApiController {
       count,
     );
 
-    if (cartItem === null) {
-      return ResponseEntity.ERROR_WITH(
-        'Product not found',
-        ResponseStatus.NOT_FOUND,
-      );
-    }
-
     return ResponseEntity.OK_WITH(new CartItemDto(cartItem));
   }
 
@@ -59,19 +52,12 @@ export class CartApiController {
     @CurrentUser() user: User,
     @Param('cartItemId') cartItemId: number,
     @Body() body: UpdateCartItemQuantityRequest,
-  ) {
+  ): Promise<ResponseEntity<CartItemDto>> {
     const cartItem = await this.cartApiService.updateCartItemQuantity(
       user.id,
       cartItemId,
       body.quantity,
     );
-
-    if (cartItem === null) {
-      return ResponseEntity.ERROR_WITH(
-        'Cart item not found',
-        ResponseStatus.NOT_FOUND,
-      );
-    }
 
     return ResponseEntity.OK_WITH(new CartItemDto(cartItem));
   }
@@ -80,19 +66,8 @@ export class CartApiController {
   async removeCartItem(
     @CurrentUser() user: User,
     @Param('cartItemId') cartItemId: number,
-  ) {
-    const removed = await this.cartApiService.removeCartItem(
-      user.id,
-      cartItemId,
-    );
-
-    if (!removed) {
-      return ResponseEntity.ERROR_WITH(
-        'Cart item not found',
-        ResponseStatus.NOT_FOUND,
-      );
-    }
-
+  ): Promise<ResponseEntity<string>> {
+    await this.cartApiService.removeCartItem(user.id, cartItemId);
     return ResponseEntity.OK();
   }
 }

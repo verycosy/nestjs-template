@@ -9,7 +9,7 @@ import {
   TestUserFactory,
 } from '@app/util/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Repository } from 'typeorm';
+import { EntityNotFoundError, Repository } from 'typeorm';
 import { ProductApiService } from '../../../../../apps/api/src/product';
 import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 
@@ -37,12 +37,12 @@ describe('ProductApiService', () => {
   });
 
   describe('like', () => {
-    it('찜할 상품이 없으면 null 반환', async () => {
+    it('찜할 상품이 없으면 EntityNotFoundError를 던진다', async () => {
       const user = await TestUserFactory.create(module);
 
-      const result = await sut.like(1, user);
+      const actual = () => sut.like(1, user);
 
-      expect(result).toBeNull();
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('상품이 찜목록에 추가되고, 찜한 상품을 반환한다', async () => {

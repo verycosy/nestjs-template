@@ -5,7 +5,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtPayload } from '../interface/JwtPayload';
-import { UserNotFoundError } from '../error/UserNotFoundError';
 
 export const ACCESS_TOKEN_STRATEGY_NAME = 'access-token-jwt';
 
@@ -26,13 +25,6 @@ export class AccessTokenStrategy extends PassportStrategy(
 
   async validate(payload: JwtPayload): Promise<User> {
     const { id } = payload;
-
-    const user = await this.userRepository.findOne({ id });
-
-    if (!user) {
-      throw new UserNotFoundError();
-    }
-
-    return user;
+    return await this.userRepository.findOneOrFail({ id });
   }
 }

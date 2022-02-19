@@ -22,24 +22,14 @@ export class NoticeAdminService {
     title: string,
     content: string,
   ): Promise<Notice> {
-    const notice = await this.noticeRepository.findOne({ id });
-
-    if (!notice) {
-      return null;
-    }
+    const notice = await this.noticeRepository.findOneOrFail({ id });
 
     notice.update(user, title, content);
     return await this.noticeRepository.save(notice);
   }
 
-  async remove(id: number): Promise<boolean> {
-    const notice = await this.noticeRepository.findOne({ id });
-
-    if (!notice) {
-      return false;
-    }
-
+  async remove(id: number): Promise<void> {
+    const notice = await this.noticeRepository.findOneOrFail({ id });
     await this.noticeRepository.remove(notice);
-    return true;
   }
 }

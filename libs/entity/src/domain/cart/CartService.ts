@@ -14,7 +14,7 @@ export class CartService {
   ) {}
 
   async findCartWithItemsByUser(user: User): Promise<Cart> {
-    return await this.cartRepository.findOne({
+    return await this.cartRepository.findOneOrFail({
       where: {
         user,
       },

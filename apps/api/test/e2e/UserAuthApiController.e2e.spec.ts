@@ -135,8 +135,10 @@ describe('UserAuthApiController (e2e)', () => {
         password: 'passwood',
       });
 
-      expect(res.body.statusCode).toBe('NOT_FOUND');
-      expect(res.body.message).toBe('User not found');
+      expect(res.statusCode).toBe(404);
+      expect(res.body.message).toBe(
+        '데이터를 찾을 수 없습니다 - "User" 조건: {"email": "not-found@test.com","role": "Customer"}',
+      );
     });
 
     it('비밀번호가 일치하지 않으면 error', async () => {

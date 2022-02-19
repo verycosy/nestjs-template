@@ -29,21 +29,11 @@ export class ProductApiService {
   }
 
   async findProductById(id: number): Promise<Product> {
-    const product = await this.productRepository.findOne({ id });
-
-    if (!product) {
-      return null;
-    }
-
-    return product;
+    return await this.productRepository.findOneOrFail({ id });
   }
 
   async like(id: number, user: User): Promise<Product> {
-    const product = await this.productRepository.findOne({ id });
-
-    if (!product) {
-      return null;
-    }
+    const product = await this.productRepository.findOneOrFail({ id });
 
     (await user.liked).push(product);
     await this.userRepository.save(user);

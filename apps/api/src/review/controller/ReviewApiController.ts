@@ -1,5 +1,5 @@
 import { AccessTokenGuard, CurrentUser } from '@app/auth';
-import { ResponseEntity, ResponseStatus } from '@app/config/response';
+import { ResponseEntity } from '@app/config/response';
 import { User } from '@app/entity/domain/user/User.entity';
 import {
   Body,
@@ -48,13 +48,6 @@ export class ReviewApiController {
         imagePath,
       );
 
-      if (review === null) {
-        return ResponseEntity.ERROR_WITH(
-          'Order item not found',
-          ResponseStatus.NOT_FOUND,
-        );
-      }
-
       return ResponseEntity.OK_WITH(new ReviewDto(review));
     } catch (err) {
       return ResponseEntity.ERROR_WITH(err.message);
@@ -79,13 +72,6 @@ export class ReviewApiController {
         imagePath,
       );
 
-      if (review === null) {
-        return ResponseEntity.ERROR_WITH(
-          'Review not found',
-          ResponseStatus.NOT_FOUND,
-        );
-      }
-
       return ResponseEntity.OK_WITH(new ReviewDto(review));
     } catch (err) {
       return ResponseEntity.ERROR_WITH(err.message);
@@ -95,15 +81,7 @@ export class ReviewApiController {
   @AccessTokenGuard()
   @Delete('/:id')
   async remove(@CurrentUser() user: User, @Param('id') id: number) {
-    const removed = await this.reviewApiService.remove(user, id);
-
-    if (!removed) {
-      return ResponseEntity.ERROR_WITH(
-        'Review not found',
-        ResponseStatus.NOT_FOUND,
-      );
-    }
-
+    await this.reviewApiService.remove(user, id);
     return ResponseEntity.OK();
   }
 }

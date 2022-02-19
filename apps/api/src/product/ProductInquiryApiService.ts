@@ -19,11 +19,9 @@ export class ProductInquiryApiService {
     productId: number,
     content: string,
   ): Promise<ProductInquiry> {
-    const product = await this.productRepository.findOne({ id: productId });
-
-    if (!product) {
-      return null;
-    }
+    const product = await this.productRepository.findOneOrFail({
+      id: productId,
+    });
 
     const productInquiry = ProductInquiry.create(user, product, content);
     return await this.productInquiryRepository.save(productInquiry);
@@ -34,29 +32,20 @@ export class ProductInquiryApiService {
     productInquiryId: number,
     content: string,
   ): Promise<ProductInquiry> {
-    const productInquiry = await this.productInquiryRepository.findOne({
+    const productInquiry = await this.productInquiryRepository.findOneOrFail({
       where: { id: productInquiryId, user },
       relations: ['user'],
     });
-
-    if (!productInquiry) {
-      return null;
-    }
 
     productInquiry.updateContent(content);
     return await this.productInquiryRepository.save(productInquiry);
   }
 
-  async remove(user: User, productInquiryId: number): Promise<boolean> {
-    const productInquiry = await this.productInquiryRepository.findOne({
+  async remove(user: User, productInquiryId: number): Promise<void> {
+    const productInquiry = await this.productInquiryRepository.findOneOrFail({
       where: { id: productInquiryId, user },
     });
 
-    if (!productInquiry) {
-      return false;
-    }
-
     await this.productInquiryRepository.remove(productInquiry);
-    return true;
   }
 }

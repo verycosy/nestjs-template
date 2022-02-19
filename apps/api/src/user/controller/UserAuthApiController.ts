@@ -25,9 +25,8 @@ import {
 } from '@app/auth';
 import { AuthToken } from '@app/auth/interface';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { UserNotFoundError } from '@app/auth/error';
-import { ResponseEntity, ResponseStatus } from '@app/config/response';
+import { EntityNotFoundError, Repository } from 'typeorm';
+import { ResponseEntity } from '@app/config/response';
 
 @ApiTags('Users API')
 @Controller('/users')
@@ -86,8 +85,8 @@ export class UserAuthApiController {
       const user = await this.authService.login(email, password);
       return ResponseEntity.OK_WITH(user);
     } catch (err) {
-      if (err instanceof UserNotFoundError) {
-        return ResponseEntity.ERROR_WITH(err.message, ResponseStatus.NOT_FOUND);
+      if (err instanceof EntityNotFoundError) {
+        throw err;
       }
 
       return ResponseEntity.ERROR_WITH(err.message);
@@ -119,23 +118,19 @@ export class UserAuthApiController {
 
     await this.authCodeService.checkVerified(phoneNumber);
 
-    const user = await this.userRepository.findOne({
+    const user = await this.userRepository.findOneOrFail({
       email,
       phoneNumber,
       role,
     });
 
-    if (user) {
-      const jwtTokens = await this.authService.generateJwtTokens({
-        id: user.id,
-      });
+    const jwtTokens = await this.authService.generateJwtTokens({
+      id: user.id,
+    });
 
-      return {
-        accessToken: jwtTokens.accessToken,
-      };
-    }
-
-    throw new UserNotFoundError();
+    return {
+      accessToken: jwtTokens.accessToken,
+    };
   }
 
   @AccessTokenGuard()

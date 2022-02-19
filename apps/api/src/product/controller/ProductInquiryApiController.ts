@@ -32,13 +32,6 @@ export class ProductInquiryApiController {
       body.content,
     );
 
-    if (productInquiry === null) {
-      return ResponseEntity.ERROR_WITH(
-        'Product not found',
-        ResponseStatus.NOT_FOUND,
-      );
-    }
-
     return ResponseEntity.OK_WITH(new ProductInquiryDto(productInquiry));
   }
 
@@ -56,13 +49,6 @@ export class ProductInquiryApiController {
         body.content,
       );
 
-      if (productInquiry === null) {
-        return ResponseEntity.ERROR_WITH(
-          'Product inquiry not found',
-          ResponseStatus.NOT_FOUND,
-        );
-      }
-
       return ResponseEntity.OK_WITH(new ProductInquiryDto(productInquiry));
     } catch (err) {
       return ResponseEntity.ERROR_WITH(err.message);
@@ -75,18 +61,7 @@ export class ProductInquiryApiController {
     @CurrentUser() user: User,
     @Param('productInquiryId') productInquiryId: number,
   ) {
-    const removed = await this.productInquiryApiService.remove(
-      user,
-      productInquiryId,
-    );
-
-    if (!removed) {
-      return ResponseEntity.ERROR_WITH(
-        'Product inquiry not found',
-        ResponseStatus.NOT_FOUND,
-      );
-    }
-
+    await this.productInquiryApiService.remove(user, productInquiryId);
     return ResponseEntity.OK();
   }
 }

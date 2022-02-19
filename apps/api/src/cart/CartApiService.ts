@@ -5,7 +5,7 @@ import { Product } from '@app/entity/domain/product/Product.entity';
 import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityNotFoundError, Repository } from 'typeorm';
 
 @Injectable()
 export class CartApiService {
@@ -29,7 +29,7 @@ export class CartApiService {
       .leftJoin('cart_item.option', 'option')
       .leftJoin('cart.user', 'user')
       .select(['cart_item', 'product', 'cart.id', 'user.id', 'option'])
-      .getOne();
+      .getOneOrFail();
   }
 
   async addCartItem(
@@ -38,14 +38,12 @@ export class CartApiService {
     productOptionId: number,
     count: number,
   ): Promise<CartItem> {
-    const product = await this.productRepository.findOne({ id: productId });
-    const productOption = await this.productOptionRepository.findOne({
+    const product = await this.productRepository.findOneOrFail({
+      id: productId,
+    });
+    const productOption = await this.productOptionRepository.findOneOrFail({
       id: productOptionId,
     });
-
-    if (!product || !productOption) {
-      return null;
-    }
 
     const cartItem = CartItem.create(cart, product, productOption, count);
     return await this.cartItemRepository.save(cartItem);
@@ -58,23 +56,22 @@ export class CartApiService {
   ): Promise<CartItem> {
     const cartItem = await this.findCartItemWithUserId(cartItemId);
 
-    if (!cartItem || !cartItem.cart.isBelongsTo(userId)) {
-      return null;
+    if (!cartItem.cart.isBelongsTo(userId)) {
+      throw new EntityNotFoundError(CartItem, { id: cartItemId });
     }
 
     cartItem.updateQuantity(quantity);
     return await this.cartItemRepository.save(cartItem);
   }
 
-  async removeCartItem(userId: number, cartItemId: number): Promise<boolean> {
+  async removeCartItem(userId: number, cartItemId: number): Promise<void> {
     const cartItem = await this.findCartItemWithUserId(cartItemId);
 
-    if (!cartItem || !cartItem.cart.isBelongsTo(userId)) {
-      return false;
+    if (!cartItem.cart.isBelongsTo(userId)) {
+      throw new EntityNotFoundError(CartItem, { userId, cartItemId });
     }
 
     await this.cartItemRepository.remove(cartItem);
-    return true;
   }
 
   async getCartItems(cartId: number): Promise<CartItem[]> {

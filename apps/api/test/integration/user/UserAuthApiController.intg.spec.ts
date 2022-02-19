@@ -3,7 +3,7 @@ import { WinstonModule } from 'nest-winston';
 import { UserAuthApiController } from '../../../src/user/controller';
 import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import { UserModule } from '@app/entity/domain/user/UserModule';
-import { Repository } from 'typeorm';
+import { EntityNotFoundError, Repository } from 'typeorm';
 import { User } from '@app/entity/domain/user/User.entity';
 import { SignUpRequest } from '../../../src/user/dto/SignUpRequest';
 import { BadRequestException } from '@nestjs/common';
@@ -14,7 +14,7 @@ import {
 } from '../../../../../libs/config/src';
 import { AuthModule, LoginDto } from '@app/auth';
 import { LoginRequest } from '../../../../api/src/user/dto/LoginRequest';
-import { WrongPasswordError, UserNotFoundError } from '@app/auth/error';
+import { WrongPasswordError } from '@app/auth/error';
 import { Role } from '@app/entity/domain/user/type/Role';
 import { ProductModule } from '@app/entity/domain/product/ProductModule';
 
@@ -102,18 +102,16 @@ describe('UserAuthApiController', () => {
   });
 
   describe('login', () => {
-    it('회원을 찾지 못하면 UserNotFoundError', async () => {
+    it('회원을 찾지 못하면 EntityNotFoundError를 던진다', async () => {
       const request = LoginRequest.create(
         Role.Customer,
         'verycosyyyyyy@test.com',
         'password',
       );
 
-      try {
-        await sut.login(request);
-      } catch (err) {
-        expect(err).toBeInstanceOf(UserNotFoundError);
-      }
+      const actual = () => sut.login(request);
+
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('비밀번호가 일치하지 않으면 WrongPasswordError', async () => {

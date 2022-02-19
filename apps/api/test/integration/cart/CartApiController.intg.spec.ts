@@ -24,6 +24,7 @@ import {
   TestUserFactory,
 } from '@app/util/testing';
 import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
+import { EntityNotFoundError } from 'typeorm';
 
 describe('CartApiController', () => {
   let sut: CartApiController;
@@ -58,12 +59,11 @@ describe('CartApiController', () => {
   });
 
   describe('addCartItem', () => {
-    it('담을 상품이 없으면 not found error response 반환', async () => {
+    it('담을 상품이 없으면 EntityNotFoundError를 던진다', async () => {
       const dto = AddCartItemRequest.create(2, 1, 3);
-      const result = await sut.addCartItem(user, dto);
+      const actual = () => sut.addCartItem(user, dto);
 
-      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
-      expect(result.message).toBe('Product not found');
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('담긴 장바구니 상품과 수량을 반환', async () => {
@@ -93,14 +93,13 @@ describe('CartApiController', () => {
   describe('updateCartItemQuantity', () => {
     const dto = UpdateCartItemQuantityRequest.create(1);
 
-    it('수량을 변경할 장바구니 상품이 없으면 not found error response 반환', async () => {
-      const result = await sut.updateCartItemQuantity(user, 1, dto);
+    it('수량을 변경할 장바구니 상품이 없으면 EntityNotFoundError를 던진다', async () => {
+      const actual = () => sut.updateCartItemQuantity(user, 1, dto);
 
-      expect(result.message).toBe('Cart item not found');
-      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
-    it('다른 사람의 장바구니 상품이면 not found error response 반환', async () => {
+    it('다른 사람의 장바구니 상품이면 EntityNotFoundError를 던진다', async () => {
       await TestCartItemFactory.create(
         module,
         user.cart,
@@ -109,10 +108,9 @@ describe('CartApiController', () => {
       );
       user.id = 2;
 
-      const result = await sut.updateCartItemQuantity(user, 1, dto);
+      const actual = () => sut.updateCartItemQuantity(user, 1, dto);
 
-      expect(result.message).toBe('Cart item not found');
-      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('수량이 변경된 장바구니 상품 반환', async () => {
@@ -131,14 +129,13 @@ describe('CartApiController', () => {
   });
 
   describe('removeCartItem', () => {
-    it('삭제할 장바구니 상품이 없으면 not found error response 반환', async () => {
-      const result = await sut.removeCartItem(user, 1);
+    it('삭제할 장바구니 상품이 없으면 EntityNotFoundError를 던진다', async () => {
+      const actual = () => sut.removeCartItem(user, 1);
 
-      expect(result.message).toBe('Cart item not found');
-      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
-    it('다른 사람의 장바구니 상품이면 not found error response 반환', async () => {
+    it('다른 사람의 장바구니 상품이면 EntityNotFoundError를 던진다', async () => {
       await TestCartItemFactory.create(
         module,
         user.cart,
@@ -147,10 +144,9 @@ describe('CartApiController', () => {
       );
       user.id = 2;
 
-      const result = await sut.removeCartItem(user, 1);
+      const actual = () => sut.removeCartItem(user, 1);
 
-      expect(result.message).toBe('Cart item not found');
-      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('삭제되면 ok response 반환', async () => {

@@ -20,13 +20,7 @@ export class PaymentService {
     reason: string,
     cancelRequestAmount?: number,
   ): Promise<PaymentDocument> {
-    const payment = await this.paymentRepository.findOneByMerchantUid(
-      merchantUid,
-    );
-
-    if (!payment) {
-      return null;
-    }
+    const payment = await this.paymentRepository.findOneOrFail(merchantUid);
 
     const canceledPayment = await this.iamportService.cancelPayment(
       payment.impUid,

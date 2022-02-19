@@ -7,6 +7,7 @@ import { Role } from '@app/entity/domain/user/type/Role';
 import { UserModule } from '@app/entity/domain/user/UserModule';
 import { TestNoticeFactory, TestUserFactory } from '@app/util/testing';
 import { Test, TestingModule } from '@nestjs/testing';
+import { EntityNotFoundError } from 'typeorm';
 import {
   NoticeAdminController,
   NoticeAdminService,
@@ -65,14 +66,13 @@ describe('NoticeAdminController', () => {
   });
 
   describe('edit', () => {
-    it('수정할 공지사항이 없으면 not found error response 반환', async () => {
+    it('수정할 공지사항이 없으면 EntityNotFoundError를 던진다', async () => {
       const dto = new WriteNoticeRequest('edited notice title', 'blablah2');
       const user = await TestUserFactory.create(module);
 
-      const result = await sut.edit(1, user, dto);
+      const actual = () => sut.edit(1, user, dto);
 
-      expect(result.message).toBe('Notice not found');
-      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('관리자가 아닌 회원이 수정하면 server error response 반환', async () => {
@@ -106,15 +106,14 @@ describe('NoticeAdminController', () => {
   });
 
   describe('remove', () => {
-    it('삭제할 공지사항이 없으면 not found error response 반환', async () => {
+    it('삭제할 공지사항이 없으면 EntityNotFoundError를 던진다', async () => {
       const admin = await TestUserFactory.create(module, {
         role: Role.Admin,
       });
 
-      const result = await sut.remove(1, admin);
+      const actual = () => sut.remove(1, admin);
 
-      expect(result.message).toBe('Notice not found');
-      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('삭제되면 ok response 반환', async () => {

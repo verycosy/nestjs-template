@@ -1,3 +1,4 @@
+import { CartItem } from '@app/entity/domain/cart/CartItem.entity';
 import { CartService } from '@app/entity/domain/cart/CartService';
 import { Order } from '@app/entity/domain/order/Order.entity';
 import { OrderService } from '@app/entity/domain/order/OrderService';
@@ -7,6 +8,7 @@ import {
 } from '@app/entity/domain/payment';
 import { User } from '@app/entity/domain/user/User.entity';
 import { Injectable } from '@nestjs/common';
+import { EntityNotFoundError } from 'typeorm';
 import { ForgeryOrderError } from './error';
 
 @Injectable()
@@ -20,7 +22,7 @@ export class OrderApiService {
   async ready(user: User, cartItemIds: number[]): Promise<Order> {
     const cart = await this.cartService.findCartWithItemsByUser(user);
     if (!cart.hasCartItems(cartItemIds)) {
-      return null;
+      throw new EntityNotFoundError(CartItem, { ids: cartItemIds });
     }
 
     const order = await this.orderService.start(
@@ -40,10 +42,6 @@ export class OrderApiService {
     const order = await this.orderService.findOneWithItemsByMerchantUid(
       merchantUid,
     );
-
-    if (!order) {
-      return null;
-    }
 
     try {
       const paymentData = await this.paymentService.complete(impUid);

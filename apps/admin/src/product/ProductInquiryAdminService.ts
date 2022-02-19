@@ -12,13 +12,9 @@ export class ProductInquiryAdminService {
   ) {}
 
   async answer(admin: User, productInquiryId: number, answer: string) {
-    const productInquiry = await this.productInquiryRepository.findOne({
+    const productInquiry = await this.productInquiryRepository.findOneOrFail({
       id: productInquiryId,
     });
-
-    if (!productInquiry) {
-      return null;
-    }
 
     productInquiry.updateAnswer(admin, answer);
     return await this.productInquiryRepository.save(productInquiry);

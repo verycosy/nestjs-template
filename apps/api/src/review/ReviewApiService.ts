@@ -39,14 +39,10 @@ export class ReviewApiService {
     detail: string,
     imagePath?: string,
   ): Promise<Review> {
-    const orderItem = await this.orderItemRepository.findOne({
+    const orderItem = await this.orderItemRepository.findOneOrFail({
       where: { id: orderItemId },
       relations: ['product'],
     });
-
-    if (!orderItem) {
-      return null;
-    }
 
     const review = Review.create(user, orderItem, rating, detail, imagePath);
     return await this.reviewRepository.save(review);
@@ -59,27 +55,20 @@ export class ReviewApiService {
     detail: string,
     imagePath?: string,
   ): Promise<Review> {
-    const review = await this.reviewRepository.findOne({
+    const review = await this.reviewRepository.findOneOrFail({
       where: { id: reviewId, user },
       relations: ['orderItem'],
     });
-
-    if (!review) {
-      return null;
-    }
 
     review.update(rating, detail, imagePath);
     return await this.reviewRepository.save(review);
   }
 
-  async remove(user: User, reviewId: number): Promise<boolean> {
-    const review = await this.reviewRepository.findOne({ id: reviewId, user });
-
-    if (!review) {
-      return false;
-    }
-
+  async remove(user: User, reviewId: number): Promise<void> {
+    const review = await this.reviewRepository.findOneOrFail({
+      id: reviewId,
+      user,
+    });
     await this.reviewRepository.remove(review);
-    return true;
   }
 }

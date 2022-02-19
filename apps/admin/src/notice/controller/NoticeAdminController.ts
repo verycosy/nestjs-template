@@ -1,5 +1,5 @@
 import { AdminGuard, CurrentUser } from '@app/auth';
-import { ResponseEntity, ResponseStatus } from '@app/config/response';
+import { ResponseEntity } from '@app/config/response';
 import { User } from '@app/entity/domain/user/User.entity';
 import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
 import { WriteNoticeRequest } from '../dto';
@@ -38,13 +38,6 @@ export class NoticeAdminController {
         content,
       );
 
-      if (notice === null) {
-        return ResponseEntity.ERROR_WITH(
-          'Notice not found',
-          ResponseStatus.NOT_FOUND,
-        );
-      }
-
       return ResponseEntity.OK_WITH(notice);
     } catch (err) {
       return ResponseEntity.ERROR_WITH(err.message);
@@ -53,15 +46,8 @@ export class NoticeAdminController {
 
   @Delete('/:id')
   async remove(@Param('id') id: number, @CurrentUser() user: User) {
-    const removed = await this.noticeAdminService.remove(id);
-
-    if (!removed) {
-      return ResponseEntity.ERROR_WITH(
-        'Notice not found',
-        ResponseStatus.NOT_FOUND,
-      );
-    }
-
+    // TODO: 누가 지웠는지
+    await this.noticeAdminService.remove(id);
     return ResponseEntity.OK();
   }
 }

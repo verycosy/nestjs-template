@@ -9,7 +9,7 @@ import { CartItemFixtureFactory } from '@app/util/testing/CartItemFixtureFactory
 import { Test, TestingModule } from '@nestjs/testing';
 import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import { OrderApiService } from '../../../../../apps/api/src/order/OrderApiService';
-import { Repository } from 'typeorm';
+import { EntityNotFoundError, Repository } from 'typeorm';
 import { Cart } from '@app/entity/domain/cart/Cart.entity';
 import { ReviewModule } from '@app/entity/domain/review/ReviewModule';
 import { iamportPaymentMockData } from '../../../../../libs/entity/test/integration/domain/payment/mockData';
@@ -70,10 +70,12 @@ describe('OrderApiService', () => {
   });
 
   describe('ready', () => {
-    it('주문할 장바구니 상품이 없으면 null 반환', async () => {
-      const result = await sut.ready(user, [1, 2]);
-
-      expect(result).toBeNull();
+    it('주문할 장바구니 상품이 없으면 EntityNotFoundError를 던진다', async () => {
+      try {
+        await sut.ready(user, [1, 2]);
+      } catch (err) {
+        expect(err).toBeInstanceOf(EntityNotFoundError);
+      }
     });
 
     it('결제준비된 주문 객체 반환', async () => {
@@ -109,10 +111,10 @@ describe('OrderApiService', () => {
   });
 
   describe('complete', () => {
-    it('결제완료할 주문이 없으면 null 반환', async () => {
-      const result = await sut.complete('impUid', 'merchantUid');
+    it('결제완료할 주문이 없으면 EntityNotFoundError 반환', async () => {
+      const actual = () => sut.complete('impUid', 'merchantUid');
 
-      expect(result).toBeNull();
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('위조된 결제일 경우 주문 삭제 및 결제 취소 후 ForgeryOrderError를 던진다', async () => {

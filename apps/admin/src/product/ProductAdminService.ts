@@ -23,13 +23,9 @@ export class ProductAdminService {
     price: number,
     detail: string,
   ): Promise<Product> {
-    const subCategory = await this.subCategoryRepository.findOne({
+    const subCategory = await this.subCategoryRepository.findOneOrFail({
       id: subCategoryId,
     });
-
-    if (!subCategory) {
-      return null;
-    }
 
     const product = Product.create(subCategory, name, price, detail);
     return await this.productRepository.save(product);
@@ -43,19 +39,11 @@ export class ProductAdminService {
     detail: string,
     status: ProductStatus,
   ): Promise<Product> {
-    const product = await this.productRepository.findOne({ id });
+    const product = await this.productRepository.findOneOrFail({ id });
 
-    if (!product) {
-      return null;
-    }
-
-    const subCategory = await this.subCategoryRepository.findOne({
+    const subCategory = await this.subCategoryRepository.findOneOrFail({
       id: subCategoryId,
     });
-
-    if (!subCategory) {
-      return null;
-    }
 
     product.update(subCategory, name, price, detail, status);
     return await this.productRepository.save(product);
@@ -67,11 +55,7 @@ export class ProductAdminService {
     price: number,
     discount: number,
   ): Promise<ProductOption> {
-    const product = await this.productRepository.findOne({ id });
-
-    if (!product) {
-      return null;
-    }
+    const product = await this.productRepository.findOneOrFail({ id });
 
     const productOption = product.addOption(detail, price, discount);
     await this.productRepository.save(product);
@@ -85,13 +69,9 @@ export class ProductAdminService {
     price: number,
     discount: number,
   ): Promise<ProductOption> {
-    const productOption = await this.productOptionRepository.findOne({
+    const productOption = await this.productOptionRepository.findOneOrFail({
       id: productOptionId,
     });
-
-    if (!productOption) {
-      return null;
-    }
 
     productOption.update(detail, price, discount);
     return await this.productOptionRepository.save(productOption);

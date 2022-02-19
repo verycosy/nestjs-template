@@ -11,6 +11,7 @@ import {
   TestUserFactory,
 } from '@app/util/testing';
 import { Test, TestingModule } from '@nestjs/testing';
+import { EntityNotFoundError } from 'typeorm';
 import {
   ProductInquiryDto,
   WriteProductInquiryRequest,
@@ -46,13 +47,12 @@ describe('ProductInquiryApiController', () => {
   describe('write', () => {
     const dto = WriteProductInquiryRequest.create('inquiry content');
 
-    it('문의를 남길 상품이 없으면 not found error response 반환', async () => {
+    it('문의를 남길 상품이 없으면 EntityNotFoundError를 던진다', async () => {
       const user = await TestUserFactory.create(module);
 
-      const result = await sut.write(user, 1, dto);
+      const actual = () => sut.write(user, 1, dto);
 
-      expect(result.message).toBe('Product not found');
-      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('상품에 남긴 문의를 반환', async () => {
@@ -75,18 +75,17 @@ describe('ProductInquiryApiController', () => {
   describe('edit', () => {
     const dto = WriteProductInquiryRequest.create('updated content');
 
-    it('수정할 상품 문의가 없으면 not found error response 반환', async () => {
+    it('수정할 상품 문의가 없으면 EntityNotFoundError를 던진다', async () => {
       const user = await TestUserFactory.create(module);
       const subCategory = await TestSubCategoryFactory.create(module);
       await TestProductFactory.create(module, subCategory);
 
-      const result = await sut.edit(user, 1, dto);
+      const actual = () => sut.edit(user, 1, dto);
 
-      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
-      expect(result.message).toBe('Product inquiry not found');
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
-    it('내가 남긴 상품 문의가 아니면 not found error response 반환', async () => {
+    it('내가 남긴 상품 문의가 아니면 EntityNotFoundError를 던진다', async () => {
       const user = await TestUserFactory.create(module);
       const user2 = await TestUserFactory.create(module, {
         email: 'tester2@test.com',
@@ -95,10 +94,9 @@ describe('ProductInquiryApiController', () => {
       const product = await TestProductFactory.create(module, subCategory);
       await TestProductInquiryFactory.create(module, user2, product);
 
-      const result = await sut.edit(user, 1, dto);
+      const actual = () => sut.edit(user, 1, dto);
 
-      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
-      expect(result.message).toBe('Product inquiry not found');
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('이미 답변이 달린 상품 문의를 수정하려고 하면 server error response 반환', async () => {
@@ -139,15 +137,14 @@ describe('ProductInquiryApiController', () => {
   });
 
   describe('remove', () => {
-    it('삭제할 상품 문의가 없으면 not found error response 반환', async () => {
+    it('삭제할 상품 문의가 없으면 EntityNotFoundError를 던진다', async () => {
       const user = await TestUserFactory.create(module);
       const subCategory = await TestSubCategoryFactory.create(module);
       await TestProductFactory.create(module, subCategory);
 
-      const result = await sut.remove(user, 1);
+      const actual = () => sut.remove(user, 1);
 
-      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
-      expect(result.message).toBe('Product inquiry not found');
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('삭제되면 ok response 반환', async () => {

@@ -14,7 +14,7 @@ export class OrderService {
   ) {}
 
   async findOneWithItemsByMerchantUid(merchantUid: string): Promise<Order> {
-    return await this.orderRepository.findOne({
+    return await this.orderRepository.findOneOrFail({
       where: { merchantUid, status: OrderStatus.Ready },
       relations: ['items'],
     });

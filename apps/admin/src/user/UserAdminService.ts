@@ -27,11 +27,7 @@ export class UserAdminService {
 
   async updateUser(userId: number, body: UpdateUserRequest): Promise<User> {
     const { name, phoneNumber, password } = body;
-    const user = await this.userRepository.findOne({ id: userId });
-
-    if (!user) {
-      return null;
-    }
+    const user = await this.userRepository.findOneOrFail({ id: userId });
 
     await user.update(name, phoneNumber, password);
     return await this.userRepository.save(user);

@@ -4,11 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AuthToken, JwtPayload } from './interface';
-import {
-  WrongPasswordError,
-  UserNotFoundError,
-  UserAlreadyExistsError,
-} from './error';
+import { WrongPasswordError, UserAlreadyExistsError } from './error';
 import { Role } from '@app/entity/domain/user/type/Role';
 import { LoginDto } from '.';
 
@@ -56,11 +52,7 @@ export class AuthService {
     plainTextPassword: string,
     role: Role = Role.Customer,
   ): Promise<LoginDto> {
-    const user = await this.userRepository.findOne({ email, role });
-
-    if (!user) {
-      throw new UserNotFoundError();
-    }
+    const user = await this.userRepository.findOneOrFail({ email, role });
 
     if (!(await user.validatePassword(plainTextPassword))) {
       throw new WrongPasswordError();

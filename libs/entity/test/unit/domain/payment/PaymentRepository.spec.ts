@@ -10,6 +10,7 @@ import { Model, Types } from 'mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { plainToClass } from 'class-transformer';
 import { iamportPaymentMockData } from '../../../../../../libs/entity/test/integration/domain/payment/mockData';
+import { EntityNotFoundError } from 'typeorm';
 
 describe('PaymentRepository', () => {
   let sut: PaymentRepository;
@@ -42,15 +43,15 @@ describe('PaymentRepository', () => {
     await paymentModel.deleteMany({});
   });
 
-  describe('findOneByMerchantUid', () => {
-    it('결제 내역을 찾지 못하면 null 반환', async () => {
+  describe('findOneOrFail', () => {
+    it('결제 내역을 찾지 못하면 EntityNotFoundError를 던진다', async () => {
       // given
 
       // when
-      const payment = await sut.findOneByMerchantUid('merchantUid');
+      const actual = () => sut.findOneOrFail('merchantUid');
 
       // then
-      expect(payment).toBeNull();
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('찾은 결제 내역 반환', async () => {
@@ -60,7 +61,7 @@ describe('PaymentRepository', () => {
       );
 
       // when
-      const result = await sut.findOneByMerchantUid(payment.merchantUid);
+      const result = await sut.findOneOrFail(payment.merchantUid);
 
       // then
       expect(result).toMatchObject(payment.toJSON());

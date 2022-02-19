@@ -23,6 +23,7 @@ import {
   WriteReviewRequest,
 } from '../../../../../apps/api/src/review';
 import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { EntityNotFoundError } from 'typeorm';
 
 describe('ReviewApiController', () => {
   let sut: ReviewApiController;
@@ -51,14 +52,13 @@ describe('ReviewApiController', () => {
   });
 
   describe('write', () => {
-    it('리뷰를 작성할 주문 항목이 없으면 not found error response 반환', async () => {
+    it('리뷰를 작성할 주문 항목이 없으면 EntityNotFoundError를 던진다', async () => {
       const dto = new WriteReviewRequest(1, 5, 'this is review');
       const user = await TestUserFactory.create(module);
 
-      const result = await sut.write(user, dto);
+      const actual = () => sut.write(user, dto);
 
-      expect(result.message).toBe('Order item not found');
-      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('리뷰를 작성할 수 없는 주문 항목이면 server error response 반환', async () => {
@@ -95,14 +95,13 @@ describe('ReviewApiController', () => {
   });
 
   describe('edit', () => {
-    it('수정할 리뷰가 없으면 not found error response 반환', async () => {
+    it('수정할 리뷰가 없으면 EntityNotFoundError를 던진다', async () => {
       const dto = new EditReviewRequest(3, 'this is edited review');
       const user = await TestUserFactory.create(module);
 
-      const result = await sut.edit(user, 1, dto);
+      const actual = () => sut.edit(user, 1, dto);
 
-      expect(result.message).toBe('Review not found');
-      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('수정할 수 없는 리뷰이면 server error response 반환', async () => {
@@ -139,13 +138,12 @@ describe('ReviewApiController', () => {
   });
 
   describe('remove', () => {
-    it('삭제할 리뷰가 없으면 not found error response 반환', async () => {
+    it('삭제할 리뷰가 없으면 EntityNotFoundError를 던진다', async () => {
       const user = await TestUserFactory.create(module);
 
-      const result = await sut.remove(user, 1);
+      const actual = () => sut.remove(user, 1);
 
-      expect(result.message).toBe('Review not found');
-      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('삭제되면 ok response 반환', async () => {

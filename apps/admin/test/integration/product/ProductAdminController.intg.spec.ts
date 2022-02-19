@@ -18,7 +18,7 @@ import {
   SubCategory,
 } from '@app/entity/domain/category';
 import { ProductModule } from '@app/entity/domain/product/ProductModule';
-import { Repository } from 'typeorm';
+import { EntityNotFoundError, Repository } from 'typeorm';
 import { ProductOptionDto } from '@app/entity/domain/product/dto/ProductOptionDto';
 
 describe('ProductAdminController', () => {
@@ -78,10 +78,9 @@ describe('ProductAdminController', () => {
     );
 
     it('수정할 상품이 없으면 Error Response Entity 반환', async () => {
-      const { message, statusCode } = await sut.updateProduct(1, request);
+      const actual = () => sut.updateProduct(1, request);
 
-      expect(message).toBe('Product not found');
-      expect(statusCode).toBe(ResponseStatus.NOT_FOUND);
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('수정된 상품 반환', async () => {
@@ -107,11 +106,10 @@ describe('ProductAdminController', () => {
   describe('addProductOption', () => {
     const dto = AddProductOptionRequest.create('100g', 4000, 0);
 
-    it('옵션을 추가할 상품이 없으면 not found error response 반환', async () => {
-      const result = await sut.addProductOption(1, dto);
+    it('옵션을 추가할 상품이 없으면 EntityNotFoundError를 던진다', async () => {
+      const actual = () => sut.addProductOption(1, dto);
 
-      expect(result.message).toBe('Product not found');
-      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('추가된 상품 옵션 반환', async () => {
@@ -132,11 +130,10 @@ describe('ProductAdminController', () => {
   describe('updateProductOption', () => {
     const dto = AddProductOptionRequest.create('200g', 6000, 0);
 
-    it('수정할 상품 옵션이 없으면 not found error response 반환', async () => {
-      const result = await sut.updateProductOption(1, dto);
+    it('수정할 상품 옵션이 없으면 EntityNotFoundError를 던진다', async () => {
+      const actual = () => sut.updateProductOption(1, dto);
 
-      expect(result.message).toBe('Product option not found');
-      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('수정된 상품 옵션 반환', async () => {

@@ -15,7 +15,7 @@ import {
   SubCategory,
 } from '@app/entity/domain/category';
 import { ProductModule } from '@app/entity/domain/product/ProductModule';
-import { Repository } from 'typeorm';
+import { EntityNotFoundError, Repository } from 'typeorm';
 import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
 import { UserModule } from '@app/entity/domain/user/UserModule';
 import {
@@ -52,9 +52,9 @@ describe('ProductApiController', () => {
 
   describe('findProduct', () => {
     it('상품이 없으면 Error Response Entity 반환', async () => {
-      const { message, statusCode } = await sut.findProduct(1);
-      expect(message).toBe('Product not found');
-      expect(statusCode).toBe(ResponseStatus.NOT_FOUND);
+      const actual = () => sut.findProduct(1);
+
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('상품 반환', async () => {
@@ -137,13 +137,12 @@ describe('ProductApiController', () => {
   });
 
   describe('like', () => {
-    it('찜할 상품이 없으면 not found error response 반환', async () => {
+    it('찜할 상품이 없으면 EntityNotFoundError를 던진다', async () => {
       const user = await TestUserFactory.create(module);
 
-      const result = await sut.like(1, user);
+      const actual = () => sut.like(1, user);
 
-      expect(result.message).toBe('Product not found');
-      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('찜한 상품 반환 ', async () => {

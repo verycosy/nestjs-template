@@ -1,5 +1,5 @@
 import { AdminGuard } from '@app/auth';
-import { ResponseEntity, ResponseStatus } from '@app/config/response';
+import { ResponseEntity } from '@app/config/response';
 import { ProductOptionDto } from '@app/entity/domain/product/dto/ProductOptionDto';
 import { Product } from '@app/entity/domain/product/Product.entity';
 import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
@@ -25,13 +25,6 @@ export class ProductAdminController {
       detail,
     );
 
-    if (product === null) {
-      return ResponseEntity.ERROR_WITH(
-        'Category not found',
-        ResponseStatus.NOT_FOUND,
-      );
-    }
-
     return ResponseEntity.OK_WITH(product);
   }
 
@@ -51,13 +44,6 @@ export class ProductAdminController {
       status,
     );
 
-    if (updatedProduct === null) {
-      return ResponseEntity.ERROR_WITH(
-        'Product not found',
-        ResponseStatus.NOT_FOUND,
-      );
-    }
-
     return ResponseEntity.OK_WITH(new ProductDto(updatedProduct));
   }
 
@@ -75,13 +61,6 @@ export class ProductAdminController {
       discount,
     );
 
-    if (productOption === null) {
-      return ResponseEntity.ERROR_WITH(
-        'Product not found',
-        ResponseStatus.NOT_FOUND,
-      );
-    }
-
     return ResponseEntity.OK_WITH(new ProductOptionDto(productOption));
   }
 
@@ -98,13 +77,6 @@ export class ProductAdminController {
       price,
       discount,
     );
-
-    if (productOption === null) {
-      return ResponseEntity.ERROR_WITH(
-        'Product option not found',
-        ResponseStatus.NOT_FOUND,
-      );
-    }
 
     return ResponseEntity.OK_WITH(new ProductOptionDto(productOption));
   }

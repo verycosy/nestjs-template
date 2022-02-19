@@ -16,6 +16,7 @@ import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.te
 import { TestSubCategoryFactory } from '@app/util/testing/TestSubCategoryFactory';
 import { Role } from '@app/entity/domain/user/type/Role';
 import { ProductInquiryAnswerDto } from '@app/entity/domain/product/dto/ProductInquiryAnswerDto';
+import { EntityNotFoundError } from 'typeorm';
 
 describe('ProductInquiryAdminController', () => {
   let sut: ProductInquiryAdminController;
@@ -44,13 +45,12 @@ describe('ProductInquiryAdminController', () => {
   describe('answer', () => {
     const dto = new ProductInquiryAnswerRequest('this is answer');
 
-    it('답변할 상품 문의가 존재하지 않으면 not found error response 반환', async () => {
+    it('답변할 상품 문의가 존재하지 않으면 EntityNotFoundError를 던진다', async () => {
       const admin = await TestUserFactory.create(module, { role: Role.Admin });
 
-      const result = await sut.answer(admin, 1, dto);
+      const actual = () => sut.answer(admin, 1, dto);
 
-      expect(result.message).toBe('Product inquiry not found');
-      expect(result.statusCode).toBe(ResponseStatus.NOT_FOUND);
+      expect(actual()).rejects.toThrowError(EntityNotFoundError);
     });
 
     it('관리자가 아닌 사람이 답변하면 forbidden error response 반환', async () => {

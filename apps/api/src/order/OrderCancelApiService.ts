@@ -14,23 +14,15 @@ export class OrderCancelApiService {
 
   async cancel(merchantUid: string, orderItemId: number, reason: string) {
     // TODO: try, tx
-    const orderItem = await this.orderItemRepository.findOne({
+    const orderItem = await this.orderItemRepository.findOneOrFail({
       id: orderItemId,
     });
 
-    if (!orderItem) {
-      return null;
-    }
-
-    const canceledPayment = await this.paymentService.cancel(
+    await this.paymentService.cancel(
       merchantUid,
       reason,
       orderItem.getAmount(),
     );
-
-    if (!canceledPayment) {
-      return null;
-    }
 
     orderItem.cancel();
     await this.orderItemRepository.save(orderItem);

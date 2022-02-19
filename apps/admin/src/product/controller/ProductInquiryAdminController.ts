@@ -27,12 +27,6 @@ export class ProductInquiryAdminController {
         body.answer,
       );
 
-      if (productInquiry === null) {
-        return ResponseEntity.ERROR_WITH(
-          'Product inquiry not found',
-          ResponseStatus.NOT_FOUND,
-        );
-      }
       return ResponseEntity.OK_WITH(
         new ProductInquiryAnswerDto(productInquiry),
       );
