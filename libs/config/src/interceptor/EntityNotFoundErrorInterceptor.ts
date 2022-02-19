@@ -24,14 +24,16 @@ export class EntityNotFoundErrorInterceptor implements NestInterceptor {
   }
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    return next
-      .handle()
-      .pipe(
-        catchError((err: EntityNotFoundError) =>
-          throwError(
+    return next.handle().pipe(
+      catchError((err) => {
+        if (err instanceof EntityNotFoundError) {
+          return throwError(
             () => new NotFoundException(this.changeErrorMessagePrefix(err)),
-          ),
-        ),
-      );
+          );
+        }
+
+        return throwError(() => err);
+      }),
+    );
   }
 }
