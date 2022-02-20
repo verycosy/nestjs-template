@@ -1,10 +1,5 @@
 import { getConfigModule } from '@app/config';
 import { ResponseStatus } from '@app/config/response';
-import { CategoryModule } from '@app/entity/domain/category';
-import { OrderModule } from '@app/entity/domain/order/OrderModule';
-import { ProductModule } from '@app/entity/domain/product/ProductModule';
-import { ReviewModule } from '@app/entity/domain/review/ReviewModule';
-import { UserModule } from '@app/entity/domain/user/UserModule';
 import { OrderItem } from '@app/entity/domain/order/OrderItem.entity';
 import {
   TestOrderFactory,
@@ -22,7 +17,7 @@ import {
   ReviewApiService,
   WriteReviewRequest,
 } from '../../../../../apps/api/src/review';
-import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import { EntityNotFoundError } from 'typeorm';
 
 describe('ReviewApiController', () => {
@@ -31,15 +26,7 @@ describe('ReviewApiController', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        getConfigModule(),
-        getTypeOrmTestModule(),
-        ReviewModule,
-        UserModule,
-        OrderModule,
-        ProductModule,
-        CategoryModule,
-      ],
+      imports: [getConfigModule(), TypeOrmTestModule],
       controllers: [ReviewApiController],
       providers: [ReviewApiService],
     }).compile();

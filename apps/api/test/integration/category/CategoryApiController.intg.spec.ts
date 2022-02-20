@@ -1,15 +1,9 @@
 import { getConfigModule } from '@app/config';
-import {
-  Category,
-  CategoryModule,
-  SubCategory,
-} from '@app/entity/domain/category';
+import { Category, SubCategory } from '@app/entity/domain/category';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CategoryApiController } from '../../../src/category/controller/CategoryApiController';
-import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import { Repository } from 'typeorm';
-import { ProductModule } from '@app/entity/domain/product/ProductModule';
-import { UserModule } from '@app/entity/domain/user/UserModule';
 
 describe('CategoryApiController', () => {
   let module: TestingModule;
@@ -18,13 +12,7 @@ describe('CategoryApiController', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        getConfigModule(),
-        getTypeOrmTestModule(),
-        CategoryModule,
-        ProductModule,
-        UserModule,
-      ],
+      imports: [getConfigModule(), TypeOrmTestModule],
       controllers: [CategoryApiController],
     }).compile();
 

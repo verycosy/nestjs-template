@@ -1,8 +1,5 @@
 import { getConfigModule } from '@app/config';
 import { ResponseStatus } from '@app/config/response';
-import { CategoryModule } from '@app/entity/domain/category';
-import { ProductModule } from '@app/entity/domain/product/ProductModule';
-import { UserModule } from '@app/entity/domain/user/UserModule';
 import {
   TestProductFactory,
   TestProductInquiryFactory,
@@ -12,7 +9,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ProductInquiryAdminService } from '../../../../../apps/admin/src/product/ProductInquiryAdminService';
 import { ProductInquiryAdminController } from '../../../../../apps/admin/src/product/controller/ProductInquiryAdminController';
 import { ProductInquiryAnswerRequest } from '../../../../../apps/admin/src/product/dto';
-import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import { TestSubCategoryFactory } from '@app/util/testing/TestSubCategoryFactory';
 import { Role } from '@app/entity/domain/user/type/Role';
 import { ProductInquiryAnswerDto } from '@app/entity/domain/product/dto/ProductInquiryAnswerDto';
@@ -24,13 +21,7 @@ describe('ProductInquiryAdminController', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        getConfigModule(),
-        getTypeOrmTestModule(),
-        UserModule,
-        ProductModule,
-        CategoryModule,
-      ],
+      imports: [getConfigModule(), TypeOrmTestModule],
       providers: [ProductInquiryAdminService],
       controllers: [ProductInquiryAdminController],
     }).compile();

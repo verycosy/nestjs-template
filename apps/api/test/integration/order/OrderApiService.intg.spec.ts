@@ -1,16 +1,10 @@
 import { getConfigModule } from '@app/config';
-import { CartModule } from '@app/entity/domain/cart/CartModule';
-import { CategoryModule } from '@app/entity/domain/category';
-import { OrderModule } from '@app/entity/domain/order/OrderModule';
-import { ProductModule } from '@app/entity/domain/product/ProductModule';
-import { UserModule } from '@app/entity/domain/user/UserModule';
 import { TestOrderFactory, TestUserFactory } from '@app/util/testing';
 import { CartItemFixtureFactory } from '@app/util/testing/CartItemFixtureFactory';
 import { Test, TestingModule } from '@nestjs/testing';
-import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import { EntityNotFoundError, Repository } from 'typeorm';
 import { Cart } from '@app/entity/domain/cart/Cart.entity';
-import { ReviewModule } from '@app/entity/domain/review/ReviewModule';
 import { iamportPaymentMockData } from '../../../../../libs/entity/test/integration/domain/payment/mockData';
 import { PaymentService } from '@app/entity/domain/payment/PaymentService';
 import { PaymentModule } from '@app/entity/domain/payment/PaymentModule';
@@ -20,7 +14,11 @@ import {
 } from '@app/entity/domain/payment/Payment.schema';
 import { getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CacheService, CACHE_SERVICE } from '@app/util/cache';
+import {
+  CacheService,
+  CACHE_SERVICE,
+  CustomCacheModule,
+} from '@app/util/cache';
 import { User } from '@app/entity/domain/user/User.entity';
 import {
   ForgeryOrderError,
@@ -28,6 +26,8 @@ import {
   OrderApiService,
 } from '../../../../../apps/api/src/order';
 import { OrderStatus } from '@app/entity/domain/order/type/OrderStatus';
+import { OrderService } from '@app/entity/domain/order/OrderService';
+import { CartService } from '@app/entity/domain/cart/CartService';
 
 describe('OrderApiService', () => {
   let sut: OrderApiService;
@@ -40,16 +40,11 @@ describe('OrderApiService', () => {
     module = await Test.createTestingModule({
       imports: [
         getConfigModule(),
-        getTypeOrmTestModule(),
-        UserModule,
-        CartModule,
-        ProductModule,
-        OrderModule,
-        CategoryModule,
-        ReviewModule,
+        TypeOrmTestModule,
         PaymentModule,
+        CustomCacheModule,
       ],
-      providers: [OrderApiService],
+      providers: [OrderApiService, OrderService, CartService],
     }).compile();
 
     sut = module.get(OrderApiService);
@@ -74,15 +69,17 @@ describe('OrderApiService', () => {
 
   describe('ready', () => {
     describe('단건 주문', () => {
-      it('상품을 찾을 수 없으면 EntityNotFoundError를 던진다', () => {
+      it('상품을 찾을 수 없으면 EntityNotFoundError를 던진다', async () => {
         // given
         const dto = new OrderReadyRequest(1, 2, 3);
 
-        // when
-        const actual = () => sut.ready(user, dto);
-
-        // then
-        expect(actual()).rejects.toThrowError(EntityNotFoundError);
+        try {
+          // when
+          await sut.ready(user, dto);
+        } catch (err) {
+          // then
+          expect(err).toBeInstanceOf(EntityNotFoundError);
+        }
       });
 
       it('상품옵션을 찾을 수 없으면 EntityNotFoundError를 던진다', async () => {
@@ -168,9 +165,11 @@ describe('OrderApiService', () => {
 
   describe('complete', () => {
     it('결제완료할 주문이 없으면 EntityNotFoundError 반환', async () => {
-      const actual = () => sut.complete('impUid', 'merchantUid');
-
-      expect(actual()).rejects.toThrowError(EntityNotFoundError);
+      try {
+        await sut.complete('impUid', 'merchantUid');
+      } catch (err) {
+        expect(err).toBeInstanceOf(EntityNotFoundError);
+      }
     });
 
     it('위조된 결제일 경우 주문 삭제 및 결제 취소 후 ForgeryOrderError를 던진다', async () => {

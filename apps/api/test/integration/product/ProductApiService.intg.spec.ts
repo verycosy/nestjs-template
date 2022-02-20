@@ -1,8 +1,5 @@
 import { getConfigModule } from '@app/config';
-import { CategoryModule } from '@app/entity/domain/category';
-import { ProductModule } from '@app/entity/domain/product/ProductModule';
 import { User } from '@app/entity/domain/user/User.entity';
-import { UserModule } from '@app/entity/domain/user/UserModule';
 import {
   TestProductFactory,
   TestSubCategoryFactory,
@@ -11,7 +8,7 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError, Repository } from 'typeorm';
 import { ProductApiService } from '../../../../../apps/api/src/product';
-import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 
 describe('ProductApiService', () => {
   let sut: ProductApiService;
@@ -19,13 +16,7 @@ describe('ProductApiService', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        getConfigModule(),
-        getTypeOrmTestModule(),
-        UserModule,
-        ProductModule,
-        CategoryModule,
-      ],
+      imports: [getConfigModule(), TypeOrmTestModule],
       providers: [ProductApiService],
     }).compile();
 

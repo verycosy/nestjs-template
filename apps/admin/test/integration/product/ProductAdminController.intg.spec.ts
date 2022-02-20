@@ -7,17 +7,11 @@ import {
   UpdateProductRequest,
 } from '../../../../admin/src/product/dto';
 import { ProductAdminController } from '../../../../../apps/admin/src/product/controller/ProductAdminController';
-import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import { ProductAdminService } from '../../../../admin/src/product/ProductAdminService';
 import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
 import { Product } from '@app/entity/domain/product/Product.entity';
-import { ResponseStatus } from '@app/config/response';
-import {
-  Category,
-  CategoryModule,
-  SubCategory,
-} from '@app/entity/domain/category';
-import { ProductModule } from '@app/entity/domain/product/ProductModule';
+import { Category, SubCategory } from '@app/entity/domain/category';
 import { EntityNotFoundError, Repository } from 'typeorm';
 import { ProductOptionDto } from '@app/entity/domain/product/dto/ProductOptionDto';
 
@@ -29,12 +23,7 @@ describe('ProductAdminController', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        getConfigModule(),
-        getTypeOrmTestModule(),
-        CategoryModule,
-        ProductModule,
-      ],
+      imports: [getConfigModule(), TypeOrmTestModule],
       providers: [ProductAdminService],
       controllers: [ProductAdminController],
     }).compile();

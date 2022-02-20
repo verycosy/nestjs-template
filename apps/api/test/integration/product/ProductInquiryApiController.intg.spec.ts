@@ -1,9 +1,6 @@
 import { getConfigModule } from '@app/config';
 import { ResponseStatus } from '@app/config/response';
-import { CategoryModule } from '@app/entity/domain/category';
-import { ProductModule } from '@app/entity/domain/product/ProductModule';
 import { ProductInquiryStatus } from '@app/entity/domain/product/type/ProductInquiryStatus';
-import { UserModule } from '@app/entity/domain/user/UserModule';
 import {
   TestProductFactory,
   TestProductInquiryFactory,
@@ -18,7 +15,7 @@ import {
 } from '../../../../../apps/api/src/product';
 import { ProductInquiryApiController } from '../../../../../apps/api/src/product/controller/ProductInquiryApiController';
 import { ProductInquiryApiService } from '../../../../../apps/api/src/product/ProductInquiryApiService';
-import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 
 describe('ProductInquiryApiController', () => {
   let sut: ProductInquiryApiController;
@@ -26,13 +23,7 @@ describe('ProductInquiryApiController', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        getConfigModule(),
-        getTypeOrmTestModule(),
-        UserModule,
-        CategoryModule,
-        ProductModule,
-      ],
+      imports: [getConfigModule(), TypeOrmTestModule],
       providers: [ProductInquiryApiService],
       controllers: [ProductInquiryApiController],
     }).compile();

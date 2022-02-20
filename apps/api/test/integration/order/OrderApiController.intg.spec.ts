@@ -1,15 +1,11 @@
 import { getConfigModule } from '@app/config';
-import { OrderModule } from '@app/entity/domain/order/OrderModule';
-import { ProductModule } from '@app/entity/domain/product/ProductModule';
-import { UserModule } from '@app/entity/domain/user/UserModule';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   OrderApiController,
   OrderApiService,
   OrderCancelApiService,
 } from '../../../../../apps/api/src/order';
-import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
-import { CartModule } from '@app/entity/domain/cart/CartModule';
+import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import {
   OrderCompleteRequest,
   CartOrderReadyRequest,
@@ -19,9 +15,7 @@ import {
 import { TestOrderFactory, TestUserFactory } from '@app/util/testing';
 import { User } from '@app/entity/domain/user/User.entity';
 import { ResponseStatus } from '@app/config/response';
-import { CategoryModule } from '@app/entity/domain/category';
 import { CartItemFixtureFactory } from '@app/util/testing/CartItemFixtureFactory';
-import { ReviewModule } from '@app/entity/domain/review/ReviewModule';
 import { PaymentModule } from '@app/entity/domain/payment/PaymentModule';
 import {
   Payment,
@@ -32,6 +26,9 @@ import { getModelToken } from '@nestjs/mongoose';
 import { PaymentService } from '@app/entity/domain/payment/PaymentService';
 import { iamportPaymentMockData } from '../../../../../libs/entity/test/integration/domain/payment/mockData';
 import { EntityNotFoundError } from 'typeorm';
+import { OrderService } from '@app/entity/domain/order/OrderService';
+import { CartService } from '@app/entity/domain/cart/CartService';
+import { CustomCacheModule } from '@app/util/cache';
 
 describe('OrderApiController', () => {
   let sut: OrderApiController;
@@ -43,16 +40,16 @@ describe('OrderApiController', () => {
     module = await Test.createTestingModule({
       imports: [
         getConfigModule(),
-        getTypeOrmTestModule(),
-        UserModule,
-        CartModule,
-        ProductModule,
-        OrderModule,
-        CategoryModule,
-        ReviewModule,
+        TypeOrmTestModule,
         PaymentModule,
+        CustomCacheModule,
       ],
-      providers: [OrderApiService, OrderCancelApiService],
+      providers: [
+        OrderApiService,
+        OrderCancelApiService,
+        OrderService,
+        CartService,
+      ],
       controllers: [OrderApiController],
     }).compile();
 
@@ -111,9 +108,11 @@ describe('OrderApiController', () => {
     it('결제준비된 주문이 없으면 EntityNotFoundError를 던진다', async () => {
       const dto = new OrderCompleteRequest('impUid', 'merchantUid');
 
-      const actual = () => sut.orderFromCartComplete(dto);
-
-      expect(actual()).rejects.toThrowError(EntityNotFoundError);
+      try {
+        await sut.orderFromCartComplete(dto);
+      } catch (err) {
+        expect(err).toBeInstanceOf(EntityNotFoundError);
+      }
     });
 
     it('위조된 결제일 경우 ', async () => {

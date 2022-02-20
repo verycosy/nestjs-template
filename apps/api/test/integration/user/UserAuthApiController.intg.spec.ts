@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { WinstonModule } from 'nest-winston';
 import { UserAuthApiController } from '../../../src/user/controller';
-import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
-import { UserModule } from '@app/entity/domain/user/UserModule';
+import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import { EntityNotFoundError, Repository } from 'typeorm';
 import { User } from '@app/entity/domain/user/User.entity';
 import { SignUpRequest } from '../../../src/user/dto/SignUpRequest';
@@ -16,7 +15,6 @@ import { AuthModule, LoginDto } from '@app/auth';
 import { LoginRequest } from '../../../../api/src/user/dto/LoginRequest';
 import { WrongPasswordError } from '@app/auth/error';
 import { Role } from '@app/entity/domain/user/type/Role';
-import { ProductModule } from '@app/entity/domain/product/ProductModule';
 
 describe('UserAuthApiController', () => {
   let sut: UserAuthApiController;
@@ -29,11 +27,9 @@ describe('UserAuthApiController', () => {
       imports: [
         getConfigModule(),
         WinstonModule.forRoot(getLoggerOptions()),
-        getTypeOrmTestModule(),
-        UserModule,
+        TypeOrmTestModule,
         AuthCodeModule,
         AuthModule,
-        ProductModule,
       ],
       controllers: [UserAuthApiController],
     }).compile();

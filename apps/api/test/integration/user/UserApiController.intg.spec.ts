@@ -1,5 +1,4 @@
 import { getConfigModule, getLoggerOptions } from '@app/config';
-import { UserModule } from '@app/entity/domain/user/UserModule';
 import {
   TestLikeFactory,
   TestProductFactory,
@@ -7,13 +6,11 @@ import {
   TestUserFactory,
 } from '@app/util/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import {
   UserApiController,
   UserApiService,
 } from '../../../../../apps/api/src/user';
-import { ProductModule } from '@app/entity/domain/product/ProductModule';
-import { CategoryModule } from '@app/entity/domain/category';
 import { AuthCodeModule } from '@app/util/auth-code';
 import { WinstonModule } from 'nest-winston';
 
@@ -25,12 +22,9 @@ describe('UserApiController', () => {
     module = await Test.createTestingModule({
       imports: [
         getConfigModule(),
-        getTypeOrmTestModule(),
+        TypeOrmTestModule,
         WinstonModule.forRoot(getLoggerOptions()),
-        UserModule,
         AuthCodeModule,
-        ProductModule,
-        CategoryModule,
       ],
       controllers: [UserApiController],
       providers: [UserApiService],

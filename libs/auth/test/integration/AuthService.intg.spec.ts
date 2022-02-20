@@ -1,14 +1,12 @@
 import { AuthService } from '../../src/AuthService';
 import { User } from '../../../entity/src/domain/user/User.entity';
-import { UserModule } from '../../../entity/src/domain/user/UserModule';
 import { JwtModule } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import { getTypeOrmTestModule } from '../../../entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '../../../entity/test/typeorm.test.module';
 import { Repository } from 'typeorm';
 import { getConfigModule } from '@app/config';
 import { Role } from '@app/entity/domain/user/type/Role';
 import { UserAlreadyExistsError } from '@app/auth/error';
-import { ProductModule } from '@app/entity/domain/product/ProductModule';
 
 describe('AuthService', () => {
   let sut: AuthService;
@@ -17,13 +15,7 @@ describe('AuthService', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        getConfigModule(),
-        getTypeOrmTestModule(),
-        JwtModule.register({}),
-        UserModule,
-        ProductModule,
-      ],
+      imports: [getConfigModule(), TypeOrmTestModule, JwtModule.register({})],
       providers: [AuthService],
     }).compile();
 

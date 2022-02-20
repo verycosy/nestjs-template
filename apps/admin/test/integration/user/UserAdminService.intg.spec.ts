@@ -2,15 +2,13 @@ import { getConfigModule } from '@app/config';
 import { Role } from '@app/entity/domain/user/type/Role';
 import { User } from '@app/entity/domain/user/User.entity';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserModule } from '@app/entity/domain/user/UserModule';
 import { Repository } from 'typeorm';
 import {
   GetUsersRequest,
   UpdateUserRequest,
 } from '../../../../admin/src/user/dto';
 import { UserAdminService } from '../../../../../apps/admin/src/user/UserAdminService';
-import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
-import { ProductModule } from '@app/entity/domain/product/ProductModule';
+import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 
 describe('UserAdminService', () => {
   let module: TestingModule;
@@ -19,12 +17,7 @@ describe('UserAdminService', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        getConfigModule(),
-        getTypeOrmTestModule(),
-        UserModule,
-        ProductModule,
-      ],
+      imports: [getConfigModule(), TypeOrmTestModule],
       providers: [UserAdminService],
     }).compile();
 

@@ -1,8 +1,7 @@
 import { getConfigModule } from '@app/config';
 import { Test } from '@nestjs/testing';
 import { CategoryAdminController } from '../../../src/category/controller/CategoryAdminController';
-import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
-import { CategoryModule } from '@app/entity/domain/category/CategoryModule';
+import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import {
   CreateCategoryRequest,
   CreateSubCategoryRequest,
@@ -11,7 +10,6 @@ import { EntityNotFoundError, Repository } from 'typeorm';
 import { Category, SubCategory } from '@app/entity/domain/category';
 import { ResponseEntity } from '@app/config/response';
 import { CategoryAdminService } from '../../../src/category/CategoryAdminService';
-import { ProductModule } from '@app/entity/domain/product/ProductModule';
 
 describe('CategoryAdminController', () => {
   let sut: CategoryAdminController;
@@ -19,12 +17,7 @@ describe('CategoryAdminController', () => {
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      imports: [
-        getConfigModule(),
-        getTypeOrmTestModule(),
-        CategoryModule,
-        ProductModule,
-      ],
+      imports: [getConfigModule(), TypeOrmTestModule],
       controllers: [CategoryAdminController],
       providers: [CategoryAdminService],
     }).compile();

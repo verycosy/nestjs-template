@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LocalDateTime } from '@js-joda/core';
 import { Entity, Repository } from 'typeorm';
-import { getTypeOrmTestModule } from '../typeorm.test.module';
+import { TypeOrmTestModule } from '../typeorm.test.module';
 
 describe('BaseTimeEntityRepository', () => {
   let sut: Repository<BaseTimeEntity>;
@@ -14,7 +14,7 @@ describe('BaseTimeEntityRepository', () => {
     module = await Test.createTestingModule({
       imports: [
         getConfigModule(),
-        getTypeOrmTestModule(),
+        TypeOrmTestModule,
         TypeOrmModule.forFeature([TestEntity]),
       ],
     }).compile();

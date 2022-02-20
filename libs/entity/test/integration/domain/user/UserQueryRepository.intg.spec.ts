@@ -4,10 +4,8 @@ import { User } from '@app/entity/domain/user/User.entity';
 import { UserQueryRepository } from '@app/entity/domain/user/UserQueryRepository';
 import { Test, TestingModule } from '@nestjs/testing';
 import { GetUsersRequest } from '../../../../../../apps/admin/src/user/dto/GetUsersRequest';
-import { getTypeOrmTestModule } from '../../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '../../../../../../libs/entity/test/typeorm.test.module';
 import { Repository } from 'typeorm';
-import { UserModule } from '@app/entity/domain/user/UserModule';
-import { ProductModule } from '@app/entity/domain/product/ProductModule';
 
 describe('UserQueryRepository', () => {
   let sut: UserQueryRepository;
@@ -16,12 +14,7 @@ describe('UserQueryRepository', () => {
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        getConfigModule(),
-        getTypeOrmTestModule(),
-        UserModule,
-        ProductModule,
-      ],
+      imports: [getConfigModule(), TypeOrmTestModule],
     }).compile();
 
     sut = module.get(UserQueryRepository);

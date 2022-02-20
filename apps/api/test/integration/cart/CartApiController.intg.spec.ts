@@ -1,7 +1,4 @@
 import { getConfigModule } from '@app/config';
-import { CartModule } from '@app/entity/domain/cart/CartModule';
-import { UserModule } from '@app/entity/domain/user/UserModule';
-import { ProductModule } from '@app/entity/domain/product/ProductModule';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   CartApiService,
@@ -10,11 +7,9 @@ import {
   UpdateCartItemQuantityRequest,
   CartItemDto,
 } from '../../../../api/src/cart';
-import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import { Product } from '@app/entity/domain/product/Product.entity';
 import { User } from '@app/entity/domain/user/User.entity';
-import { ResponseStatus } from '@app/config/response';
-import { CategoryModule } from '@app/entity/domain/category';
 import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
 import {
   TestCartItemFactory,
@@ -33,14 +28,7 @@ describe('CartApiController', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        getConfigModule(),
-        getTypeOrmTestModule(),
-        UserModule,
-        CartModule,
-        CategoryModule,
-        ProductModule,
-      ],
+      imports: [getConfigModule(), TypeOrmTestModule],
       controllers: [CartApiController],
       providers: [CartApiService],
     }).compile();
