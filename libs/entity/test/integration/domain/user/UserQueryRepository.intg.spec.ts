@@ -4,7 +4,7 @@ import { User } from '@app/entity/domain/user/User.entity';
 import { UserQueryRepository } from '@app/entity/domain/user/UserQueryRepository';
 import { Test, TestingModule } from '@nestjs/testing';
 import { GetUsersRequest } from '../../../../../../apps/admin/src/user/dto/GetUsersRequest';
-import { TypeOrmTestModule } from '../../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 import { Repository } from 'typeorm';
 
 describe('UserQueryRepository', () => {

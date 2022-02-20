@@ -7,7 +7,7 @@ import {
   NoticeApiController,
   NoticeApiService,
 } from '../../../../../apps/api/src/notice';
-import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 
 describe('NoticeApiController', () => {
   let sut: NoticeApiController;

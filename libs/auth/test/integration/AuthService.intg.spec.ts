@@ -2,7 +2,7 @@ import { AuthService } from '../../src/AuthService';
 import { User } from '../../../entity/src/domain/user/User.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmTestModule } from '../../../entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 import { Repository } from 'typeorm';
 import { getConfigModule } from '@app/config';
 import { Role } from '@app/entity/domain/user/type/Role';

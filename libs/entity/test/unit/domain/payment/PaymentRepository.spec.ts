@@ -10,7 +10,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { plainToClass } from 'class-transformer';
 import { iamportPaymentMockData } from '../../../../../../libs/entity/test/integration/domain/payment/mockData';
 import { EntityNotFoundError } from 'typeorm';
-import { MongooseTestModule } from '../../../../../../libs/entity/test/mongoose.test.module';
+import { MongooseTestModule } from '@app/entity/mongoose.test.module';
 
 describe('PaymentRepository', () => {
   let sut: PaymentRepository;

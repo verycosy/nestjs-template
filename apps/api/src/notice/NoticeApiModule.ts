@@ -1,4 +1,4 @@
-import { TypeOrmTestModule } from '../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 import { Module } from '@nestjs/common';
 import { NoticeApiController, NoticeApiService } from '.';
 

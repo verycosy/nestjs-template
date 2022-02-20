@@ -17,7 +17,7 @@ import {
   ReviewApiService,
   WriteReviewRequest,
 } from '../../../../../apps/api/src/review';
-import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 import { EntityNotFoundError } from 'typeorm';
 
 describe('ReviewApiController', () => {

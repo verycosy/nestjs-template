@@ -7,7 +7,7 @@ import {
   UpdateCartItemQuantityRequest,
   CartItemDto,
 } from '../../../../api/src/cart';
-import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 import { Product } from '@app/entity/domain/product/Product.entity';
 import { User } from '@app/entity/domain/user/User.entity';
 import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';

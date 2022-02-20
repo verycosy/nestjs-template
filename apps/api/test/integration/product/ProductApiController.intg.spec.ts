@@ -1,6 +1,6 @@
 import { getConfigModule } from '@app/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 import {
   ProductApiController,
   ProductApiService,

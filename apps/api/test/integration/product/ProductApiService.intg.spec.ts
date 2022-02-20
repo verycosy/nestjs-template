@@ -8,7 +8,7 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError, Repository } from 'typeorm';
 import { ProductApiService } from '../../../../../apps/api/src/product';
-import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 
 describe('ProductApiService', () => {
   let sut: ProductApiService;

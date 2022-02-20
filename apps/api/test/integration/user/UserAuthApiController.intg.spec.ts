@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { WinstonModule } from 'nest-winston';
 import { UserAuthApiController } from '../../../src/user/controller';
-import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 import { EntityNotFoundError, Repository } from 'typeorm';
 import { User } from '@app/entity/domain/user/User.entity';
 import { SignUpRequest } from '../../../src/user/dto/SignUpRequest';

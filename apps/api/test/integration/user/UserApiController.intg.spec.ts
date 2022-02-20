@@ -6,7 +6,7 @@ import {
   TestUserFactory,
 } from '@app/util/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 import { UserApiController } from '../../../../../apps/api/src/user';
 import { AuthCodeModule } from '@app/util/auth-code';
 import { WinstonModule } from 'nest-winston';

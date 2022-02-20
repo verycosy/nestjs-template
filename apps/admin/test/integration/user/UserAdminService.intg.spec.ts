@@ -8,7 +8,7 @@ import {
   UpdateUserRequest,
 } from '../../../../admin/src/user/dto';
 import { UserAdminService } from '../../../../../apps/admin/src/user/UserAdminService';
-import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 
 describe('UserAdminService', () => {
   let module: TestingModule;

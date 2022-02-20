@@ -7,7 +7,7 @@ import { PaymentService } from '@app/entity/domain/payment/PaymentService';
 import { IamportService } from '@app/entity/domain/pg';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongooseTestModule } from '../../../../../../libs/entity/test/mongoose.test.module';
+import { MongooseTestModule } from '@app/entity/mongoose.test.module';
 import { Model } from 'mongoose';
 import { iamportPaymentMockData } from './mockData';
 

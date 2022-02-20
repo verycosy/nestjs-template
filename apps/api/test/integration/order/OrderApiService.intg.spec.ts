@@ -2,7 +2,7 @@ import { getConfigModule } from '@app/config';
 import { TestOrderFactory, TestUserFactory } from '@app/util/testing';
 import { CartItemFixtureFactory } from '@app/util/testing/CartItemFixtureFactory';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 import { EntityNotFoundError, Repository } from 'typeorm';
 import { Cart } from '@app/entity/domain/cart/Cart.entity';
 import { iamportPaymentMockData } from '../../../../../libs/entity/test/integration/domain/payment/mockData';
@@ -27,7 +27,7 @@ import {
 import { OrderStatus } from '@app/entity/domain/order/type/OrderStatus';
 import { OrderService } from '@app/entity/domain/order/OrderService';
 import { CartService } from '@app/entity/domain/cart/CartService';
-import { MongooseTestModule } from '../../../../../libs/entity/test/mongoose.test.module';
+import { MongooseTestModule } from '@app/entity/mongoose.test.module';
 import { IamportService } from '@app/entity/domain/pg';
 
 describe('OrderApiService', () => {

@@ -15,7 +15,7 @@ import {
 } from '../../../../../apps/api/src/product';
 import { ProductInquiryApiController } from '../../../../../apps/api/src/product/controller/ProductInquiryApiController';
 import { ProductInquiryApiService } from '../../../../../apps/api/src/product/ProductInquiryApiService';
-import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 
 describe('ProductInquiryApiController', () => {
   let sut: ProductInquiryApiController;

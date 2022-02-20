@@ -5,7 +5,7 @@ import {
   OrderApiService,
   OrderCancelApiService,
 } from '../../../../../apps/api/src/order';
-import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 import {
   OrderCompleteRequest,
   CartOrderReadyRequest,
@@ -28,7 +28,7 @@ import { EntityNotFoundError } from 'typeorm';
 import { OrderService } from '@app/entity/domain/order/OrderService';
 import { CartService } from '@app/entity/domain/cart/CartService';
 import { CustomCacheModule } from '@app/util/cache';
-import { MongooseTestModule } from '../../../../../libs/entity/test/mongoose.test.module';
+import { MongooseTestModule } from '@app/entity/mongoose.test.module';
 import { IamportService } from '@app/entity/domain/pg';
 
 describe('OrderApiController', () => {

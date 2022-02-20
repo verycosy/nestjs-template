@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 import { CategoryService } from './CategoryService';
 
 @Module({

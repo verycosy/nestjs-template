@@ -7,7 +7,7 @@ import {
   UpdateProductRequest,
 } from '../../../../admin/src/product/dto';
 import { ProductAdminController } from '../../../../../apps/admin/src/product/controller/ProductAdminController';
-import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 import { ProductAdminService } from '../../../../admin/src/product/ProductAdminService';
 import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
 import { Product } from '@app/entity/domain/product/Product.entity';
