@@ -7,8 +7,7 @@ import { existsSync, mkdirSync } from 'fs';
 import { basename, extname } from 'path';
 import { v4 as uuid } from 'uuid';
 import { UserAuthApiController, UserApiController } from './controller';
-import { UserApiService } from './UserApiService';
-import { TypeOrmTestModule } from '../../../../libs/entity/test/typeorm.test.module';
+import { UserModule } from '@app/entity/domain/user/UserModule';
 
 function processingFilename(file: Express.Multer.File): string {
   const originalFilename = basename(file.originalname);
@@ -34,7 +33,7 @@ const diskStorageOption = diskStorage({
 
 @Module({
   imports: [
-    TypeOrmTestModule,
+    UserModule,
     AuthCodeModule,
     AuthModule,
     MulterModule.register({
@@ -42,6 +41,5 @@ const diskStorageOption = diskStorage({
     }),
   ],
   controllers: [UserAuthApiController, UserApiController],
-  providers: [UserApiService],
 })
 export class UserApiModule {}

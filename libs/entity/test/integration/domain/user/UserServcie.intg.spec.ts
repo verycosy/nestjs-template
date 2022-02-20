@@ -1,22 +1,20 @@
 import { WrongPasswordError } from '@app/auth/error';
 import { User } from '@app/entity/domain/user/User.entity';
-import { JwtModule } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserApiService } from '../../../src/user/UserApiService';
-import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
 import { getConfigModule } from '@app/config';
+import { UserModule } from '@app/entity/domain/user/UserModule';
+import { UserService } from '@app/entity/domain/user/UserService';
 
-describe('UserApiService', () => {
-  let sut: UserApiService;
+describe('UserService', () => {
+  let sut: UserService;
   let module: TestingModule;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [getConfigModule(), TypeOrmTestModule, JwtModule.register({})],
-      providers: [UserApiService],
+      imports: [getConfigModule(), UserModule],
     }).compile();
 
-    sut = module.get(UserApiService);
+    sut = module.get(UserService);
   });
 
   afterEach(async () => {

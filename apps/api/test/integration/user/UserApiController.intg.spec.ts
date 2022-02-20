@@ -7,12 +7,10 @@ import {
 } from '@app/util/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
-import {
-  UserApiController,
-  UserApiService,
-} from '../../../../../apps/api/src/user';
+import { UserApiController } from '../../../../../apps/api/src/user';
 import { AuthCodeModule } from '@app/util/auth-code';
 import { WinstonModule } from 'nest-winston';
+import { UserModule } from '@app/entity/domain/user/UserModule';
 
 describe('UserApiController', () => {
   let sut: UserApiController;
@@ -25,9 +23,9 @@ describe('UserApiController', () => {
         TypeOrmTestModule,
         WinstonModule.forRoot(getLoggerOptions()),
         AuthCodeModule,
+        UserModule,
       ],
       controllers: [UserApiController],
-      providers: [UserApiService],
     }).compile();
 
     sut = module.get(UserApiController);

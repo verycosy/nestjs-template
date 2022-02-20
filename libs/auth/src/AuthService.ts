@@ -83,4 +83,45 @@ export class AuthService {
     const user = await this.userRepository.findOne({ email, role });
     return Boolean(user);
   }
+
+  async findEmail(
+    name: string,
+    phoneNumber: string,
+    role: Role,
+  ): Promise<string | null> {
+    const user = await this.userRepository.findOne({
+      name,
+      phoneNumber,
+      role,
+    });
+
+    if (user) {
+      return user.email;
+    }
+
+    return null;
+  }
+
+  async changePassword(user: User, newPassword: string): Promise<void> {
+    await user.changePassword(newPassword);
+    await this.userRepository.save(user);
+  }
+
+  async getAccessTokenForFindPassword(
+    email: string,
+    phoneNumber: string,
+    role: Role,
+  ): Promise<string> {
+    const user = await this.userRepository.findOneOrFail({
+      email,
+      phoneNumber,
+      role,
+    });
+
+    const jwtTokens = await this.generateJwtTokens({
+      id: user.id,
+    });
+
+    return jwtTokens.accessToken;
+  }
 }

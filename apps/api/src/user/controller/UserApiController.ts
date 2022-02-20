@@ -1,5 +1,6 @@
 import { AccessTokenGuard, CurrentUser } from '@app/auth';
 import { User } from '@app/entity/domain/user/User.entity';
+import { UserService } from '@app/entity/domain/user/UserService';
 import { AuthCodeService } from '@app/util/auth-code';
 import {
   BadRequestException,
@@ -12,7 +13,6 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
-  UserApiService,
   ChangePasswordRequest,
   UpdatePhoneNumberRequest,
   LikedProductItem,
@@ -22,7 +22,7 @@ import {
 @Controller('/users')
 export class UserApiController {
   constructor(
-    private readonly userApiService: UserApiService,
+    private readonly userService: UserService,
     private readonly authCodeService: AuthCodeService,
   ) {}
 
@@ -37,7 +37,7 @@ export class UserApiController {
     @CurrentUser() user: User,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    await this.userApiService.updateProfile(user, file.path);
+    await this.userService.updateProfile(user, file.path);
     return { profileImageUrl: file.path };
   }
 
@@ -49,7 +49,7 @@ export class UserApiController {
     const { phoneNumber: newPhoneNumber } = request;
     await this.authCodeService.checkVerified(newPhoneNumber);
 
-    await this.userApiService.updatePhoneNumber(user, newPhoneNumber);
+    await this.userService.updatePhoneNumber(user, newPhoneNumber);
 
     return { phoneNumber: newPhoneNumber };
   }
@@ -63,7 +63,7 @@ export class UserApiController {
 
     try {
       request.checkEqualPassword();
-      await this.userApiService.changePassword(user, oldPassword, password);
+      await this.userService.changePassword(user, oldPassword, password);
     } catch (err) {
       throw new BadRequestException(err.message);
     }

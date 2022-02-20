@@ -24,8 +24,7 @@ import {
   RefreshTokenGuard,
 } from '@app/auth';
 import { AuthToken } from '@app/auth/interface';
-import { InjectRepository } from '@nestjs/typeorm';
-import { EntityNotFoundError, Repository } from 'typeorm';
+import { EntityNotFoundError } from 'typeorm';
 import { ResponseEntity } from '@app/config/response';
 
 @ApiTags('Users API')
@@ -34,7 +33,6 @@ export class UserAuthApiController {
   constructor(
     private readonly authCodeService: AuthCodeService,
     private readonly authService: AuthService,
-    @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
   @Post('/sms')
@@ -99,17 +97,8 @@ export class UserAuthApiController {
 
     await this.authCodeService.checkVerified(phoneNumber);
 
-    const user = await this.userRepository.findOne({
-      name,
-      phoneNumber,
-      role,
-    });
-
-    if (user) {
-      return { email: user.email };
-    }
-
-    return { email: null };
+    const email = await this.authService.findEmail(name, phoneNumber, role);
+    return { email };
   }
 
   @Post('/find-password')
@@ -118,18 +107,14 @@ export class UserAuthApiController {
 
     await this.authCodeService.checkVerified(phoneNumber);
 
-    const user = await this.userRepository.findOneOrFail({
+    const accessToken = await this.authService.getAccessTokenForFindPassword(
       email,
       phoneNumber,
       role,
-    });
-
-    const jwtTokens = await this.authService.generateJwtTokens({
-      id: user.id,
-    });
+    );
 
     return {
-      accessToken: jwtTokens.accessToken,
+      accessToken,
     };
   }
 
@@ -141,9 +126,7 @@ export class UserAuthApiController {
   ): Promise<void> {
     try {
       request.checkEqualPassword();
-
-      await user.changePassword(request.password);
-      await this.userRepository.save(user);
+      await this.authService.changePassword(user, request.password);
     } catch (err) {
       throw new BadRequestException(err.message);
     }
