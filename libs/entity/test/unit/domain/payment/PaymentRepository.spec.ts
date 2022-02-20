@@ -1,16 +1,16 @@
 import {
   Payment,
   PaymentDocument,
-  PaymentSchema,
 } from '@app/entity/domain/payment/Payment.schema';
 import { PaymentRepository } from '@app/entity/domain/payment/PaymentRepository';
 import { IamportPayment } from '@app/entity/domain/pg';
-import { MongooseModule, getModelToken } from '@nestjs/mongoose';
+import { getModelToken } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { plainToClass } from 'class-transformer';
 import { iamportPaymentMockData } from '../../../../../../libs/entity/test/integration/domain/payment/mockData';
 import { EntityNotFoundError } from 'typeorm';
+import { MongooseTestModule } from '../../../../../../libs/entity/test/mongoose.test.module';
 
 describe('PaymentRepository', () => {
   let sut: PaymentRepository;
@@ -19,20 +19,7 @@ describe('PaymentRepository', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        MongooseModule.forRoot('mongodb://localhost:47017', {
-          dbName: 'test',
-          user: 'root',
-          pass: 'password',
-        }),
-        MongooseModule.forFeature([
-          {
-            name: Payment.name,
-            schema: PaymentSchema,
-          },
-        ]),
-      ],
-      providers: [PaymentRepository],
+      imports: [MongooseTestModule],
     }).compile();
 
     sut = module.get(PaymentRepository);

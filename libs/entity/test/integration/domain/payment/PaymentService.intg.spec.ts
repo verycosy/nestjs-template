@@ -2,13 +2,12 @@ import { getConfigModule } from '@app/config';
 import {
   Payment,
   PaymentDocument,
-  PaymentSchema,
 } from '@app/entity/domain/payment/Payment.schema';
-import { PaymentRepository } from '@app/entity/domain/payment/PaymentRepository';
 import { PaymentService } from '@app/entity/domain/payment/PaymentService';
 import { IamportService } from '@app/entity/domain/pg';
-import { getModelToken, MongooseModule } from '@nestjs/mongoose';
+import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MongooseTestModule } from '../../../../../../libs/entity/test/mongoose.test.module';
 import { Model } from 'mongoose';
 import { iamportPaymentMockData } from './mockData';
 
@@ -18,21 +17,8 @@ describe('PaymentService', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        getConfigModule(),
-        MongooseModule.forRoot('mongodb://localhost:47017', {
-          dbName: 'test',
-          user: 'root',
-          pass: 'password',
-        }),
-        MongooseModule.forFeature([
-          {
-            name: Payment.name,
-            schema: PaymentSchema,
-          },
-        ]),
-      ],
-      providers: [PaymentService, IamportService, PaymentRepository],
+      imports: [getConfigModule(), MongooseTestModule],
+      providers: [PaymentService, IamportService],
     }).compile();
 
     sut = module.get(PaymentService);
