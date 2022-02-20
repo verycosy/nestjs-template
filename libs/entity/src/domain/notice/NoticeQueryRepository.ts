@@ -1,4 +1,4 @@
-import { GetNoticesRequest } from 'apps/api/src/notice';
+import { GetNoticesRequest } from './dto';
 import { AbstractRepository, EntityRepository } from 'typeorm';
 import { Notice } from './Notice.entity';
 

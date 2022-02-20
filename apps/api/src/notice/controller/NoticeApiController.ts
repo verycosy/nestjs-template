@@ -1,13 +1,13 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { GetNoticesRequest } from '..';
-import { NoticeApiService } from '../NoticeApiService';
+import { GetNoticesRequest } from '@app/entity/domain/notice/dto/GetNoticesRequest';
+import { NoticeService } from '@app/entity/domain/notice/NoticeService';
 
 @Controller('/notice')
 export class NoticeApiController {
-  constructor(private readonly noticeApiService: NoticeApiService) {}
+  constructor(private readonly noticeService: NoticeService) {}
 
   @Get()
   async getNotices(@Query() query: GetNoticesRequest) {
-    return await this.noticeApiService.getNotices(query);
+    return await this.noticeService.getNotices(query);
   }
 }

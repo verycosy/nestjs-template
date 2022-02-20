@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
-import { NoticeAdminController, NoticeAdminService } from '.';
+import { NoticeModule } from '@app/entity/domain/notice/NoticeModule';
+import { NoticeAdminController } from '.';
 
 @Module({
-  imports: [TypeOrmTestModule],
+  imports: [NoticeModule],
   controllers: [NoticeAdminController],
-  providers: [NoticeAdminService],
 })
 export class NoticeAdminModule {}

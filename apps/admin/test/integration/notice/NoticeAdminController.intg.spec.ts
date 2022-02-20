@@ -7,10 +7,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from 'typeorm';
 import {
   NoticeAdminController,
-  NoticeAdminService,
   WriteNoticeRequest,
 } from '../../../../../apps/admin/src/notice';
-import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
+import { NoticeModule } from '@app/entity/domain/notice/NoticeModule';
 
 describe('NoticeAdminController', () => {
   let sut: NoticeAdminController;
@@ -18,9 +17,8 @@ describe('NoticeAdminController', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [getConfigModule(), TypeOrmTestModule],
+      imports: [getConfigModule(), NoticeModule],
       controllers: [NoticeAdminController],
-      providers: [NoticeAdminService],
     }).compile();
 
     sut = module.get(NoticeAdminController);
