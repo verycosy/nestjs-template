@@ -8,7 +8,6 @@ import { TestOrderFactory, TestUserFactory } from '@app/util/testing';
 import { CartItemFixtureFactory } from '@app/util/testing/CartItemFixtureFactory';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getTypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
-import { OrderApiService } from '../../../../../apps/api/src/order/OrderApiService';
 import { EntityNotFoundError, Repository } from 'typeorm';
 import { Cart } from '@app/entity/domain/cart/Cart.entity';
 import { ReviewModule } from '@app/entity/domain/review/ReviewModule';
@@ -23,7 +22,11 @@ import { getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CacheService, CACHE_SERVICE } from '@app/util/cache';
 import { User } from '@app/entity/domain/user/User.entity';
-import { ForgeryOrderError } from '../../../../../apps/api/src/order/error';
+import {
+  ForgeryOrderError,
+  OrderReadyRequest,
+  OrderApiService,
+} from '../../../../../apps/api/src/order';
 import { OrderStatus } from '@app/entity/domain/order/type/OrderStatus';
 
 describe('OrderApiService', () => {
@@ -70,42 +73,95 @@ describe('OrderApiService', () => {
   });
 
   describe('ready', () => {
-    it('주문할 장바구니 상품이 없으면 EntityNotFoundError를 던진다', async () => {
-      try {
-        await sut.ready(user, [1, 2]);
-      } catch (err) {
-        expect(err).toBeInstanceOf(EntityNotFoundError);
-      }
+    describe('단건 주문', () => {
+      it('상품을 찾을 수 없으면 EntityNotFoundError를 던진다', () => {
+        // given
+        const dto = new OrderReadyRequest(1, 2, 3);
+
+        // when
+        const actual = () => sut.ready(user, dto);
+
+        // then
+        expect(actual()).rejects.toThrowError(EntityNotFoundError);
+      });
+
+      it('상품옵션을 찾을 수 없으면 EntityNotFoundError를 던진다', async () => {
+        // given
+        await CartItemFixtureFactory.create(module, user);
+        const dto = new OrderReadyRequest(1, 4, 3);
+
+        // when
+        const actual = () => sut.ready(user, dto);
+
+        // then
+        expect(actual()).rejects.toThrowError(EntityNotFoundError);
+      });
+
+      it('결제준비된 주문 객체 반환', async () => {
+        // given
+        await CartItemFixtureFactory.create(module, user);
+        const dto = new OrderReadyRequest(1, 2, 3);
+
+        // when
+        const result = await sut.ready(user, dto);
+
+        // then
+        expect(result).toMatchObject({
+          id: 1,
+          status: OrderStatus.Ready,
+          items: [
+            {
+              id: 1,
+              quantity: 3,
+              optionPrice: 2000,
+              optionDetail: 'product option 2',
+              optionDiscount: 0,
+              productName: 'banana',
+              status: 'accept',
+            },
+          ],
+        });
+      });
     });
 
-    it('결제준비된 주문 객체 반환', async () => {
-      await CartItemFixtureFactory.create(module, user);
+    describe('장바구니 주문', () => {
+      it('주문할 장바구니 상품이 없으면 EntityNotFoundError를 던진다', async () => {
+        try {
+          await sut.ready(user, [1, 2]);
+        } catch (err) {
+          expect(err).toBeInstanceOf(EntityNotFoundError);
+        }
+      });
 
-      const result = await sut.ready(user, [1, 2]);
+      it('결제준비된 주문 객체 반환', async () => {
+        await CartItemFixtureFactory.create(module, user);
 
-      expect(result).toMatchObject({
-        id: 1,
-        status: OrderStatus.Ready,
-        items: [
-          {
-            id: 1,
-            quantity: 3,
-            optionPrice: 1000,
-            optionDetail: 'product option 1',
-            optionDiscount: 0,
-            productName: 'banana',
-            status: 'accept',
-          },
-          {
-            id: 2,
-            quantity: 1,
-            optionPrice: 1000,
-            optionDetail: 'product option 3',
-            optionDiscount: 0,
-            productName: 'apple',
-            status: 'accept',
-          },
-        ],
+        const result = await sut.ready(user, [1, 2]);
+
+        expect(result).toMatchObject({
+          id: 1,
+          status: OrderStatus.Ready,
+          items: [
+            {
+              id: 1,
+              quantity: 3,
+              optionPrice: 1000,
+              optionDetail: 'product option 1',
+              optionDiscount: 0,
+              productName: 'banana',
+              status: 'accept',
+            },
+            {
+              id: 2,
+              quantity: 1,
+              optionPrice: 1000,
+              optionDetail: 'product option 3',
+              optionDiscount: 0,
+              productName: 'apple',
+              status: 'accept',
+            },
+          ],
+        });
       });
     });
   });

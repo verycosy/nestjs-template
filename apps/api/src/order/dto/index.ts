@@ -3,3 +3,4 @@ export * from './OrderCompleteRequest';
 export * from './OrderDto';
 export * from './OrderItemDto';
 export * from './CancelOrderRequest';
+export * from './OrderReadyRequest';

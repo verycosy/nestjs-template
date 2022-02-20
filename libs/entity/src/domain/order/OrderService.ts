@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CartItem } from '../cart/CartItem.entity';
-import { User } from '../user/User.entity';
 import { Order } from './Order.entity';
 import { OrderStatus } from './type/OrderStatus';
 
@@ -20,8 +18,8 @@ export class OrderService {
     });
   }
 
-  async start(user: User, cartItems: CartItem[]): Promise<Order> {
-    return await this.orderRepository.save(Order.create(user, cartItems));
+  async start(order: Order): Promise<Order> {
+    return await this.orderRepository.save(order);
   }
 
   async complete(order: Order): Promise<Order> {

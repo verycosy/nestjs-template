@@ -14,6 +14,7 @@ import {
   OrderCompleteRequest,
   CartOrderReadyRequest,
   OrderDto,
+  OrderReadyRequest,
 } from '../../../../../apps/api/src/order/dto';
 import { TestOrderFactory, TestUserFactory } from '@app/util/testing';
 import { User } from '@app/entity/domain/user/User.entity';
@@ -72,6 +73,17 @@ describe('OrderApiController', () => {
     jest.clearAllMocks();
     await paymentRepository.deleteMany({});
     await module.close();
+  });
+
+  describe('orderReady', () => {
+    it('결제준비된 주문번호 반환', async () => {
+      await CartItemFixtureFactory.create(module, user);
+      const dto = new OrderReadyRequest(1, 2, 3);
+
+      const result = await sut.orderReady(user, dto);
+
+      expect(result.data.length).toBe(36);
+    });
   });
 
   describe('orderFromCartReady', () => {

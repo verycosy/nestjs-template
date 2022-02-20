@@ -31,13 +31,20 @@ export class Order extends BaseTimeEntity {
     return uuidv4();
   }
 
-  static create(user: User, cartItems: CartItem[]): Order {
+  static create(user: User, orderItem: OrderItem): Order;
+  static create(user: User, cartItems: CartItem[]): Order;
+  static create(user: User, option: OrderItem | CartItem[]): Order {
     const order = new Order();
     order.merchantUid = order.generateMerchantUid();
     order.user = Promise.resolve(user);
-    order.items = cartItems.map((cartItem) =>
-      OrderItem.createByCartItem(cartItem),
-    );
+
+    if (option instanceof OrderItem) {
+      order.items = [option];
+    } else {
+      order.items = option.map((cartItem) =>
+        OrderItem.createByCartItem(cartItem),
+      );
+    }
 
     return order;
   }

@@ -8,6 +8,7 @@ import {
   CartOrderReadyRequest,
   OrderCompleteRequest,
   OrderDto,
+  OrderReadyRequest,
 } from '../dto';
 import { OrderApiService } from '../OrderApiService';
 import { OrderCancelApiService } from '../OrderCancelApiService';
@@ -19,6 +20,12 @@ export class OrderApiController {
     private readonly orderApiService: OrderApiService,
     private readonly orderCancelApiService: OrderCancelApiService,
   ) {}
+
+  @Post()
+  async orderReady(@CurrentUser() user: User, @Body() body: OrderReadyRequest) {
+    const order = await this.orderApiService.ready(user, body);
+    return ResponseEntity.OK_WITH(order.merchantUid);
+  }
 
   @Post('/cart/ready')
   async orderFromCartReady(
