@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class CategoryAdminService {
+export class CategoryService {
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
@@ -28,5 +28,13 @@ export class CategoryAdminService {
     return await this.subCategoryRepository.save(
       SubCategory.create(category, subCategoryName),
     );
+  }
+
+  async findCategories(): Promise<Category[]> {
+    return await this.categoryRepository.find({
+      order: {
+        id: 'ASC',
+      },
+    });
   }
 }

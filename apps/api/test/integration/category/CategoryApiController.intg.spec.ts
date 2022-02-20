@@ -2,7 +2,7 @@ import { getConfigModule } from '@app/config';
 import { Category, SubCategory } from '@app/entity/domain/category';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CategoryApiController } from '../../../src/category/controller/CategoryApiController';
-import { TypeOrmTestModule } from '../../../../../libs/entity/test/typeorm.test.module';
+import { CategoryModule } from '@app/entity/domain/category/CategoryModule';
 import { Repository } from 'typeorm';
 
 describe('CategoryApiController', () => {
@@ -12,7 +12,7 @@ describe('CategoryApiController', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [getConfigModule(), TypeOrmTestModule],
+      imports: [getConfigModule(), CategoryModule],
       controllers: [CategoryApiController],
     }).compile();
 
