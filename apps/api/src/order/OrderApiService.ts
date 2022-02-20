@@ -7,11 +7,11 @@ import {
   PaymentService,
   PaymentCompleteFailedError,
 } from '@app/entity/domain/payment';
-import { Product } from '@app/entity/domain/product/Product.entity';
+import { ProductQueryRepository } from '@app/entity/domain/product/ProductQueryRepository';
 import { User } from '@app/entity/domain/user/User.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityNotFoundError, Repository } from 'typeorm';
+import { EntityNotFoundError } from 'typeorm';
 import { OrderReadyRequest } from './dto';
 import { ForgeryOrderError } from './error';
 
@@ -21,8 +21,8 @@ export class OrderApiService {
     private readonly orderService: OrderService,
     private readonly paymentService: PaymentService,
     private readonly cartService: CartService,
-    @InjectRepository(Product)
-    private readonly productRepository: Repository<Product>,
+    @InjectRepository(ProductQueryRepository)
+    private readonly productQueryRepository: ProductQueryRepository,
   ) {}
 
   async ready(user: User, dto: OrderReadyRequest): Promise<Order>;
@@ -31,41 +31,39 @@ export class OrderApiService {
     user: User,
     option: number[] | OrderReadyRequest,
   ): Promise<Order> {
+    let order: Order = null;
+
     if (option instanceof OrderReadyRequest) {
-      const { productId, productOptionId, quantity } = option;
-      const product = await this.productRepository
-        .createQueryBuilder('product')
-        .leftJoinAndSelect('product.options', 'options')
-        .where({ id: productId })
-        .andWhere('options.id = :optionId', { optionId: productOptionId })
-        .getOneOrFail();
+      const [product, productOption] =
+        await this.productQueryRepository.findProductAndOptionForOrderReady(
+          option,
+        );
 
-      const orderItem = OrderItem.create(product, product.options[0], quantity);
-
-      const order = await this.orderService.start(
-        Order.create(user, orderItem),
+      const orderItem = OrderItem.create(
+        product,
+        productOption,
+        option.quantity,
       );
-      return order;
+
+      order = Order.create(user, orderItem);
     } else {
       const cart = await this.cartService.findCartWithItemsByUser(user);
       if (!cart.hasCartItems(option)) {
         throw new EntityNotFoundError(CartItem, { ids: option });
       }
 
-      const order = await this.orderService.start(
-        Order.create(
-          user,
-          cart.items.filter((item) => option.includes(item.id)),
-        ),
+      const orderedCartItems = cart.items.filter((item) =>
+        option.includes(item.id),
       );
 
+      order = Order.create(user, orderedCartItems);
       await this.cartService.cachingOrderedCartItemIds(
         order.merchantUid,
         option,
       );
-
-      return order;
     }
+
+    return await this.orderService.start(order);
   }
 
   async complete(impUid: string, merchantUid: string): Promise<Order> {

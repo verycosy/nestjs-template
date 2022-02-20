@@ -1,3 +1,4 @@
+import { OrderReadyRequest } from 'apps/api/src/order';
 import { GetProductsRequest } from 'apps/api/src/product/dto/GetProductsRequest';
 import {
   AbstractRepository,
@@ -5,6 +6,7 @@ import {
   EntityRepository,
 } from 'typeorm';
 import { Product } from './Product.entity';
+import { ProductOption } from './ProductOption.entity';
 
 @EntityRepository(Product)
 export class ProductQueryRepository extends AbstractRepository<Product> {
@@ -25,5 +27,20 @@ export class ProductQueryRepository extends AbstractRepository<Product> {
     }
 
     return queryBuilder.disableEscaping().getManyAndCount();
+  }
+
+  async findProductAndOptionForOrderReady(
+    param: OrderReadyRequest,
+  ): Promise<[Product, ProductOption]> {
+    const { productId, productOptionId } = param;
+
+    const product = await this.repository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.options', 'options')
+      .where({ id: productId })
+      .andWhere('options.id = :optionId', { optionId: productOptionId })
+      .getOneOrFail();
+
+    return [product, product.options[0]];
   }
 }
