@@ -1,5 +1,4 @@
 import { AuthModule } from '@app/auth';
-import { UserModule } from '@app/entity/domain/user/UserModule';
 import { AuthCodeModule } from '@app/util/auth-code';
 import { Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
@@ -9,7 +8,7 @@ import { basename, extname } from 'path';
 import { v4 as uuid } from 'uuid';
 import { UserAuthApiController, UserApiController } from './controller';
 import { UserApiService } from './UserApiService';
-import { CartModule } from '@app/entity/domain/cart/CartModule';
+import { TypeOrmTestModule } from '../../../../libs/entity/test/typeorm.test.module';
 
 function processingFilename(file: Express.Multer.File): string {
   const originalFilename = basename(file.originalname);
@@ -35,7 +34,7 @@ const diskStorageOption = diskStorage({
 
 @Module({
   imports: [
-    UserModule,
+    TypeOrmTestModule,
     AuthCodeModule,
     AuthModule,
     MulterModule.register({

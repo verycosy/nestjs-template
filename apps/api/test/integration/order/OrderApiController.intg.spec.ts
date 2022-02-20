@@ -16,7 +16,6 @@ import { TestOrderFactory, TestUserFactory } from '@app/util/testing';
 import { User } from '@app/entity/domain/user/User.entity';
 import { ResponseStatus } from '@app/config/response';
 import { CartItemFixtureFactory } from '@app/util/testing/CartItemFixtureFactory';
-import { PaymentModule } from '@app/entity/domain/payment/PaymentModule';
 import {
   Payment,
   PaymentDocument,
@@ -29,6 +28,8 @@ import { EntityNotFoundError } from 'typeorm';
 import { OrderService } from '@app/entity/domain/order/OrderService';
 import { CartService } from '@app/entity/domain/cart/CartService';
 import { CustomCacheModule } from '@app/util/cache';
+import { MongooseTestModule } from '../../../../../libs/entity/test/mongoose.test.module';
+import { IamportService } from '@app/entity/domain/pg';
 
 describe('OrderApiController', () => {
   let sut: OrderApiController;
@@ -41,7 +42,7 @@ describe('OrderApiController', () => {
       imports: [
         getConfigModule(),
         TypeOrmTestModule,
-        PaymentModule,
+        MongooseTestModule,
         CustomCacheModule,
       ],
       providers: [
@@ -49,6 +50,8 @@ describe('OrderApiController', () => {
         OrderCancelApiService,
         OrderService,
         CartService,
+        PaymentService,
+        IamportService,
       ],
       controllers: [OrderApiController],
     }).compile();

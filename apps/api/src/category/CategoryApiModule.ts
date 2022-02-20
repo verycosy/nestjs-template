@@ -1,9 +1,9 @@
-import { CategoryModule } from '@app/entity/domain/category';
+import { TypeOrmTestModule } from '../../../../libs/entity/test/typeorm.test.module';
 import { Module } from '@nestjs/common';
 import { CategoryApiController } from './controller/CategoryApiController';
 
 @Module({
-  imports: [CategoryModule],
+  imports: [TypeOrmTestModule],
   controllers: [CategoryApiController],
 })
 export class CategoryApiModule {}

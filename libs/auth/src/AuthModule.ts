@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './AuthService';
-import { UserModule } from '@app/entity/domain/user/UserModule';
 import { AccessTokenStrategy, RefreshTokenStrategy } from './strategy';
+import { TypeOrmTestModule } from '../../../libs/entity/test/typeorm.test.module';
 
 @Module({
-  imports: [PassportModule, JwtModule.register({}), UserModule],
+  imports: [PassportModule, JwtModule.register({}), TypeOrmTestModule],
   providers: [AuthService, AccessTokenStrategy, RefreshTokenStrategy],
   exports: [AuthService],
 })

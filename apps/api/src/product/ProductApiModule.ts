@@ -1,12 +1,11 @@
-import { ProductModule } from '@app/entity/domain/product/ProductModule';
-import { UserModule } from '@app/entity/domain/user/UserModule';
+import { TypeOrmTestModule } from '../../../../libs/entity/test/typeorm.test.module';
 import { Module } from '@nestjs/common';
 import { ProductApiController, ProductApiService } from '.';
 import { ProductInquiryApiController } from './controller/ProductInquiryApiController';
 import { ProductInquiryApiService } from './ProductInquiryApiService';
 
 @Module({
-  imports: [ProductModule, UserModule],
+  imports: [TypeOrmTestModule],
   controllers: [ProductApiController, ProductInquiryApiController],
   providers: [ProductApiService, ProductInquiryApiService],
 })

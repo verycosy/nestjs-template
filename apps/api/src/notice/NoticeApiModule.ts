@@ -1,9 +1,9 @@
-import { NoticeModule } from '@app/entity/domain/notice/NoticeModule';
+import { TypeOrmTestModule } from '../../../../libs/entity/test/typeorm.test.module';
 import { Module } from '@nestjs/common';
 import { NoticeApiController, NoticeApiService } from '.';
 
 @Module({
-  imports: [NoticeModule],
+  imports: [TypeOrmTestModule],
   controllers: [NoticeApiController],
   providers: [NoticeApiService],
 })

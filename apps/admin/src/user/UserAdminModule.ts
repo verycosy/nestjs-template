@@ -1,11 +1,10 @@
-import { CartModule } from '@app/entity/domain/cart/CartModule';
-import { UserModule } from '@app/entity/domain/user/UserModule';
 import { Module } from '@nestjs/common';
+import { TypeOrmTestModule } from '../../../../libs/entity/test/typeorm.test.module';
 import { UserAdminController } from './controller/UserAdminController';
 import { UserAdminService } from './UserAdminService';
 
 @Module({
-  imports: [UserModule, CartModule],
+  imports: [TypeOrmTestModule],
   controllers: [UserAdminController],
   providers: [UserAdminService],
 })

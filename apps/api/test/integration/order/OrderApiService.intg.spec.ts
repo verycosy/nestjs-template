@@ -7,7 +7,6 @@ import { EntityNotFoundError, Repository } from 'typeorm';
 import { Cart } from '@app/entity/domain/cart/Cart.entity';
 import { iamportPaymentMockData } from '../../../../../libs/entity/test/integration/domain/payment/mockData';
 import { PaymentService } from '@app/entity/domain/payment/PaymentService';
-import { PaymentModule } from '@app/entity/domain/payment/PaymentModule';
 import {
   PaymentDocument,
   Payment,
@@ -28,6 +27,8 @@ import {
 import { OrderStatus } from '@app/entity/domain/order/type/OrderStatus';
 import { OrderService } from '@app/entity/domain/order/OrderService';
 import { CartService } from '@app/entity/domain/cart/CartService';
+import { MongooseTestModule } from '../../../../../libs/entity/test/mongoose.test.module';
+import { IamportService } from '@app/entity/domain/pg';
 
 describe('OrderApiService', () => {
   let sut: OrderApiService;
@@ -41,10 +42,16 @@ describe('OrderApiService', () => {
       imports: [
         getConfigModule(),
         TypeOrmTestModule,
-        PaymentModule,
+        MongooseTestModule,
         CustomCacheModule,
       ],
-      providers: [OrderApiService, OrderService, CartService],
+      providers: [
+        OrderApiService,
+        OrderService,
+        CartService,
+        PaymentService,
+        IamportService,
+      ],
     }).compile();
 
     sut = module.get(OrderApiService);
