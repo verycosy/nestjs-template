@@ -13,11 +13,7 @@ import {
 } from '@app/entity/domain/payment/Payment.schema';
 import { getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import {
-  CacheService,
-  CACHE_SERVICE,
-  CustomCacheModule,
-} from '@app/util/cache';
+import { CacheService, CACHE_SERVICE } from '@app/util/cache';
 import { User } from '@app/entity/domain/user/User.entity';
 import {
   ForgeryOrderError,
@@ -26,7 +22,7 @@ import {
 } from '../../../../../apps/api/src/order';
 import { OrderStatus } from '@app/entity/domain/order/type/OrderStatus';
 import { OrderService } from '@app/entity/domain/order/OrderService';
-import { CartService } from '@app/entity/domain/cart/CartService';
+import { CartModule } from '@app/entity/domain/cart/CartModule';
 import { MongooseTestModule } from '@app/entity/mongoose.test.module';
 import { IamportService } from '@app/entity/domain/pg';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -46,12 +42,11 @@ describe('OrderApiService', () => {
         TypeOrmTestModule,
         TypeOrmModule.forFeature([ProductApiQueryRepository]),
         MongooseTestModule,
-        CustomCacheModule,
+        CartModule,
       ],
       providers: [
         OrderApiService,
         OrderService,
-        CartService,
         PaymentService,
         IamportService,
       ],

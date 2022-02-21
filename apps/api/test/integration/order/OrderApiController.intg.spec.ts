@@ -26,8 +26,7 @@ import { PaymentService } from '@app/entity/domain/payment/PaymentService';
 import { iamportPaymentMockData } from '../../../../../libs/entity/test/integration/domain/payment/mockData';
 import { EntityNotFoundError } from 'typeorm';
 import { OrderService } from '@app/entity/domain/order/OrderService';
-import { CartService } from '@app/entity/domain/cart/CartService';
-import { CustomCacheModule } from '@app/util/cache';
+import { CartModule } from '@app/entity/domain/cart/CartModule';
 import { MongooseTestModule } from '@app/entity/mongoose.test.module';
 import { IamportService } from '@app/entity/domain/pg';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -46,13 +45,12 @@ describe('OrderApiController', () => {
         TypeOrmTestModule,
         TypeOrmModule.forFeature([ProductApiQueryRepository]),
         MongooseTestModule,
-        CustomCacheModule,
+        CartModule,
       ],
       providers: [
         OrderApiService,
         OrderCancelApiService,
         OrderService,
-        CartService,
         PaymentService,
         IamportService,
       ],
