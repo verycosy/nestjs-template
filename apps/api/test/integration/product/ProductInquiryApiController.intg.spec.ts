@@ -1,6 +1,6 @@
 import { getConfigModule } from '@app/config';
 import { ResponseStatus } from '@app/config/response';
-import { ProductInquiryStatus } from '@app/entity/domain/product/type/ProductInquiryStatus';
+import { ProductInquiryStatus } from '@app/entity/domain/product-inquiry/type/ProductInquiryStatus';
 import {
   TestProductFactory,
   TestProductInquiryFactory,

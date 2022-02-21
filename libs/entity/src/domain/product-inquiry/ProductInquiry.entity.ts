@@ -4,8 +4,8 @@ import { LocalDateTimeTransformer } from '@app/entity/transformer';
 import { LocalDateTime } from '@js-joda/core';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { User } from '../user/User.entity';
-import { ProductInquiryAlreadyCompletedError } from './error/ProductInquiryAlreadyCompletedError';
-import { Product } from './Product.entity';
+import { ProductInquiryAlreadyCompletedError } from '../product/error/ProductInquiryAlreadyCompletedError';
+import { Product } from '../product/Product.entity';
 import { ProductInquiryStatus } from './type/ProductInquiryStatus';
 
 @Entity('product_inquiry')

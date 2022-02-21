@@ -10,7 +10,7 @@ import { ProductInquiryAdminController } from '../../../../../apps/admin/src/pro
 import { ProductInquiryAnswerRequest } from '../../../../../apps/admin/src/product/dto';
 import { TestSubCategoryFactory } from '@app/util/testing/TestSubCategoryFactory';
 import { Role } from '@app/entity/domain/user/type/Role';
-import { ProductInquiryAnswerDto } from '@app/entity/domain/product/dto/ProductInquiryAnswerDto';
+import { ProductInquiryAnswerDto } from '@app/entity/domain/product-inquiry/dto/ProductInquiryAnswerDto';
 import { EntityNotFoundError } from 'typeorm';
 import { ProductAdminModule } from '../../../../../apps/admin/src/product/ProductAdminModule';
 

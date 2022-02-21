@@ -1,3 +1,4 @@
+import { ProductInquiryModule } from '@app/entity/domain/product-inquiry/ProductInquiryModule';
 import { ProductModule } from '@app/entity/domain/product/ProductModule';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -8,6 +9,7 @@ import { ProductApiQueryRepository } from './ProductApiQueryRepository';
 @Module({
   imports: [
     ProductModule,
+    ProductInquiryModule,
     TypeOrmModule.forFeature([ProductApiQueryRepository]),
   ],
   controllers: [ProductApiController, ProductInquiryApiController],

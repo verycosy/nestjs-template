@@ -1,11 +1,11 @@
 import { AdminGuard, CurrentUser } from '@app/auth';
 import { CommandForbiddenError } from '@app/auth/error';
 import { ResponseEntity, ResponseStatus } from '@app/config/response';
-import { ProductInquiryAnswerDto } from '@app/entity/domain/product/dto/ProductInquiryAnswerDto';
+import { ProductInquiryAnswerDto } from '@app/entity/domain/product-inquiry/dto/ProductInquiryAnswerDto';
 import { User } from '@app/entity/domain/user/User.entity';
 import { Body, Controller, Param, Patch } from '@nestjs/common';
 import { ProductInquiryAnswerRequest } from '../dto';
-import { ProductInquiryService } from '@app/entity/domain/product/ProductInquiryService';
+import { ProductInquiryService } from '@app/entity/domain/product-inquiry/ProductInquiryService';
 
 @AdminGuard()
 @Controller('/product-inquiry')

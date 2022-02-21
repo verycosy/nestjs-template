@@ -1,5 +1,5 @@
-import { ProductInquiry } from '@app/entity/domain/product/ProductInquiry.entity';
-import { ProductInquiryStatus } from '@app/entity/domain/product/type/ProductInquiryStatus';
+import { ProductInquiry } from '@app/entity/domain/product-inquiry/ProductInquiry.entity';
+import { ProductInquiryStatus } from '@app/entity/domain/product-inquiry/type/ProductInquiryStatus';
 
 export class ProductInquiryDto {
   constructor(entity: ProductInquiry) {

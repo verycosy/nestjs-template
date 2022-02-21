@@ -6,7 +6,7 @@ import { Notice } from '@app/entity/domain/notice/Notice.entity';
 import { Order } from '@app/entity/domain/order/Order.entity';
 import { OrderItem } from '@app/entity/domain/order/OrderItem.entity';
 import { Product } from '@app/entity/domain/product/Product.entity';
-import { ProductInquiry } from '@app/entity/domain/product/ProductInquiry.entity';
+import { ProductInquiry } from '@app/entity/domain/product-inquiry/ProductInquiry.entity';
 import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
 import { Review } from '@app/entity/domain/review/Review.entity';
 import { User } from '@app/entity/domain/user/User.entity';

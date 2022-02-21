@@ -1,5 +1,5 @@
 import { Product } from '@app/entity/domain/product/Product.entity';
-import { ProductInquiry } from '@app/entity/domain/product/ProductInquiry.entity';
+import { ProductInquiry } from '@app/entity/domain/product-inquiry/ProductInquiry.entity';
 import { User } from '@app/entity/domain/user/User.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';

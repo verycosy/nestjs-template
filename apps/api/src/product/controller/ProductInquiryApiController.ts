@@ -1,6 +1,6 @@
 import { AccessTokenGuard, CurrentUser } from '@app/auth';
 import { ResponseEntity } from '@app/config/response';
-import { ProductInquiryService } from '@app/entity/domain/product/ProductInquiryService';
+import { ProductInquiryService } from '@app/entity/domain/product-inquiry/ProductInquiryService';
 import { User } from '@app/entity/domain/user/User.entity';
 import {
   Body,
