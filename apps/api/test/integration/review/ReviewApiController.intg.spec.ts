@@ -14,10 +14,9 @@ import {
   EditReviewRequest,
   GetReviewsRequest,
   ReviewApiController,
-  ReviewApiService,
+  ReviewApiModule,
   WriteReviewRequest,
 } from '../../../../../apps/api/src/review';
-import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 import { EntityNotFoundError } from 'typeorm';
 
 describe('ReviewApiController', () => {
@@ -26,9 +25,7 @@ describe('ReviewApiController', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [getConfigModule(), TypeOrmTestModule],
-      controllers: [ReviewApiController],
-      providers: [ReviewApiService],
+      imports: [getConfigModule(), ReviewApiModule],
     }).compile();
 
     sut = module.get(ReviewApiController);

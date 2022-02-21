@@ -1,9 +1,9 @@
 import { GetReviewsRequest } from 'apps/api/src/review';
 import { AbstractRepository, EntityRepository } from 'typeorm';
-import { Review } from './Review.entity';
+import { Review } from '@app/entity/domain/review/Review.entity';
 
 @EntityRepository(Review)
-export class ReviewQueryRepository extends AbstractRepository<Review> {
+export class ReviewApiQueryRepository extends AbstractRepository<Review> {
   paging(
     productId: number,
     param: GetReviewsRequest,

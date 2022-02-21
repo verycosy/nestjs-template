@@ -8,11 +8,11 @@ import { NoticeApiQueryRepository } from './NoticeApiQueryRepository';
 export class NoticeApiService {
   constructor(
     @InjectRepository(NoticeApiQueryRepository)
-    private readonly noticeQueryRepository: NoticeApiQueryRepository,
+    private readonly noticeApiQueryRepository: NoticeApiQueryRepository,
   ) {}
 
   async getNotices(dto: GetNoticesRequest) {
-    const [items, totalCount] = await this.noticeQueryRepository.paging(dto);
+    const [items, totalCount] = await this.noticeApiQueryRepository.paging(dto);
 
     return new Page<GetNoticesItem>(
       totalCount,

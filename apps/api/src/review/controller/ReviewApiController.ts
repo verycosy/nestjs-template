@@ -1,5 +1,6 @@
 import { AccessTokenGuard, CurrentUser } from '@app/auth';
 import { ResponseEntity } from '@app/config/response';
+import { ReviewService } from '@app/entity/domain/review/ReviewService';
 import { User } from '@app/entity/domain/user/User.entity';
 import {
   Body,
@@ -21,7 +22,10 @@ import { ReviewApiService } from '../ReviewApiService';
 
 @Controller('/review')
 export class ReviewApiController {
-  constructor(private readonly reviewApiService: ReviewApiService) {}
+  constructor(
+    private readonly reviewService: ReviewService,
+    private readonly reviewApiService: ReviewApiService,
+  ) {}
 
   @Get()
   async getReviews(
@@ -40,7 +44,7 @@ export class ReviewApiController {
     const { orderItemId, rating, detail, imagePath } = body;
 
     try {
-      const review = await this.reviewApiService.write(
+      const review = await this.reviewService.write(
         user,
         orderItemId,
         rating,
@@ -64,7 +68,7 @@ export class ReviewApiController {
     const { rating, detail, imagePath } = body;
 
     try {
-      const review = await this.reviewApiService.edit(
+      const review = await this.reviewService.edit(
         user,
         id,
         rating,
@@ -81,7 +85,7 @@ export class ReviewApiController {
   @AccessTokenGuard()
   @Delete('/:id')
   async remove(@CurrentUser() user: User, @Param('id') id: number) {
-    await this.reviewApiService.remove(user, id);
+    await this.reviewService.remove(user, id);
     return ResponseEntity.OK();
   }
 }
