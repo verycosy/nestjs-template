@@ -1,35 +1,25 @@
 import { Page } from '@app/config/Page';
-import { User } from '@app/entity/domain/user/User.entity';
-import { UserQueryRepository } from '@app/entity/domain/user/UserQueryRepository';
+import { UserAdminQueryRepository } from './UserAdminQueryRepository';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { GetUsersItem, GetUsersRequest } from './dto';
-import { UpdateUserRequest } from './dto/UpdateUserRequest';
 
 @Injectable()
 export class UserAdminService {
   constructor(
-    @InjectRepository(User) private readonly userRepository: Repository<User>,
-    @InjectRepository(UserQueryRepository)
-    private readonly userQueryRepository: UserQueryRepository,
+    @InjectRepository(UserAdminQueryRepository)
+    private readonly userAdminQueryRepository: UserAdminQueryRepository,
   ) {}
 
   async getUsersByRole(query: GetUsersRequest) {
-    const [items, totalCount] = await this.userQueryRepository.paging(query);
+    const [items, totalCount] = await this.userAdminQueryRepository.paging(
+      query,
+    );
 
     return new Page<GetUsersItem>(
       totalCount,
       query.pageSize,
       items.map((user) => new GetUsersItem(user)),
     );
-  }
-
-  async updateUser(userId: number, body: UpdateUserRequest): Promise<User> {
-    const { name, phoneNumber, password } = body;
-    const user = await this.userRepository.findOneOrFail({ id: userId });
-
-    await user.update(name, phoneNumber, password);
-    return await this.userRepository.save(user);
   }
 }

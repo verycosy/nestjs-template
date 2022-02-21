@@ -1,23 +1,28 @@
 import { getConfigModule } from '@app/config';
 import { Role } from '@app/entity/domain/user/type/Role';
 import { User } from '@app/entity/domain/user/User.entity';
-import { UserQueryRepository } from '@app/entity/domain/user/UserQueryRepository';
+import { UserAdminQueryRepository } from '../../../../../apps/admin/src/user/UserAdminQueryRepository';
 import { Test, TestingModule } from '@nestjs/testing';
-import { GetUsersRequest } from '../../../../../../apps/admin/src/user/dto/GetUsersRequest';
+import { GetUsersRequest } from '../../../src/user/dto/GetUsersRequest';
 import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 import { Repository } from 'typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
-describe('UserQueryRepository', () => {
-  let sut: UserQueryRepository;
+describe('UserAdminQueryRepository', () => {
+  let sut: UserAdminQueryRepository;
   let repository: Repository<User>;
   let module: TestingModule;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [getConfigModule(), TypeOrmTestModule],
+      imports: [
+        getConfigModule(),
+        TypeOrmTestModule,
+        TypeOrmModule.forFeature([UserAdminQueryRepository]),
+      ],
     }).compile();
 
-    sut = module.get(UserQueryRepository);
+    sut = module.get(UserAdminQueryRepository);
     repository = module.get('UserRepository');
 
     const users = await Promise.all(

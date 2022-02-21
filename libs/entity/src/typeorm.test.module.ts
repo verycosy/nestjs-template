@@ -10,7 +10,6 @@ import { ProductInquiry } from '@app/entity/domain/product-inquiry/ProductInquir
 import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
 import { Review } from '@app/entity/domain/review/Review.entity';
 import { User } from '@app/entity/domain/user/User.entity';
-import { UserQueryRepository } from '@app/entity/domain/user/UserQueryRepository';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
@@ -45,7 +44,6 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
       ProductInquiry,
       Review,
       User,
-      UserQueryRepository,
     ]),
   ],
   exports: [TypeOrmModule],

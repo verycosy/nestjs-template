@@ -10,6 +10,18 @@ export class UserService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
+  async updateUserById(
+    userId: number,
+    name: string,
+    phoneNumber: string,
+    password: string,
+  ): Promise<User> {
+    const user = await this.userRepository.findOneOrFail({ id: userId });
+
+    await user.update(name, phoneNumber, password);
+    return await this.userRepository.save(user);
+  }
+
   async updateProfile(
     user: User,
     uploadedProfileImageUrl: string,

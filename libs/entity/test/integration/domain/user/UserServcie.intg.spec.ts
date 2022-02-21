@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getConfigModule } from '@app/config';
 import { UserModule } from '@app/entity/domain/user/UserModule';
 import { UserService } from '@app/entity/domain/user/UserService';
+import { TestUserFactory } from '@app/util/testing';
 
 describe('UserService', () => {
   let sut: UserService;
@@ -43,6 +44,23 @@ describe('UserService', () => {
 
       await sut.changePassword(user, 'old password', 'new password');
       expect(user.validatePassword('new password')).resolves.toEqual(true);
+    });
+  });
+
+  describe('updateUserById', () => {
+    it('사용자 정보 업데이트', async () => {
+      await TestUserFactory.create(module);
+
+      const result = await sut.updateUserById(
+        1,
+        'new',
+        '010-3333-4444',
+        'new password',
+      );
+
+      expect(result.name).toBe('new');
+      expect(result.phoneNumber).toBe('010-3333-4444');
+      expect(result.validatePassword('new password')).resolves.toBe(true);
     });
   });
 });

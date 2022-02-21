@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 import { UserAdminController } from './controller/UserAdminController';
 import { UserAdminService } from './UserAdminService';
+import { UserModule } from '@app/entity/domain/user/UserModule';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserAdminQueryRepository } from './UserAdminQueryRepository';
 
 @Module({
-  imports: [TypeOrmTestModule],
+  imports: [UserModule, TypeOrmModule.forFeature([UserAdminQueryRepository])],
   controllers: [UserAdminController],
   providers: [UserAdminService],
 })

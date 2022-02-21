@@ -3,12 +3,9 @@ import { Role } from '@app/entity/domain/user/type/Role';
 import { User } from '@app/entity/domain/user/User.entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Repository } from 'typeorm';
-import {
-  GetUsersRequest,
-  UpdateUserRequest,
-} from '../../../../admin/src/user/dto';
+import { GetUsersRequest } from '../../../../admin/src/user/dto';
 import { UserAdminService } from '../../../../../apps/admin/src/user/UserAdminService';
-import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
+import { UserAdminModule } from '../../../../../apps/admin/src/user/UserAdminModule';
 
 describe('UserAdminService', () => {
   let module: TestingModule;
@@ -17,8 +14,7 @@ describe('UserAdminService', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [getConfigModule(), TypeOrmTestModule],
-      providers: [UserAdminService],
+      imports: [getConfigModule(), UserAdminModule],
     }).compile();
 
     sut = module.get(UserAdminService);
@@ -53,25 +49,5 @@ describe('UserAdminService', () => {
       email: 'test@test.com',
       phoneNumber: '010-1111-2222',
     });
-  });
-
-  it('사용자 정보 업데이트', async () => {
-    await repository.save(
-      await User.signUp({
-        name: 'tester',
-        email: 'test@test.com',
-        password: 'password',
-        phoneNumber: '010-1111-2222',
-      }),
-    );
-
-    const result = await sut.updateUser(
-      1,
-      UpdateUserRequest.create('new', '010-3333-4444', 'new password'),
-    );
-
-    expect(result.name).toBe('new');
-    expect(result.phoneNumber).toBe('010-3333-4444');
-    expect(result.validatePassword('new password')).resolves.toBe(true);
   });
 });
