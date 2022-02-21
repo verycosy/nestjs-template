@@ -14,8 +14,7 @@ import {
   WriteProductInquiryRequest,
 } from '../../../../../apps/api/src/product';
 import { ProductInquiryApiController } from '../../../../../apps/api/src/product/controller/ProductInquiryApiController';
-import { ProductInquiryApiService } from '../../../../../apps/api/src/product/ProductInquiryApiService';
-import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
+import { ProductApiModule } from '../../../../../apps/api/src/product/ProductApiModule';
 
 describe('ProductInquiryApiController', () => {
   let sut: ProductInquiryApiController;
@@ -23,9 +22,7 @@ describe('ProductInquiryApiController', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [getConfigModule(), TypeOrmTestModule],
-      providers: [ProductInquiryApiService],
-      controllers: [ProductInquiryApiController],
+      imports: [getConfigModule(), ProductApiModule],
     }).compile();
 
     sut = module.get(ProductInquiryApiController);

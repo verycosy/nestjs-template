@@ -6,14 +6,13 @@ import {
   TestUserFactory,
 } from '@app/util/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ProductInquiryAdminService } from '../../../../../apps/admin/src/product/ProductInquiryAdminService';
 import { ProductInquiryAdminController } from '../../../../../apps/admin/src/product/controller/ProductInquiryAdminController';
 import { ProductInquiryAnswerRequest } from '../../../../../apps/admin/src/product/dto';
-import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 import { TestSubCategoryFactory } from '@app/util/testing/TestSubCategoryFactory';
 import { Role } from '@app/entity/domain/user/type/Role';
 import { ProductInquiryAnswerDto } from '@app/entity/domain/product/dto/ProductInquiryAnswerDto';
 import { EntityNotFoundError } from 'typeorm';
+import { ProductAdminModule } from '../../../../../apps/admin/src/product/ProductAdminModule';
 
 describe('ProductInquiryAdminController', () => {
   let sut: ProductInquiryAdminController;
@@ -21,9 +20,7 @@ describe('ProductInquiryAdminController', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [getConfigModule(), TypeOrmTestModule],
-      providers: [ProductInquiryAdminService],
-      controllers: [ProductInquiryAdminController],
+      imports: [getConfigModule(), ProductAdminModule],
     }).compile();
 
     sut = module.get(ProductInquiryAdminController);

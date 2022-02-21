@@ -1,4 +1,4 @@
-import { GetReviewsRequest } from 'apps/api/src/review';
+import { GetReviewsRequest } from './dto';
 import { AbstractRepository, EntityRepository } from 'typeorm';
 import { Review } from '@app/entity/domain/review/Review.entity';
 

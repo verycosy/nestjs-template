@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class ProductInquiryApiService {
+export class ProductInquiryService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
@@ -47,5 +47,14 @@ export class ProductInquiryApiService {
     });
 
     await this.productInquiryRepository.remove(productInquiry);
+  }
+
+  async answer(admin: User, productInquiryId: number, answer: string) {
+    const productInquiry = await this.productInquiryRepository.findOneOrFail({
+      id: productInquiryId,
+    });
+
+    productInquiry.updateAnswer(admin, answer);
+    return await this.productInquiryRepository.save(productInquiry);
   }
 }

@@ -7,11 +7,11 @@ import {
   PaymentService,
   PaymentCompleteFailedError,
 } from '@app/entity/domain/payment';
-import { ProductQueryRepository } from '@app/entity/domain/product/ProductQueryRepository';
 import { User } from '@app/entity/domain/user/User.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityNotFoundError } from 'typeorm';
+import { ProductApiQueryRepository } from '../product/ProductApiQueryRepository';
 import { OrderReadyRequest } from './dto';
 import { ForgeryOrderError } from './error';
 
@@ -21,8 +21,8 @@ export class OrderApiService {
     private readonly orderService: OrderService,
     private readonly paymentService: PaymentService,
     private readonly cartService: CartService,
-    @InjectRepository(ProductQueryRepository)
-    private readonly productQueryRepository: ProductQueryRepository,
+    @InjectRepository(ProductApiQueryRepository)
+    private readonly productApiQueryRepository: ProductApiQueryRepository,
   ) {}
 
   async ready(user: User, dto: OrderReadyRequest): Promise<Order>;
@@ -35,7 +35,7 @@ export class OrderApiService {
 
     if (option instanceof OrderReadyRequest) {
       const [product, productOption] =
-        await this.productQueryRepository.findProductAndOptionForOrderReady(
+        await this.productApiQueryRepository.findProductAndOptionForOrderReady(
           option,
         );
 

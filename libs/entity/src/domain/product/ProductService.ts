@@ -1,14 +1,17 @@
-import { SubCategory } from '@app/entity/domain/category';
-import { Product } from '@app/entity/domain/product/Product.entity';
-import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
-import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { SubCategory } from '../category';
+import { User } from '../user/User.entity';
+import { Product } from './Product.entity';
+import { ProductOption } from './ProductOption.entity';
+import { ProductStatus } from './type/ProductStatus';
 
 @Injectable()
-export class ProductAdminService {
+export class ProductService {
   constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
     @InjectRepository(ProductOption)
@@ -75,5 +78,24 @@ export class ProductAdminService {
 
     productOption.update(detail, price, discount);
     return await this.productOptionRepository.save(productOption);
+  }
+
+  async like(id: number, user: User): Promise<Product> {
+    const product = await this.productRepository.findOneOrFail({ id });
+
+    (await user.liked).push(product);
+    await this.userRepository.save(user);
+
+    return product;
+  }
+
+  async cancelLike(productId: number, user: User): Promise<void> {
+    const liked = await user.liked;
+
+    user.liked = Promise.resolve(
+      liked.filter((product) => product.id !== productId),
+    );
+
+    await this.userRepository.save(user);
   }
 }

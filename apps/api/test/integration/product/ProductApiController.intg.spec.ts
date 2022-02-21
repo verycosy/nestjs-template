@@ -1,12 +1,9 @@
 import { getConfigModule } from '@app/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 import {
   ProductApiController,
-  ProductApiService,
   GetProductsRequest,
 } from '../../../../../apps/api/src/product';
-import { ProductAdminService } from '../../../../admin/src/product/ProductAdminService';
 import { Product } from '@app/entity/domain/product/Product.entity';
 import { Category, SubCategory } from '@app/entity/domain/category';
 import { EntityNotFoundError, Repository } from 'typeorm';
@@ -16,6 +13,8 @@ import {
   TestSubCategoryFactory,
   TestUserFactory,
 } from '@app/util/testing';
+import { ProductApiModule } from '../../../../../apps/api/src/product/ProductApiModule';
+import { ProductService } from '@app/entity/domain/product/ProductService';
 
 describe('ProductApiController', () => {
   let sut: ProductApiController;
@@ -24,9 +23,7 @@ describe('ProductApiController', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [getConfigModule(), TypeOrmTestModule],
-      providers: [ProductAdminService, ProductApiService],
-      controllers: [ProductApiController],
+      imports: [getConfigModule(), ProductApiModule],
     }).compile();
 
     sut = module.get(ProductApiController);
@@ -48,9 +45,7 @@ describe('ProductApiController', () => {
       const category = new Category('fruit');
       await subCategoryRepository.save(SubCategory.create(category, 'tropics'));
 
-      await module
-        .get(ProductAdminService)
-        .addProduct(1, 'banana', 3000, 'yummy');
+      await module.get(ProductService).addProduct(1, 'banana', 3000, 'yummy');
 
       const result = await sut.findProduct(1);
       const data = result.data as Product;
@@ -69,10 +64,8 @@ describe('ProductApiController', () => {
         SubCategory.create(category2, 'soda'),
       ]);
 
-      await module
-        .get(ProductAdminService)
-        .addProduct(1, 'banana', 3000, 'yummy');
-      await module.get(ProductAdminService).addProduct(2, 'coke', 1000, 'pop');
+      await module.get(ProductService).addProduct(1, 'banana', 3000, 'yummy');
+      await module.get(ProductService).addProduct(2, 'coke', 1000, 'pop');
     });
 
     it('sub category에 아무 상품도 없으면 빈 목록 페이징 조회', async () => {

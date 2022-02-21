@@ -1,5 +1,6 @@
 import { AccessTokenGuard, CurrentUser } from '@app/auth';
-import { ResponseEntity, ResponseStatus } from '@app/config/response';
+import { ResponseEntity } from '@app/config/response';
+import { ProductInquiryService } from '@app/entity/domain/product/ProductInquiryService';
 import { User } from '@app/entity/domain/user/User.entity';
 import {
   Body,
@@ -11,13 +12,10 @@ import {
   Query,
 } from '@nestjs/common';
 import { ProductInquiryDto, WriteProductInquiryRequest } from '../dto';
-import { ProductInquiryApiService } from '../ProductInquiryApiService';
 
 @Controller('/product-inquiry')
 export class ProductInquiryApiController {
-  constructor(
-    private readonly productInquiryApiService: ProductInquiryApiService,
-  ) {}
+  constructor(private readonly productInquiryService: ProductInquiryService) {}
 
   @AccessTokenGuard()
   @Post()
@@ -26,7 +24,7 @@ export class ProductInquiryApiController {
     @Query('productId') productId: number,
     @Body() body: WriteProductInquiryRequest,
   ): Promise<ResponseEntity<ProductInquiryDto | string>> {
-    const productInquiry = await this.productInquiryApiService.write(
+    const productInquiry = await this.productInquiryService.write(
       user,
       productId,
       body.content,
@@ -43,7 +41,7 @@ export class ProductInquiryApiController {
     @Body() body: WriteProductInquiryRequest,
   ): Promise<ResponseEntity<ProductInquiryDto | string>> {
     try {
-      const productInquiry = await this.productInquiryApiService.edit(
+      const productInquiry = await this.productInquiryService.edit(
         user,
         productInquiryId,
         body.content,
@@ -61,7 +59,7 @@ export class ProductInquiryApiController {
     @CurrentUser() user: User,
     @Param('productInquiryId') productInquiryId: number,
   ) {
-    await this.productInquiryApiService.remove(user, productInquiryId);
+    await this.productInquiryService.remove(user, productInquiryId);
     return ResponseEntity.OK();
   }
 }

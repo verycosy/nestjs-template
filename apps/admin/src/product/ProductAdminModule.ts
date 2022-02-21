@@ -1,13 +1,10 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 import { ProductAdminController } from './controller/ProductAdminController';
 import { ProductInquiryAdminController } from './controller/ProductInquiryAdminController';
-import { ProductAdminService } from './ProductAdminService';
-import { ProductInquiryAdminService } from './ProductInquiryAdminService';
+import { ProductModule } from '@app/entity/domain/product/ProductModule';
 
 @Module({
-  imports: [TypeOrmTestModule],
-  providers: [ProductAdminService, ProductInquiryAdminService],
+  imports: [ProductModule],
   controllers: [ProductAdminController, ProductInquiryAdminController],
 })
 export class ProductAdminModule {}

@@ -7,29 +7,27 @@ import {
   UpdateProductRequest,
 } from '../../../../admin/src/product/dto';
 import { ProductAdminController } from '../../../../../apps/admin/src/product/controller/ProductAdminController';
-import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
-import { ProductAdminService } from '../../../../admin/src/product/ProductAdminService';
 import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
 import { Product } from '@app/entity/domain/product/Product.entity';
 import { Category, SubCategory } from '@app/entity/domain/category';
 import { EntityNotFoundError, Repository } from 'typeorm';
 import { ProductOptionDto } from '@app/entity/domain/product/dto/ProductOptionDto';
+import { ProductService } from '@app/entity/domain/product/ProductService';
+import { ProductAdminModule } from '../../../../../apps/admin/src/product/ProductAdminModule';
 
 describe('ProductAdminController', () => {
   let module: TestingModule;
   let sut: ProductAdminController;
-  let productAdminService: ProductAdminService;
+  let productService: ProductService;
   let subCategoryRepository: Repository<SubCategory>;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [getConfigModule(), TypeOrmTestModule],
-      providers: [ProductAdminService],
-      controllers: [ProductAdminController],
+      imports: [getConfigModule(), ProductAdminModule],
     }).compile();
 
     sut = module.get(ProductAdminController);
-    productAdminService = module.get(ProductAdminService);
+    productService = module.get(ProductService);
     subCategoryRepository = module.get('SubCategoryRepository');
 
     const category = new Category('fruit');
@@ -73,7 +71,7 @@ describe('ProductAdminController', () => {
     });
 
     it('수정된 상품 반환', async () => {
-      await productAdminService.addProduct(1, 'banana', 5000, 'yeah');
+      await productService.addProduct(1, 'banana', 5000, 'yeah');
 
       const result = await sut.updateProduct(1, request);
 
@@ -102,7 +100,7 @@ describe('ProductAdminController', () => {
     });
 
     it('추가된 상품 옵션 반환', async () => {
-      await productAdminService.addProduct(1, 'banana', 5000, 'yeah');
+      await productService.addProduct(1, 'banana', 5000, 'yeah');
 
       const result = await sut.addProductOption(1, dto);
 
@@ -126,8 +124,8 @@ describe('ProductAdminController', () => {
     });
 
     it('수정된 상품 옵션 반환', async () => {
-      await productAdminService.addProduct(1, 'banana', 5000, 'yeah');
-      await productAdminService.addProductOption(1, '400g', 4000, 0);
+      await productService.addProduct(1, 'banana', 5000, 'yeah');
+      await productService.addProductOption(1, '400g', 4000, 0);
 
       const result = await sut.updateProductOption(1, dto);
 

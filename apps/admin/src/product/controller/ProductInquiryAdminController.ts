@@ -5,14 +5,12 @@ import { ProductInquiryAnswerDto } from '@app/entity/domain/product/dto/ProductI
 import { User } from '@app/entity/domain/user/User.entity';
 import { Body, Controller, Param, Patch } from '@nestjs/common';
 import { ProductInquiryAnswerRequest } from '../dto';
-import { ProductInquiryAdminService } from '../ProductInquiryAdminService';
+import { ProductInquiryService } from '@app/entity/domain/product/ProductInquiryService';
 
 @AdminGuard()
 @Controller('/product-inquiry')
 export class ProductInquiryAdminController {
-  constructor(
-    private readonly productInquiryAdminService: ProductInquiryAdminService,
-  ) {}
+  constructor(private readonly productInquiryService: ProductInquiryService) {}
 
   @Patch('/:id')
   async answer(
@@ -21,7 +19,7 @@ export class ProductInquiryAdminController {
     @Body() body: ProductInquiryAnswerRequest,
   ): Promise<ResponseEntity<ProductInquiryAnswerDto | string>> {
     try {
-      const productInquiry = await this.productInquiryAdminService.answer(
+      const productInquiry = await this.productInquiryService.answer(
         user,
         id,
         body.answer,

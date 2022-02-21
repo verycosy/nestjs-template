@@ -2,6 +2,7 @@ import { AccessTokenGuard, CurrentUser } from '@app/auth';
 import { Page } from '@app/config/Page';
 import { ResponseEntity } from '@app/config/response';
 import { Product } from '@app/entity/domain/product/Product.entity';
+import { ProductService } from '@app/entity/domain/product/ProductService';
 import { User } from '@app/entity/domain/user/User.entity';
 import { Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { GetProductsItem, GetProductsRequest } from '../dto';
@@ -9,7 +10,10 @@ import { ProductApiService } from '../ProductApiService';
 
 @Controller('/product')
 export class ProductApiController {
-  constructor(private readonly productApiService: ProductApiService) {}
+  constructor(
+    private readonly productApiService: ProductApiService,
+    private readonly productService: ProductService,
+  ) {}
 
   @Get()
   async getProducts(
@@ -30,7 +34,7 @@ export class ProductApiController {
     @Param('id') id: number,
     @CurrentUser() user: User,
   ): Promise<ResponseEntity<Product>> {
-    const likedProduct = await this.productApiService.like(id, user);
+    const likedProduct = await this.productService.like(id, user);
     return ResponseEntity.OK_WITH(likedProduct);
   }
 
@@ -40,7 +44,7 @@ export class ProductApiController {
     @Param('id') id: number,
     @CurrentUser() user: User,
   ): Promise<ResponseEntity<string>> {
-    await this.productApiService.cancelLike(id, user);
+    await this.productService.cancelLike(id, user);
     return ResponseEntity.OK();
   }
 }

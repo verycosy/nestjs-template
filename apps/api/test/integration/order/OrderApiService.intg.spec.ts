@@ -29,6 +29,8 @@ import { OrderService } from '@app/entity/domain/order/OrderService';
 import { CartService } from '@app/entity/domain/cart/CartService';
 import { MongooseTestModule } from '@app/entity/mongoose.test.module';
 import { IamportService } from '@app/entity/domain/pg';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ProductApiQueryRepository } from '../../../../../apps/api/src/product/ProductApiQueryRepository';
 
 describe('OrderApiService', () => {
   let sut: OrderApiService;
@@ -42,6 +44,7 @@ describe('OrderApiService', () => {
       imports: [
         getConfigModule(),
         TypeOrmTestModule,
+        TypeOrmModule.forFeature([ProductApiQueryRepository]),
         MongooseTestModule,
         CustomCacheModule,
       ],

@@ -1,12 +1,16 @@
-import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
+import { ProductModule } from '@app/entity/domain/product/ProductModule';
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductApiController, ProductApiService } from '.';
 import { ProductInquiryApiController } from './controller/ProductInquiryApiController';
-import { ProductInquiryApiService } from './ProductInquiryApiService';
+import { ProductApiQueryRepository } from './ProductApiQueryRepository';
 
 @Module({
-  imports: [TypeOrmTestModule],
+  imports: [
+    ProductModule,
+    TypeOrmModule.forFeature([ProductApiQueryRepository]),
+  ],
   controllers: [ProductApiController, ProductInquiryApiController],
-  providers: [ProductApiService, ProductInquiryApiService],
+  providers: [ProductApiService],
 })
 export class ProductApiModule {}

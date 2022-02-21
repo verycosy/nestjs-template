@@ -9,9 +9,16 @@ import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 import { OrderApiController } from './controller/OrderApiController';
 import { OrderApiService } from './OrderApiService';
 import { OrderCancelApiService } from './OrderCancelApiService';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ProductApiQueryRepository } from '../product/ProductApiQueryRepository';
 
 @Module({
-  imports: [MongooseTestModule, TypeOrmTestModule, CustomCacheModule],
+  imports: [
+    MongooseTestModule,
+    TypeOrmTestModule,
+    CustomCacheModule,
+    TypeOrmModule.forFeature([ProductApiQueryRepository]),
+  ],
   controllers: [OrderApiController],
   providers: [
     OrderApiService,

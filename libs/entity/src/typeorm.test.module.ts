@@ -8,7 +8,6 @@ import { OrderItem } from '@app/entity/domain/order/OrderItem.entity';
 import { Product } from '@app/entity/domain/product/Product.entity';
 import { ProductInquiry } from '@app/entity/domain/product/ProductInquiry.entity';
 import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
-import { ProductQueryRepository } from '@app/entity/domain/product/ProductQueryRepository';
 import { Review } from '@app/entity/domain/review/Review.entity';
 import { User } from '@app/entity/domain/user/User.entity';
 import { UserQueryRepository } from '@app/entity/domain/user/UserQueryRepository';
@@ -42,7 +41,6 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
       Order,
       OrderItem,
       Product,
-      ProductQueryRepository,
       ProductOption,
       ProductInquiry,
       Review,

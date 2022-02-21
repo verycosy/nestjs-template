@@ -1,15 +1,15 @@
-import { OrderReadyRequest } from 'apps/api/src/order';
-import { GetProductsRequest } from 'apps/api/src/product/dto/GetProductsRequest';
+import { OrderReadyRequest } from '../order/dto';
+import { GetProductsRequest } from './dto';
 import {
   AbstractRepository,
   createQueryBuilder,
   EntityRepository,
 } from 'typeorm';
-import { Product } from './Product.entity';
-import { ProductOption } from './ProductOption.entity';
+import { Product } from '@app/entity/domain/product/Product.entity';
+import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
 
 @EntityRepository(Product)
-export class ProductQueryRepository extends AbstractRepository<Product> {
+export class ProductApiQueryRepository extends AbstractRepository<Product> {
   async paging(param: GetProductsRequest): Promise<[Product[], number]> {
     const queryBuilder = createQueryBuilder()
       .select(['product.id', 'product.name', 'product.price', 'product.status'])
@@ -27,6 +27,10 @@ export class ProductQueryRepository extends AbstractRepository<Product> {
     }
 
     return queryBuilder.disableEscaping().getManyAndCount();
+  }
+
+  async findByIdOrFail(id: number): Promise<Product> {
+    return await this.repository.findOneOrFail({ id });
   }
 
   async findProductAndOptionForOrderReady(

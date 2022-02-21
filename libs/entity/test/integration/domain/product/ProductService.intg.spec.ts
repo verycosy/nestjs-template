@@ -7,20 +7,19 @@ import {
 } from '@app/util/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError, Repository } from 'typeorm';
-import { ProductApiService } from '../../../../../apps/api/src/product';
-import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
+import { ProductService } from '@app/entity/domain/product/ProductService';
+import { ProductModule } from '@app/entity/domain/product/ProductModule';
 
-describe('ProductApiService', () => {
-  let sut: ProductApiService;
+describe('ProductService', () => {
+  let sut: ProductService;
   let module: TestingModule;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [getConfigModule(), TypeOrmTestModule],
-      providers: [ProductApiService],
+      imports: [getConfigModule(), ProductModule],
     }).compile();
 
-    sut = module.get(ProductApiService);
+    sut = module.get(ProductService);
   });
 
   afterEach(async () => {

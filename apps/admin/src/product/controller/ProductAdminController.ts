@@ -5,12 +5,12 @@ import { Product } from '@app/entity/domain/product/Product.entity';
 import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
 import { AddProductRequest, ProductDto, UpdateProductRequest } from '../dto';
 import { AddProductOptionRequest } from '../dto/AddProductOptionRequest';
-import { ProductAdminService } from '../ProductAdminService';
+import { ProductService } from '@app/entity/domain/product/ProductService';
 
 @AdminGuard()
 @Controller('/product')
 export class ProductAdminController {
-  constructor(private readonly productAdminService: ProductAdminService) {}
+  constructor(private readonly productService: ProductService) {}
 
   @Post()
   async addProduct(
@@ -18,7 +18,7 @@ export class ProductAdminController {
   ): Promise<ResponseEntity<Product | string>> {
     const { subCategoryId, name, price, detail } = request;
 
-    const product = await this.productAdminService.addProduct(
+    const product = await this.productService.addProduct(
       subCategoryId,
       name,
       price,
@@ -35,7 +35,7 @@ export class ProductAdminController {
   ): Promise<ResponseEntity<ProductDto | string>> {
     const { subCategoryId, name, price, detail, status } = request;
 
-    const updatedProduct = await this.productAdminService.updateProduct(
+    const updatedProduct = await this.productService.updateProduct(
       id,
       subCategoryId,
       name,
@@ -54,7 +54,7 @@ export class ProductAdminController {
   ): Promise<ResponseEntity<ProductOptionDto | string>> {
     const { detail, price, discount } = body;
 
-    const productOption = await this.productAdminService.addProductOption(
+    const productOption = await this.productService.addProductOption(
       id,
       detail,
       price,
@@ -71,7 +71,7 @@ export class ProductAdminController {
   ): Promise<ResponseEntity<ProductOptionDto | string>> {
     const { detail, price, discount } = body;
 
-    const productOption = await this.productAdminService.updateProductOption(
+    const productOption = await this.productService.updateProductOption(
       id,
       detail,
       price,
