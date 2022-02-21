@@ -1,6 +1,5 @@
 import { Cart } from '@app/entity/domain/cart/Cart.entity';
 import { CartItem } from '@app/entity/domain/cart/CartItem.entity';
-import { CartQueryRepository } from '@app/entity/domain/cart/CartQueryRepository';
 import { Category, SubCategory } from '@app/entity/domain/category';
 import { Notice } from '@app/entity/domain/notice/Notice.entity';
 import { Order } from '@app/entity/domain/order/Order.entity';
@@ -32,7 +31,6 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
     }),
     TypeOrmModule.forFeature([
       Cart,
-      CartQueryRepository,
       CartItem,
       Category,
       SubCategory,

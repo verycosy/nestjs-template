@@ -1,6 +1,6 @@
 import { Cart } from '@app/entity/domain/cart/Cart.entity';
 import { CartItem } from '@app/entity/domain/cart/CartItem.entity';
-import { CartQueryRepository } from '@app/entity/domain/cart/CartQueryRepository';
+import { CartApiQueryRepository } from './CartApiQueryRepository';
 import { Product } from '@app/entity/domain/product/Product.entity';
 import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
 import { Injectable } from '@nestjs/common';
@@ -10,8 +10,8 @@ import { EntityNotFoundError, Repository } from 'typeorm';
 @Injectable()
 export class CartApiService {
   constructor(
-    @InjectRepository(CartQueryRepository)
-    private readonly cartQueryRepository: CartQueryRepository,
+    @InjectRepository(CartApiQueryRepository)
+    private readonly cartApiQueryRepository: CartApiQueryRepository,
     @InjectRepository(CartItem)
     private readonly cartItemRepository: Repository<CartItem>,
     @InjectRepository(Product)
@@ -75,6 +75,6 @@ export class CartApiService {
   }
 
   async getCartItems(cartId: number): Promise<CartItem[]> {
-    return await this.cartQueryRepository.getCartItems(cartId);
+    return await this.cartApiQueryRepository.getCartItems(cartId);
   }
 }

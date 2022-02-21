@@ -1,13 +1,11 @@
 import { getConfigModule } from '@app/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-  CartApiService,
   CartApiController,
   AddCartItemRequest,
   UpdateCartItemQuantityRequest,
   CartItemDto,
 } from '../../../../api/src/cart';
-import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 import { Product } from '@app/entity/domain/product/Product.entity';
 import { User } from '@app/entity/domain/user/User.entity';
 import { ProductStatus } from '@app/entity/domain/product/type/ProductStatus';
@@ -20,6 +18,7 @@ import {
 } from '@app/util/testing';
 import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
 import { EntityNotFoundError } from 'typeorm';
+import { CartApiModule } from '../../../../../apps/api/src/cart/CartApiModule';
 
 describe('CartApiController', () => {
   let sut: CartApiController;
@@ -28,9 +27,7 @@ describe('CartApiController', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [getConfigModule(), TypeOrmTestModule],
-      controllers: [CartApiController],
-      providers: [CartApiService],
+      imports: [getConfigModule(), CartApiModule],
     }).compile();
 
     sut = module.get(CartApiController);
