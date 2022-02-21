@@ -3,7 +3,6 @@ import { CartItem } from '@app/entity/domain/cart/CartItem.entity';
 import { CartQueryRepository } from '@app/entity/domain/cart/CartQueryRepository';
 import { Category, SubCategory } from '@app/entity/domain/category';
 import { Notice } from '@app/entity/domain/notice/Notice.entity';
-import { NoticeQueryRepository } from '@app/entity/domain/notice/NoticeQueryRepository';
 import { Order } from '@app/entity/domain/order/Order.entity';
 import { OrderItem } from '@app/entity/domain/order/OrderItem.entity';
 import { Product } from '@app/entity/domain/product/Product.entity';
@@ -41,7 +40,6 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
       Category,
       SubCategory,
       Notice,
-      NoticeQueryRepository,
       Order,
       OrderItem,
       Product,

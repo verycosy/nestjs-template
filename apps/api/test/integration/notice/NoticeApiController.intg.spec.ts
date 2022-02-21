@@ -2,9 +2,11 @@ import { getConfigModule } from '@app/config';
 import { Role } from '@app/entity/domain/user/type/Role';
 import { TestNoticeFactory, TestUserFactory } from '@app/util/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { GetNoticesRequest } from '@app/entity/domain/notice/dto';
-import { NoticeModule } from '@app/entity/domain/notice/NoticeModule';
-import { NoticeApiController } from '../../../../../apps/api/src/notice';
+import {
+  NoticeApiController,
+  GetNoticesRequest,
+  NoticeApiModule,
+} from '../../../../../apps/api/src/notice';
 
 describe('NoticeApiController', () => {
   let sut: NoticeApiController;
@@ -12,8 +14,7 @@ describe('NoticeApiController', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [getConfigModule(), NoticeModule],
-      controllers: [NoticeApiController],
+      imports: [getConfigModule(), NoticeApiModule],
     }).compile();
 
     sut = module.get(NoticeApiController);
