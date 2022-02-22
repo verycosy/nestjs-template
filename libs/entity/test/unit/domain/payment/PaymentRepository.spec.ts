@@ -20,6 +20,7 @@ describe('PaymentRepository', () => {
   beforeEach(async () => {
     module = await Test.createTestingModule({
       imports: [MongooseTestModule],
+      providers: [PaymentRepository],
     }).compile();
 
     sut = module.get(PaymentRepository);

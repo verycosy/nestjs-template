@@ -2,7 +2,6 @@ import {
   Payment,
   PaymentSchema,
 } from '@app/entity/domain/payment/Payment.schema';
-import { PaymentRepository } from '@app/entity/domain/payment/PaymentRepository';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -20,7 +19,6 @@ import { MongooseModule } from '@nestjs/mongoose';
       },
     ]),
   ],
-  providers: [PaymentRepository],
-  exports: [MongooseModule, PaymentRepository],
+  exports: [MongooseModule],
 })
 export class MongooseTestModule {}
