@@ -11,15 +11,11 @@ import {
   OrderReadyRequest,
 } from '../dto';
 import { OrderApiService } from '../OrderApiService';
-import { OrderCancelApiService } from '../OrderCancelApiService';
 
 @AccessTokenGuard()
 @Controller('/order')
 export class OrderApiController {
-  constructor(
-    private readonly orderApiService: OrderApiService,
-    private readonly orderCancelApiService: OrderCancelApiService,
-  ) {}
+  constructor(private readonly orderApiService: OrderApiService) {}
 
   @Post()
   async orderReady(@CurrentUser() user: User, @Body() body: OrderReadyRequest) {
@@ -64,6 +60,6 @@ export class OrderApiController {
   @Post('/cancel')
   async cancelOrder(@Body() body: CancelOrderRequest) {
     const { merchantUid, reason, orderItemId } = body;
-    await this.orderCancelApiService.cancel(merchantUid, orderItemId, reason);
+    await this.orderApiService.cancel(merchantUid, orderItemId, reason);
   }
 }

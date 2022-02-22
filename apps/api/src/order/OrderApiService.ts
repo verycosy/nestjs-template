@@ -1,6 +1,7 @@
 import { CartOrderService } from '@app/entity/domain/order/CartOrderService';
 import { ForgeryOrderError } from '@app/entity/domain/order/error/ForgeryOrderError';
 import { Order } from '@app/entity/domain/order/Order.entity';
+import { OrderCancelService } from '@app/entity/domain/order/OrderCancelService';
 import { OrderCompleteService } from '@app/entity/domain/order/OrderCompleteService';
 import { SingleOrderService } from '@app/entity/domain/order/SingleOrderService';
 import { SingleOrderDto } from '@app/entity/domain/order/type/SingleOrderDto';
@@ -18,6 +19,7 @@ export class OrderApiService {
     private readonly singleOrderService: SingleOrderService,
     private readonly cartOrderService: CartOrderService,
     private readonly orderCompleteService: OrderCompleteService,
+    private readonly orderCancelService: OrderCancelService,
   ) {}
 
   async ready(user: User, option: number[] | SingleOrderDto): Promise<Order> {
@@ -52,5 +54,23 @@ export class OrderApiService {
       }
       throw err;
     }
+  }
+
+  async cancel(
+    merchantUid: string,
+    orderItemId: number,
+    reason: string,
+  ): Promise<void> {
+    const orderItem = await this.orderCancelService.findOrderItemById(
+      orderItemId,
+    );
+
+    await this.paymentService.cancel(
+      merchantUid,
+      reason,
+      orderItem.getAmount(),
+    );
+
+    await this.orderCancelService.cancel(orderItem);
   }
 }
