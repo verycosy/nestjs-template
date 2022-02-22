@@ -39,7 +39,7 @@ describe('OrderApiController', () => {
     paymentRepository = module.get(getModelToken(Payment.name));
 
     jest
-      .spyOn(module.get(PaymentService), 'complete')
+      .spyOn(module.get(PaymentService), 'save')
       .mockResolvedValue(iamportPaymentMockData as any);
     jest
       .spyOn(module.get(PaymentService), 'cancel')
