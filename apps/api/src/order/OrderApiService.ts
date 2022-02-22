@@ -2,7 +2,7 @@ import { CartItem } from '@app/entity/domain/cart/CartItem.entity';
 import { CartService } from '@app/entity/domain/cart/CartService';
 import { Order } from '@app/entity/domain/order/Order.entity';
 import { OrderItem } from '@app/entity/domain/order/OrderItem.entity';
-import { OrderService } from '@app/entity/domain/order/OrderService';
+import { OrderStatus } from '@app/entity/domain/order/type/OrderStatus';
 import {
   PaymentService,
   PaymentCompleteFailedError,
@@ -10,7 +10,7 @@ import {
 import { User } from '@app/entity/domain/user/User.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityNotFoundError } from 'typeorm';
+import { EntityNotFoundError, Repository } from 'typeorm';
 import { ProductApiQueryRepository } from '../product/ProductApiQueryRepository';
 import { OrderReadyRequest } from './dto';
 import { ForgeryOrderError } from './error';
@@ -18,7 +18,8 @@ import { ForgeryOrderError } from './error';
 @Injectable()
 export class OrderApiService {
   constructor(
-    private readonly orderService: OrderService,
+    @InjectRepository(Order)
+    private readonly orderRepository: Repository<Order>,
     private readonly paymentService: PaymentService,
     private readonly cartService: CartService,
     @InjectRepository(ProductApiQueryRepository)
@@ -63,25 +64,27 @@ export class OrderApiService {
       );
     }
 
-    return await this.orderService.start(order);
+    return await this.orderRepository.save(order);
   }
 
   async complete(impUid: string, merchantUid: string): Promise<Order> {
-    const order = await this.orderService.findOneWithItemsByMerchantUid(
-      merchantUid,
-    );
+    const order = await this.orderRepository.findOneOrFail({
+      where: { merchantUid, status: OrderStatus.Ready },
+      relations: ['items'],
+    });
 
     try {
       const paymentData = await this.paymentService.complete(impUid);
 
       if (order.isForgery(paymentData)) {
-        await this.orderService.remove(order);
+        await this.orderRepository.remove(order);
         throw new ForgeryOrderError(order.getTotalAmount(), paymentData.amount);
       }
 
       switch (paymentData.status) {
         case 'paid': // tx ?
-          await this.orderService.complete(order);
+          order.complete();
+          await this.orderRepository.save(order);
           await this.cartService.removeOrderedCartItems(order);
           return order;
         default:

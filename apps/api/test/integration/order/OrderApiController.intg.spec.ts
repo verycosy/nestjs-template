@@ -25,7 +25,6 @@ import { getModelToken } from '@nestjs/mongoose';
 import { PaymentService } from '@app/entity/domain/payment/PaymentService';
 import { iamportPaymentMockData } from '../../../../../libs/entity/test/integration/domain/payment/mockData';
 import { EntityNotFoundError } from 'typeorm';
-import { OrderService } from '@app/entity/domain/order/OrderService';
 import { CartModule } from '@app/entity/domain/cart/CartModule';
 import { MongooseTestModule } from '@app/entity/mongoose.test.module';
 import { IamportService } from '@app/entity/domain/pg';
@@ -50,7 +49,6 @@ describe('OrderApiController', () => {
       providers: [
         OrderApiService,
         OrderCancelApiService,
-        OrderService,
         PaymentService,
         IamportService,
       ],

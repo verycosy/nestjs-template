@@ -1,4 +1,3 @@
-import { OrderService } from '@app/entity/domain/order/OrderService';
 import { PaymentService } from '@app/entity/domain/payment';
 import { IamportService } from '@app/entity/domain/pg';
 import { Module } from '@nestjs/common';
@@ -22,7 +21,6 @@ import { CartModule } from '@app/entity/domain/cart/CartModule';
   providers: [
     OrderApiService,
     OrderCancelApiService,
-    OrderService,
     PaymentService,
     IamportService,
   ],

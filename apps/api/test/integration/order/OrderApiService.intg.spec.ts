@@ -21,7 +21,6 @@ import {
   OrderApiService,
 } from '../../../../../apps/api/src/order';
 import { OrderStatus } from '@app/entity/domain/order/type/OrderStatus';
-import { OrderService } from '@app/entity/domain/order/OrderService';
 import { CartModule } from '@app/entity/domain/cart/CartModule';
 import { MongooseTestModule } from '@app/entity/mongoose.test.module';
 import { IamportService } from '@app/entity/domain/pg';
@@ -44,12 +43,7 @@ describe('OrderApiService', () => {
         MongooseTestModule,
         CartModule,
       ],
-      providers: [
-        OrderApiService,
-        OrderService,
-        PaymentService,
-        IamportService,
-      ],
+      providers: [OrderApiService, PaymentService, IamportService],
     }).compile();
 
     sut = module.get(OrderApiService);
