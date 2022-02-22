@@ -28,8 +28,6 @@ import { EntityNotFoundError } from 'typeorm';
 import { CartModule } from '@app/entity/domain/cart/CartModule';
 import { MongooseTestModule } from '@app/entity/mongoose.test.module';
 import { IamportService } from '@app/entity/domain/pg';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProductApiQueryRepository } from '../../../../../apps/api/src/product/ProductApiQueryRepository';
 
 describe('OrderApiController', () => {
   let sut: OrderApiController;
@@ -42,7 +40,6 @@ describe('OrderApiController', () => {
       imports: [
         getConfigModule(),
         TypeOrmTestModule,
-        TypeOrmModule.forFeature([ProductApiQueryRepository]),
         MongooseTestModule,
         CartModule,
       ],

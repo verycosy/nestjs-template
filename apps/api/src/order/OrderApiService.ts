@@ -7,11 +7,12 @@ import {
   PaymentService,
   PaymentCompleteFailedError,
 } from '@app/entity/domain/payment';
+import { Product } from '@app/entity/domain/product/Product.entity';
+import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
 import { User } from '@app/entity/domain/user/User.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityNotFoundError, Repository } from 'typeorm';
-import { ProductApiQueryRepository } from '../product/ProductApiQueryRepository';
 import { OrderReadyRequest } from './dto';
 import { ForgeryOrderError } from './error';
 
@@ -22,9 +23,24 @@ export class OrderApiService {
     private readonly orderRepository: Repository<Order>,
     private readonly paymentService: PaymentService,
     private readonly cartService: CartService,
-    @InjectRepository(ProductApiQueryRepository)
-    private readonly productApiQueryRepository: ProductApiQueryRepository,
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
   ) {}
+
+  private async findProductAndOptionForOrderReady(
+    param: OrderReadyRequest,
+  ): Promise<[Product, ProductOption]> {
+    const { productId, productOptionId } = param;
+
+    const product = await this.productRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.options', 'options')
+      .where({ id: productId })
+      .andWhere('options.id = :optionId', { optionId: productOptionId })
+      .getOneOrFail();
+
+    return [product, product.options[0]];
+  }
 
   async ready(user: User, dto: OrderReadyRequest): Promise<Order>;
   async ready(user: User, cartItemIds: number[]): Promise<Order>;
@@ -36,9 +52,7 @@ export class OrderApiService {
 
     if (option instanceof OrderReadyRequest) {
       const [product, productOption] =
-        await this.productApiQueryRepository.findProductAndOptionForOrderReady(
-          option,
-        );
+        await this.findProductAndOptionForOrderReady(option);
 
       const orderItem = OrderItem.create(
         product,
