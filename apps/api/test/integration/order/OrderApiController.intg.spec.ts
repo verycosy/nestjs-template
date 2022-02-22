@@ -1,11 +1,6 @@
 import { getConfigModule } from '@app/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  OrderApiController,
-  OrderApiService,
-  OrderCancelApiService,
-} from '../../../../../apps/api/src/order';
-import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
+import { OrderApiController } from '../../../../../apps/api/src/order';
 import {
   OrderCompleteRequest,
   CartOrderReadyRequest,
@@ -25,9 +20,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { PaymentService } from '@app/entity/domain/payment/PaymentService';
 import { iamportPaymentMockData } from '../../../../../libs/entity/test/integration/domain/payment/mockData';
 import { EntityNotFoundError } from 'typeorm';
-import { CartModule } from '@app/entity/domain/cart/CartModule';
-import { MongooseTestModule } from '@app/entity/mongoose.test.module';
-import { IamportService } from '@app/entity/domain/pg';
+import { OrderApiModule } from '../../../../../apps/api/src/order/OrderApiModule';
 
 describe('OrderApiController', () => {
   let sut: OrderApiController;
@@ -37,19 +30,7 @@ describe('OrderApiController', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        getConfigModule(),
-        TypeOrmTestModule,
-        MongooseTestModule,
-        CartModule,
-      ],
-      providers: [
-        OrderApiService,
-        OrderCancelApiService,
-        PaymentService,
-        IamportService,
-      ],
-      controllers: [OrderApiController],
+      imports: [getConfigModule(), OrderApiModule],
     }).compile();
 
     sut = module.get(OrderApiController);

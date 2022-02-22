@@ -1,5 +1,5 @@
+import { Cart } from '@app/entity/domain/cart/Cart.entity';
 import { CartItem } from '@app/entity/domain/cart/CartItem.entity';
-import { CartService } from '@app/entity/domain/cart/CartService';
 import { Order } from '@app/entity/domain/order/Order.entity';
 import { OrderItem } from '@app/entity/domain/order/OrderItem.entity';
 import { OrderStatus } from '@app/entity/domain/order/type/OrderStatus';
@@ -10,7 +10,8 @@ import {
 import { Product } from '@app/entity/domain/product/Product.entity';
 import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
 import { User } from '@app/entity/domain/user/User.entity';
-import { Injectable } from '@nestjs/common';
+import { CACHE_SERVICE, CacheService } from '@app/util/cache';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityNotFoundError, Repository } from 'typeorm';
 import { OrderReadyRequest } from './dto';
@@ -22,10 +23,49 @@ export class OrderApiService {
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
     private readonly paymentService: PaymentService,
-    private readonly cartService: CartService,
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    @InjectRepository(Cart) private readonly cartRepository: Repository<Cart>,
+    @Inject(CACHE_SERVICE) private readonly cacheService: CacheService,
   ) {}
+
+  async findCartWithItemsByUser(user: User): Promise<Cart> {
+    return await this.cartRepository.findOneOrFail({
+      where: {
+        user,
+      },
+      relations: ['items', 'items.product', 'items.option'],
+    });
+  }
+
+  private async getOrderedCartItemIdsByMerchantUid(
+    merchantUid: string,
+  ): Promise<number[]> {
+    const cartItemIdsString =
+      (await this.cacheService.get<string>(merchantUid)) ?? '';
+
+    return cartItemIdsString.split(',').map(Number);
+  }
+
+  async removeOrderedCartItems(order: Order): Promise<void> {
+    const cartItemIds = await this.getOrderedCartItemIdsByMerchantUid(
+      order.merchantUid,
+    );
+
+    const cart = await this.findCartWithItemsByUser(await order.user);
+    cart.items = cart.items.filter((item) => !cartItemIds.includes(item.id));
+
+    await this.cartRepository.save(cart);
+  }
+
+  async cachingOrderedCartItemIds(
+    merchantUid: string,
+    cartItemIds: number[],
+  ): Promise<void> {
+    await this.cacheService.set(merchantUid, cartItemIds.join(), {
+      ttl: 60 * 15, // 15min
+    });
+  }
 
   private async findProductAndOptionForOrderReady(
     param: OrderReadyRequest,
@@ -62,7 +102,7 @@ export class OrderApiService {
 
       order = Order.create(user, orderItem);
     } else {
-      const cart = await this.cartService.findCartWithItemsByUser(user);
+      const cart = await this.findCartWithItemsByUser(user);
       if (!cart.hasCartItems(option)) {
         throw new EntityNotFoundError(CartItem, { ids: option });
       }
@@ -72,10 +112,7 @@ export class OrderApiService {
       );
 
       order = Order.create(user, orderedCartItems);
-      await this.cartService.cachingOrderedCartItemIds(
-        order.merchantUid,
-        option,
-      );
+      await this.cachingOrderedCartItemIds(order.merchantUid, option);
     }
 
     return await this.orderRepository.save(order);
@@ -99,7 +136,7 @@ export class OrderApiService {
         case 'paid': // tx ?
           order.complete();
           await this.orderRepository.save(order);
-          await this.cartService.removeOrderedCartItems(order);
+          await this.removeOrderedCartItems(order);
           return order;
         default:
           throw new PaymentCompleteFailedError();
