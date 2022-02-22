@@ -10,6 +10,8 @@ import { Order } from './Order.entity';
 @Injectable()
 export class CartOrderService {
   constructor(
+    @InjectRepository(Order)
+    private readonly orderRepository: Repository<Order>,
     @InjectRepository(Cart) private readonly cartRepository: Repository<Cart>,
     @Inject(CACHE_SERVICE) private readonly cacheService: CacheService,
   ) {}
@@ -64,8 +66,7 @@ export class CartOrderService {
 
     const order = Order.create(user, orderedCartItems);
     await this.cachingOrderedCartItemIds(order.merchantUid, cartItemIds);
-
-    return order;
+    return await this.orderRepository.save(order);
   }
 
   async complete(order: Order) {

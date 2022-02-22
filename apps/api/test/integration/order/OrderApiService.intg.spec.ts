@@ -16,11 +16,11 @@ import { CacheService, CACHE_SERVICE } from '@app/util/cache';
 import { User } from '@app/entity/domain/user/User.entity';
 import {
   ForgeryOrderError,
-  OrderReadyRequest,
   OrderApiService,
 } from '../../../../../apps/api/src/order';
 import { OrderStatus } from '@app/entity/domain/order/type/OrderStatus';
 import { OrderApiModule } from '../../../../../apps/api/src/order/OrderApiModule';
+import { SingleOrderDto } from '@app/entity/domain/order/type/SingleOrderDto';
 
 describe('OrderApiService', () => {
   let sut: OrderApiService;
@@ -58,7 +58,7 @@ describe('OrderApiService', () => {
     describe('단건 주문', () => {
       it('상품을 찾을 수 없으면 EntityNotFoundError를 던진다', async () => {
         // given
-        const dto = new OrderReadyRequest(1, 2, 3);
+        const dto = new SingleOrderDto(1, 2, 3);
 
         try {
           // when
@@ -72,7 +72,7 @@ describe('OrderApiService', () => {
       it('상품옵션을 찾을 수 없으면 EntityNotFoundError를 던진다', async () => {
         // given
         await CartItemFixtureFactory.create(module, user);
-        const dto = new OrderReadyRequest(1, 4, 3);
+        const dto = new SingleOrderDto(1, 4, 3);
 
         // when
         const actual = () => sut.ready(user, dto);
@@ -84,7 +84,7 @@ describe('OrderApiService', () => {
       it('결제준비된 주문 객체 반환', async () => {
         // given
         await CartItemFixtureFactory.create(module, user);
-        const dto = new OrderReadyRequest(1, 2, 3);
+        const dto = new SingleOrderDto(1, 2, 3);
 
         // when
         const result = await sut.ready(user, dto);

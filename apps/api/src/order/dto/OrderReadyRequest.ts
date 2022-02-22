@@ -1,3 +1,4 @@
+import { SingleOrderDto } from '@app/entity/domain/order/type/SingleOrderDto';
 import { IsNumber } from 'class-validator';
 
 export class OrderReadyRequest {
@@ -14,5 +15,13 @@ export class OrderReadyRequest {
     this.productId = productId;
     this.productOptionId = productOptionId;
     this.quantity = quantity;
+  }
+
+  toDto(): SingleOrderDto {
+    return new SingleOrderDto(
+      this.productId,
+      this.productOptionId,
+      this.quantity,
+    );
   }
 }

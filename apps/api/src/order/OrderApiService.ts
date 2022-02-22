@@ -1,18 +1,16 @@
 import { CartOrderService } from '@app/entity/domain/order/CartOrderService';
 import { Order } from '@app/entity/domain/order/Order.entity';
-import { OrderItem } from '@app/entity/domain/order/OrderItem.entity';
+import { SingleOrderService } from '@app/entity/domain/order/SingleOrderService';
 import { OrderStatus } from '@app/entity/domain/order/type/OrderStatus';
+import { SingleOrderDto } from '@app/entity/domain/order/type/SingleOrderDto';
 import {
   PaymentService,
   PaymentCompleteFailedError,
 } from '@app/entity/domain/payment';
-import { Product } from '@app/entity/domain/product/Product.entity';
-import { ProductOption } from '@app/entity/domain/product/ProductOption.entity';
 import { User } from '@app/entity/domain/user/User.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { OrderReadyRequest } from './dto';
 import { ForgeryOrderError } from './error';
 
 @Injectable()
@@ -21,50 +19,16 @@ export class OrderApiService {
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
     private readonly paymentService: PaymentService,
-    @InjectRepository(Product)
-    private readonly productRepository: Repository<Product>,
+    private readonly singleOrderService: SingleOrderService,
     private readonly cartOrderService: CartOrderService,
   ) {}
 
-  private async findProductAndOptionForOrderReady(
-    param: OrderReadyRequest,
-  ): Promise<[Product, ProductOption]> {
-    const { productId, productOptionId } = param;
-
-    const product = await this.productRepository
-      .createQueryBuilder('product')
-      .leftJoinAndSelect('product.options', 'options')
-      .where({ id: productId })
-      .andWhere('options.id = :optionId', { optionId: productOptionId })
-      .getOneOrFail();
-
-    return [product, product.options[0]];
-  }
-
-  async ready(user: User, dto: OrderReadyRequest): Promise<Order>;
-  async ready(user: User, cartItemIds: number[]): Promise<Order>;
-  async ready(
-    user: User,
-    option: number[] | OrderReadyRequest,
-  ): Promise<Order> {
-    let order: Order = null;
-
-    if (option instanceof OrderReadyRequest) {
-      const [product, productOption] =
-        await this.findProductAndOptionForOrderReady(option);
-
-      const orderItem = OrderItem.create(
-        product,
-        productOption,
-        option.quantity,
-      );
-
-      order = Order.create(user, orderItem);
+  async ready(user: User, option: number[] | SingleOrderDto): Promise<Order> {
+    if (option instanceof SingleOrderDto) {
+      return await this.singleOrderService.ready(user, option);
     } else {
-      order = await this.cartOrderService.ready(user, option);
+      return await this.cartOrderService.ready(user, option);
     }
-
-    return await this.orderRepository.save(order);
   }
 
   async complete(impUid: string, merchantUid: string): Promise<Order> {

@@ -23,7 +23,7 @@ export class OrderApiController {
 
   @Post()
   async orderReady(@CurrentUser() user: User, @Body() body: OrderReadyRequest) {
-    const order = await this.orderApiService.ready(user, body);
+    const order = await this.orderApiService.ready(user, body.toDto());
     return ResponseEntity.OK_WITH(order.merchantUid);
   }
 
