@@ -14,13 +14,11 @@ import { getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CacheService, CACHE_SERVICE } from '@app/util/cache';
 import { User } from '@app/entity/domain/user/User.entity';
-import {
-  ForgeryOrderError,
-  OrderApiService,
-} from '../../../../../apps/api/src/order';
+import { OrderApiService } from '../../../../../apps/api/src/order';
 import { OrderStatus } from '@app/entity/domain/order/type/OrderStatus';
 import { OrderApiModule } from '../../../../../apps/api/src/order/OrderApiModule';
 import { SingleOrderDto } from '@app/entity/domain/order/type/SingleOrderDto';
+import { ForgeryOrderError } from '@app/entity/domain/order/error/ForgeryOrderError';
 
 describe('OrderApiService', () => {
   let sut: OrderApiService;
