@@ -6,10 +6,10 @@ import { TypeOrmTestModule } from '@app/entity/typeorm.test.module';
 import { OrderApiController } from './controller/OrderApiController';
 import { OrderApiService } from './OrderApiService';
 import { OrderCancelApiService } from './OrderCancelApiService';
-import { CustomCacheModule } from '@app/util/cache';
+import { OrderModule } from '@app/entity/domain/order/OrderModule';
 
 @Module({
-  imports: [MongooseTestModule, TypeOrmTestModule, CustomCacheModule],
+  imports: [MongooseTestModule, TypeOrmTestModule, OrderModule],
   controllers: [OrderApiController],
   providers: [
     OrderApiService,
