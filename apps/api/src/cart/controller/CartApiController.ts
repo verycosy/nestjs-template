@@ -1,5 +1,6 @@
 import { AccessTokenGuard, CurrentUser } from '@app/auth';
-import { ResponseEntity, ResponseStatus } from '@app/config/response';
+import { ResponseEntity } from '@app/config/response';
+import { CartService } from '@app/entity/domain/cart/CartService';
 import { User } from '@app/entity/domain/user/User.entity';
 import {
   Body,
@@ -17,7 +18,10 @@ import { UpdateCartItemQuantityRequest } from '../dto/UpdateCartItemQuantityRequ
 @AccessTokenGuard()
 @Controller('/cart')
 export class CartApiController {
-  constructor(private readonly cartApiService: CartApiService) {}
+  constructor(
+    private readonly cartApiService: CartApiService,
+    private readonly cartService: CartService,
+  ) {}
 
   @Get()
   async getCartItems(
@@ -37,7 +41,7 @@ export class CartApiController {
   ): Promise<ResponseEntity<CartItemDto>> {
     const { productId, productOptionId, count } = body;
 
-    const cartItem = await this.cartApiService.addCartItem(
+    const cartItem = await this.cartService.addCartItem(
       user.cart,
       productId,
       productOptionId,
@@ -53,7 +57,7 @@ export class CartApiController {
     @Param('cartItemId') cartItemId: number,
     @Body() body: UpdateCartItemQuantityRequest,
   ): Promise<ResponseEntity<CartItemDto>> {
-    const cartItem = await this.cartApiService.updateCartItemQuantity(
+    const cartItem = await this.cartService.updateCartItemQuantity(
       user.id,
       cartItemId,
       body.quantity,
@@ -67,7 +71,7 @@ export class CartApiController {
     @CurrentUser() user: User,
     @Param('cartItemId') cartItemId: number,
   ): Promise<ResponseEntity<string>> {
-    await this.cartApiService.removeCartItem(user.id, cartItemId);
+    await this.cartService.removeCartItem(user.id, cartItemId);
     return ResponseEntity.OK();
   }
 }
