@@ -1,4 +1,5 @@
 import { AccessTokenGuard, CurrentUser } from '@app/auth';
+import { Page } from '@app/config/Page';
 import { ResponseEntity } from '@app/config/response';
 import { ReviewService } from '@app/entity/domain/review/ReviewService';
 import { User } from '@app/entity/domain/user/User.entity';
@@ -14,6 +15,7 @@ import {
 } from '@nestjs/common';
 import {
   EditReviewRequest,
+  GetReviewsItem,
   GetReviewsRequest,
   ReviewDto,
   WriteReviewRequest,
@@ -28,11 +30,20 @@ export class ReviewApiController {
   ) {}
 
   @Get()
-  async getReviews(
+  async getProductReviews(
     @Query('productId') productId: number,
     @Body() body: GetReviewsRequest,
+  ): Promise<Page<GetReviewsItem>> {
+    return await this.reviewApiService.getProductReviews(productId, body);
+  }
+
+  @AccessTokenGuard()
+  @Get('/me')
+  async getMyReviews(
+    @CurrentUser() user: User,
+    @Body() body: GetReviewsRequest,
   ) {
-    return await this.reviewApiService.getReviews(productId, body);
+    return await this.reviewApiService.getMyReviews(user.id, body);
   }
 
   @AccessTokenGuard()
@@ -64,7 +75,7 @@ export class ReviewApiController {
     @CurrentUser() user: User,
     @Param('id') id: number,
     @Body() body: EditReviewRequest,
-  ) {
+  ): Promise<ResponseEntity<ReviewDto | string>> {
     const { rating, detail, imagePath } = body;
 
     try {
@@ -84,7 +95,10 @@ export class ReviewApiController {
 
   @AccessTokenGuard()
   @Delete('/:id')
-  async remove(@CurrentUser() user: User, @Param('id') id: number) {
+  async remove(
+    @CurrentUser() user: User,
+    @Param('id') id: number,
+  ): Promise<ResponseEntity<string>> {
     await this.reviewService.remove(user, id);
     return ResponseEntity.OK();
   }

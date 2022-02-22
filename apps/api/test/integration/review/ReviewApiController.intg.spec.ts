@@ -33,6 +33,7 @@ describe('ReviewApiController', () => {
 
   afterEach(async () => {
     await module.close();
+    jest.restoreAllMocks();
   });
 
   describe('write', () => {
@@ -57,8 +58,6 @@ describe('ReviewApiController', () => {
 
       expect(result.message).toBe('Order item #1(accept) not reviewable');
       expect(result.statusCode).toBe(ResponseStatus.SERVER_ERROR);
-
-      jest.restoreAllMocks();
     });
 
     it('작성된 리뷰 반환', async () => {
@@ -100,8 +99,6 @@ describe('ReviewApiController', () => {
 
       expect(result.message).toBe('Order item #1(accept) not reviewable');
       expect(result.statusCode).toBe(ResponseStatus.SERVER_ERROR);
-
-      jest.restoreAllMocks();
     });
 
     it('수정된 리뷰 반환', async () => {
@@ -141,49 +138,99 @@ describe('ReviewApiController', () => {
     });
   });
 
-  it('getReviews', async () => {
-    const dto = GetReviewsRequest.create(1, 10);
-    const user = await TestUserFactory.create(module);
-    const subCategory = await TestSubCategoryFactory.create(module);
-    const product = await TestProductFactory.create(module, subCategory);
-    const productOption = await TestProductOptionFactory.create(
-      module,
-      product,
-    );
+  describe('getProductReviews', () => {
+    it('상품 후기 목록 페이징', async () => {
+      const dto = GetReviewsRequest.create(1, 10);
+      const user = await TestUserFactory.create(module);
+      const subCategory = await TestSubCategoryFactory.create(module);
+      const product = await TestProductFactory.create(module, subCategory);
+      const productOption = await TestProductOptionFactory.create(
+        module,
+        product,
+      );
 
-    await TestReviewFactory.create(module, user, product, productOption);
-    await TestReviewFactory.create(module, user, product, productOption);
-    await TestReviewFactory.create(module, user, product, productOption);
+      await TestReviewFactory.create(module, user, product, productOption);
+      await TestReviewFactory.create(module, user, product, productOption);
+      await TestReviewFactory.create(module, user, product, productOption);
 
-    const result = await sut.getReviews(1, dto);
+      const result = await sut.getProductReviews(1, dto);
 
-    expect(result).toEqual({
-      pageSize: 10,
-      totalCount: 3,
-      totalPage: 1,
-      items: [
-        {
-          id: 3,
-          rating: 5,
-          detail: 'this is review',
-          imagePath: null,
-          selectedOption: 'awesome product',
-        },
-        {
-          id: 2,
-          rating: 5,
-          detail: 'this is review',
-          imagePath: null,
-          selectedOption: 'awesome product',
-        },
-        {
-          id: 1,
-          rating: 5,
-          detail: 'this is review',
-          imagePath: null,
-          selectedOption: 'awesome product',
-        },
-      ],
+      expect(result).toEqual({
+        pageSize: 10,
+        totalCount: 3,
+        totalPage: 1,
+        items: [
+          {
+            id: 3,
+            rating: 5,
+            detail: 'this is review',
+            imagePath: null,
+            selectedOption: 'awesome product',
+          },
+          {
+            id: 2,
+            rating: 5,
+            detail: 'this is review',
+            imagePath: null,
+            selectedOption: 'awesome product',
+          },
+          {
+            id: 1,
+            rating: 5,
+            detail: 'this is review',
+            imagePath: null,
+            selectedOption: 'awesome product',
+          },
+        ],
+      });
+    });
+  });
+
+  describe('getMyReviews', () => {
+    it('내 후기 목록 페이징', async () => {
+      const dto = GetReviewsRequest.create(1, 10);
+      const user = await TestUserFactory.create(module);
+      const subCategory = await TestSubCategoryFactory.create(module);
+      const product = await TestProductFactory.create(module, subCategory);
+      const productOption = await TestProductOptionFactory.create(
+        module,
+        product,
+      );
+
+      await TestReviewFactory.create(module, user, product, productOption);
+      await TestReviewFactory.create(module, user, product, productOption);
+      await TestReviewFactory.create(module, user, product, productOption);
+
+      const result = await sut.getMyReviews(user, dto);
+
+      expect(result).toEqual({
+        pageSize: 10,
+        totalCount: 3,
+        totalPage: 1,
+        items: [
+          {
+            id: 3,
+            rating: 5,
+            detail: 'this is review',
+            imagePath: null,
+            selectedOption: 'awesome product',
+          },
+          {
+            id: 2,
+            rating: 5,
+            detail: 'this is review',
+            imagePath: null,
+            selectedOption: 'awesome product',
+          },
+          {
+            id: 1,
+            rating: 5,
+            detail: 'this is review',
+            imagePath: null,
+            selectedOption: 'awesome product',
+          },
+        ],
+      });
     });
   });
 });
