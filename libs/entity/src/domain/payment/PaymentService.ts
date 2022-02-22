@@ -10,7 +10,7 @@ export class PaymentService {
     private readonly iamportService: IamportService,
   ) {}
 
-  async complete(impUid: string): Promise<PaymentDocument> {
+  async save(impUid: string): Promise<PaymentDocument> {
     const payment = await this.iamportService.getPayment(impUid);
     return await this.paymentRepository.save(payment);
   }

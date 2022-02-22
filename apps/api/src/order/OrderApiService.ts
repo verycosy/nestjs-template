@@ -36,7 +36,7 @@ export class OrderApiService {
     );
 
     try {
-      const payment = await this.paymentService.complete(impUid);
+      const payment = await this.paymentService.save(impUid);
       await this.orderCompleteService.checkAmount(payment, order);
 
       switch (payment.status) {

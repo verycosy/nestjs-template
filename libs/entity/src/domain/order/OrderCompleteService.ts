@@ -32,7 +32,7 @@ export class OrderCompleteService {
   async complete(order: Order): Promise<Order> {
     order.complete();
     await this.orderRepository.save(order);
-    await this.cartOrderService.complete(order);
+    await this.cartOrderService.removeOrderedCartItems(order);
 
     return order;
   }

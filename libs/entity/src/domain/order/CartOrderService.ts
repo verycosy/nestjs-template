@@ -16,7 +16,7 @@ export class CartOrderService {
     @Inject(CACHE_SERVICE) private readonly cacheService: CacheService,
   ) {}
 
-  async findCartWithItemsByUser(user: User): Promise<Cart> {
+  private async findCartWithItemsByUser(user: User): Promise<Cart> {
     return await this.cartRepository.findOneOrFail({
       where: {
         user,
@@ -45,7 +45,7 @@ export class CartOrderService {
     await this.cartRepository.save(cart);
   }
 
-  async cachingOrderedCartItemIds(
+  private async cachingOrderedCartItemIds(
     merchantUid: string,
     cartItemIds: number[],
   ): Promise<void> {
@@ -67,9 +67,5 @@ export class CartOrderService {
     const order = Order.create(user, orderedCartItems);
     await this.cachingOrderedCartItemIds(order.merchantUid, cartItemIds);
     return await this.orderRepository.save(order);
-  }
-
-  async complete(order: Order) {
-    await this.removeOrderedCartItems(order);
   }
 }

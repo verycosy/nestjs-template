@@ -20,9 +20,7 @@ describe('PaymentService', () => {
     }).compile();
 
     sut = module.get(PaymentService);
-    jest
-      .spyOn(sut, 'complete')
-      .mockResolvedValue(iamportPaymentMockData as any);
+    jest.spyOn(sut, 'save').mockResolvedValue(iamportPaymentMockData as any);
   });
 
   afterEach(async () => {
