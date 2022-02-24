@@ -12,6 +12,7 @@ import { User } from '@app/entity/domain/user/User.entity';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { Banner } from './domain/banner/Banner.entity';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
       ProductInquiry,
       Review,
       User,
+      Banner,
     ]),
   ],
   exports: [TypeOrmModule],
