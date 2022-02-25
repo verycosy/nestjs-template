@@ -1,0 +1,48 @@
+import { AdminGuard } from '@app/auth';
+import { ResponseEntity } from '@app/config/response';
+import { BannerService } from '@app/entity/domain/banner/BannerService';
+import { BannerDurationError } from '@app/entity/domain/banner/error/BannerDurationError';
+import { LocalDate } from '@js-joda/core';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { AddBannerRequest } from './dto/AddBannerRequest';
+import { BannerDto } from './dto/BannerDto';
+
+@AdminGuard()
+@Controller('/banner')
+export class BannerAdminController {
+  constructor(private readonly bannerService: BannerService) {}
+
+  @Post()
+  @UseInterceptors(FileInterceptor('imageFile'))
+  async add(
+    @Body() body: AddBannerRequest,
+    @UploadedFile() imageFile: Express.Multer.File,
+  ): Promise<ResponseEntity<BannerDto>> {
+    const { title, startDate, endDate } = body;
+
+    try {
+      const banner = await this.bannerService.add(
+        title,
+        imageFile.path,
+        LocalDate.parse(startDate),
+        LocalDate.parse(endDate),
+      );
+
+      return ResponseEntity.OK_WITH(new BannerDto(banner));
+    } catch (err) {
+      if (err instanceof BannerDurationError) {
+        throw new BadRequestException(err.message);
+      }
+
+      throw err;
+    }
+  }
+}
