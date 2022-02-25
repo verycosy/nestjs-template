@@ -33,4 +33,9 @@ export class BannerService {
 
     return await this.bannerRepository.save(banner);
   }
+
+  async remove(bannerId: number): Promise<void> {
+    const banner = await this.bannerRepository.findOneOrFail({ id: bannerId });
+    await this.bannerRepository.remove(banner);
+  }
 }

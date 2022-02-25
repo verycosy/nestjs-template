@@ -140,4 +140,28 @@ describe('BannerAdminController (e2e)', () => {
       expect(res.body.data.image).not.toBe(banner.image);
     });
   });
+
+  describe('/banner/:bannerId (DELETE)', () => {
+    it('삭제할 배너가 없으면 404를 응답한다', async () => {
+      const res = await request(app.getHttpServer())
+        .delete('/banner/1')
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(res.statusCode).toBe(404);
+      expect(res.body).toEqual({
+        message: '데이터를 찾을 수 없습니다 - "Banner" 조건: {"id": 1}',
+      });
+    });
+
+    it('삭제완료 응답', async () => {
+      await saveBanner();
+
+      const res = await request(app.getHttpServer())
+        .delete('/banner/1')
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.message).toBe('');
+    });
+  });
 });

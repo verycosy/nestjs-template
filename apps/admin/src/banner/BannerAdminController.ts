@@ -7,6 +7,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Param,
   Patch,
   Post,
@@ -74,5 +75,13 @@ export class BannerAdminController {
 
       throw err;
     }
+  }
+
+  @Delete('/:bannerId')
+  async remove(
+    @Param('bannerId') bannerId: number,
+  ): Promise<ResponseEntity<string>> {
+    await this.bannerService.remove(bannerId);
+    return ResponseEntity.OK();
   }
 }
