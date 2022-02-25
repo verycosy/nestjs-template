@@ -2,6 +2,7 @@ import { BaseTimeEntity } from '@app/entity/BaseTimeEntity';
 import { LocalDateTransformer } from '@app/entity/transformer';
 import { LocalDate } from '@js-joda/core';
 import { Column, Entity } from 'typeorm';
+import { BannerDurationError } from './error/BannerDurationError';
 
 @Entity('banner')
 export class Banner extends BaseTimeEntity {
@@ -30,7 +31,7 @@ export class Banner extends BaseTimeEntity {
     endDate: LocalDate,
   ): Banner {
     if (endDate.isBefore(startDate)) {
-      throw new Error();
+      throw new BannerDurationError(startDate, endDate);
     }
 
     const banner = new Banner();
