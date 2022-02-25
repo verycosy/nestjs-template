@@ -57,7 +57,7 @@ describe('CategoryAdminController (e2e)', () => {
 
       expect(res.status).toBe(404);
       expect(res.body).toEqual({
-        message: '데이터를 찾을 수 없습니다 - "Category" 조건: {"id": "1"}',
+        message: '데이터를 찾을 수 없습니다 - "Category" 조건: {"id": 1}',
       });
     });
 

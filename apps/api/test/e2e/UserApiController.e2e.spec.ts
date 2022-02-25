@@ -5,6 +5,7 @@ import { ApiModule } from '../../../api/src/api.module';
 import { Repository } from 'typeorm';
 import * as request from 'supertest';
 import { AuthService } from '@app/auth';
+import { setNestApp } from '@app/config/setNestApp';
 
 describe('UserApiController (e2e)', () => {
   let app: INestApplication;
@@ -18,6 +19,7 @@ describe('UserApiController (e2e)', () => {
     }).compile();
 
     app = module.createNestApplication();
+    setNestApp(app);
     await app.init();
 
     userRepository = module.get('UserRepository');

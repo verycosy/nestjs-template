@@ -1,4 +1,8 @@
-import { ClassSerializerInterceptor, INestApplication } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  INestApplication,
+  ValidationPipe,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { EntityNotFoundErrorInterceptor } from './interceptor';
@@ -20,6 +24,11 @@ function setSwagger(app: INestApplication) {
 }
 
 export function setResponse(app: INestApplication) {
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  );
   app.useGlobalInterceptors(
     new ClassSerializerInterceptor(app.get(Reflector)),
     new EntityNotFoundErrorInterceptor(),
