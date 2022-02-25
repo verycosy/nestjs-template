@@ -47,6 +47,34 @@ describe('BannerAdminController (e2e)', () => {
     await app.close();
   });
 
+  describe('/banner (GET)', () => {
+    it('배너 목록 조회', async () => {
+      // given
+      const banners: Banner[] = [];
+      for (let i = 0; i < 12; i++) {
+        banners.push(
+          Banner.create(
+            `제목${i}`,
+            `이미지${i}`,
+            LocalDate.parse('2020-01-01'),
+            LocalDate.parse('2020-01-02'),
+          ),
+        );
+      }
+
+      await bannerRepository.save(banners);
+
+      // when
+      const res = await request(app.getHttpServer())
+        .get('/banner')
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      // then
+      expect(res.body.totalCount).toBe(12);
+      expect(res.body.totalPage).toBe(2);
+    });
+  });
+
   describe('/banner (POST)', () => {
     it('종료일이 시작일보다 앞서면 400을 응답한다', async () => {
       const res = await request(app.getHttpServer())

@@ -1,4 +1,5 @@
 import { AdminGuard } from '@app/auth';
+import { Page } from '@app/config/Page';
 import { ResponseEntity } from '@app/config/response';
 import { BannerService } from '@app/entity/domain/banner/BannerService';
 import { BannerDurationError } from '@app/entity/domain/banner/error/BannerDurationError';
@@ -8,20 +9,32 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { AddBannerRequest } from './dto/AddBannerRequest';
-import { BannerDto } from './dto/BannerDto';
+import { BannerAdminService } from './BannerAdminService';
+import { AddBannerRequest, BannerDto, GetBannersRequest } from './dto';
 
 @AdminGuard()
 @Controller('/banner')
 export class BannerAdminController {
-  constructor(private readonly bannerService: BannerService) {}
+  constructor(
+    private readonly bannerService: BannerService,
+    private readonly bannerAdminService: BannerAdminService,
+  ) {}
+
+  @Get()
+  async getBanners(
+    @Query() query: GetBannersRequest,
+  ): Promise<Page<BannerDto>> {
+    return this.bannerAdminService.getBanners(query);
+  }
 
   @Post()
   @UseInterceptors(FileInterceptor('imageFile'))
