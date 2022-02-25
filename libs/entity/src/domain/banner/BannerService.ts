@@ -20,4 +20,17 @@ export class BannerService {
     const banner = Banner.create(title, image, startDate, endDate);
     return await this.bannerRepository.save(banner);
   }
+
+  async edit(
+    bannerId: number,
+    title: string,
+    image: string,
+    startDate: LocalDate,
+    endDate: LocalDate,
+  ): Promise<Banner> {
+    const banner = await this.bannerRepository.findOneOrFail({ id: bannerId });
+    banner.update(title, image, startDate, endDate);
+
+    return await this.bannerRepository.save(banner);
+  }
 }

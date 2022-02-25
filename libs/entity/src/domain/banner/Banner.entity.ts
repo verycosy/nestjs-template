@@ -14,15 +14,21 @@ export class Banner extends BaseTimeEntity {
 
   @Column({
     transformer: new LocalDateTransformer(),
-    type: 'date',
+    type: 'timestamptz',
   })
   startDate: LocalDate;
 
   @Column({
     transformer: new LocalDateTransformer(),
-    type: 'date',
+    type: 'timestamptz',
   })
   endDate: LocalDate;
+
+  checkDuration(): void {
+    if (this.endDate.isBefore(this.startDate)) {
+      throw new BannerDurationError(this.startDate, this.endDate);
+    }
+  }
 
   static create(
     title: string,
@@ -30,16 +36,23 @@ export class Banner extends BaseTimeEntity {
     startDate: LocalDate,
     endDate: LocalDate,
   ): Banner {
-    if (endDate.isBefore(startDate)) {
-      throw new BannerDurationError(startDate, endDate);
-    }
-
     const banner = new Banner();
-    banner.title = title;
-    banner.image = image;
-    banner.startDate = startDate;
-    banner.endDate = endDate;
+    banner.update(title, image, startDate, endDate);
 
     return banner;
+  }
+
+  update(
+    title: string,
+    image: string,
+    startDate: LocalDate,
+    endDate: LocalDate,
+  ): void {
+    this.title = title;
+    this.image = image;
+    this.startDate = startDate;
+    this.endDate = endDate;
+
+    this.checkDuration();
   }
 }
