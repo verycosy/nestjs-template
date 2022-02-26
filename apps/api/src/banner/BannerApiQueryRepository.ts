@@ -10,6 +10,9 @@ export class BannerApiQueryRepository extends AbstractRepository<Banner> {
       .where('start_date <= :now AND end_date >= :now', {
         now: DateTimeUtil.toDate(now),
       })
+      .orderBy({
+        id: 'DESC',
+      })
       .getMany();
   }
 }
